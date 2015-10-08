@@ -1,0 +1,57 @@
+Step by Step Brainstorms
+
+===================Step by Step for Host Platform===================
+
+- Creates an Account
+    - Username
+    - Email
+    - Password
+    - Re-enter Password
+
+- Login in
+    - Session started
+
+- Will have the abilities to Choosing
+    - Seeing the list of the applications.
+
+- Selection
+
+- Creates and launches the Lobby
+
+- Lobby Creation Page
+    - Name of Lobby
+    - Size of Lobby in number of people allowed.
+    - Optional Password and setting that.
+    - Make selection and confirm
+    - Applications Specific Settings
+    - Click Start lobby instance
+
+- Load Lobby
+    - QR and PIN again
+    - List of People and their usernames (anon)
+    - Quit and Change Application
+        - Which will lead to lobby creation page again.
+    - Start button
+
+- Sending the people in the lobby to the application.
+
+- Platform Running in background Per Application
+
+- Application terminates pushing host back to lobby.
+
+===================Step by Step for Joining Platform===================
+
+- QR or PIN
+    - QR pushes them straight to lobby startup
+    - PIN + Certain URL straight to lobby startup
+    - PIN + Host Username WIP
+    - URL + JOIN + PIN
+
+- Lobby Startup
+    - Picking ANON Username
+    - Password
+
+- Load Lobby
+    - Straight to application
+
+    
