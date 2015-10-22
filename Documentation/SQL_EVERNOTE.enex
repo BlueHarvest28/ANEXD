@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export3.dtd">
+<en-export export-date="20151018T163929Z" application="Evernote" version="Evernote Mac 6.1.1 (452253)">
+<note><title>Database SQL Design</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note>
+<div><br/></div>
+<div>ANEXD_ADMIN</div>
+<div>ANEXD_PASS123</div>
+<div><br/></div>
+<div>Tables</div>
+<ul>
+<li>Users
+<ul>
+<li>UserID {PK}</li>
+<li>Username</li>
+<li>Password</li>
+<li>Email</li>
+</ul>
+</li>
+<li>Anon Users
+<ul>
+<li>UserID {PK}</li>
+<li>Username </li>
+<li>Lobby(lobby they are in)</li>
+</ul>
+</li>
+<li>Lobby
+<ul>
+<li>LobbyID</li>
+<li>Lobby Title</li>
+<li>Size</li>
+<li>Creator {PK}(UserID from Users)</li>
+<li>Password (If there is one)</li>
+<li>Game (GameID from Game)</li>
+<li>QR code (using QR code api to give us a barcode data which we store int the database)</li>
+</ul>
+</li>
+<li>Game
+<ul>
+<li>CreatorID (UserID from Users)</li>
+<li>GameID {PK}</li>
+<li>name (name of game)</li>
+<li>date_created (timestamp for when the game was created)</li>
+</ul>
+</li>
+</ul>
+<div><br/></div>
+<div>TABLE User</div>
+<table style="-evernote-table:true;border-collapse:collapse;margin-left:0px;table-layout:fixed;width:100%;">
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.58024691358025%;">
+<div>Name</div>
+</td>
+<td style="border: 1px solid rgb(219, 219, 219); padding: 10px; margin: 0px;width:37.53086419753087%;">
+<div>Type</div>
+</td>
+<td style="border: 1px solid rgb(219, 219, 219); padding: 10px; margin: 0px;width:28.641975308641975%;">
+<div>Extra</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>userID</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>NOT NULL, PK, AUTO INCREMENT</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>username</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>VARCHAR(30)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>NOT NULL</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>password</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>CHAR(128)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>NOT NULL,</div>
+<div>using sha512 to hash it and store</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>email</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>VARCHAR(30)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:25%;">
+<div>NOT NULL</div>
+</td>
+</tr>
+</table>
+<div><br/></div>
+<div><br/></div>
+<div><span style="font-size: 11.000000pt; font-family: 'Calibri'">CREATE TABLE User</span></div>
+<div><span style="font-size: 11.000000pt; font-family: 'Calibri'">(</span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">userID INT NOT NULL AUTO_INCREMENT<span style="font-size: 16px;"><span style="font-family: Consolas;">,</span></span></span></span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">username VARCHAR(30) UNIQUE NOT NULL,</span></span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">password CHAR(128) NOT NULL,</span></span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">email VARCHAR(30) UNIQUE NOT NULL,</span></span></div>
+<div><span style="font-size: 11.000000pt; font-family: 'Calibri'">PRIMARY KEY (userID)</span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">);</span></span></div>
+<div><br/></div>
+<div><br/></div>
+<div>TABLE Anon_User</div>
+<table style="-evernote-table:true;border-collapse:collapse;width:100%;table-layout:fixed;margin-left:0px;">
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Name</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Type </div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Extra</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>userID</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">NOT NULL AUTO_INCREMENT, PK</span></span></div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>username</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>VARCHAR(30)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">UNIQUE NOT NULL</span></span></div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>lobby</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>NOT NULL, FK</div>
+</td>
+</tr>
+</table>
+<div><br/></div>
+<div><br/></div>
+<div>CREATE TABLE Anon_User</div>
+<div>(</div>
+<div>userID INT <span style="font-size: 11pt;"><span style="font-family: Calibri;">NOT NULL AUTO_INCREMENT,</span></span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">username </span></span><span style="font-size: 11pt;"><span style="font-family: Calibri;">VARCHAR(30) UNIQUE NOT NULL,</span></span></div>
+<div><span style="font-size: 15px;"><span style="font-family: Calibri;">lobby INT NOT NULL,</span></span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">PRIMARY KEY (userID),</span></span></div>
+<div><font face="Calibri"><span style="font-size: 15px;">FOREIGN</span></font><font face="Calibri" size="3"> KEY (lobby) REFERENCES Lobby(lobbyID)</font></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">);</span></span></div>
+<div><br/></div>
+<div>TABLE Lobby</div>
+<table style="-evernote-table:true;border-collapse:collapse;width:100%;table-layout:fixed;margin-left:0px;">
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Name</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Type</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Extra</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>lobbyID</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>NOT NULL, AUTO INCREMENT, PK</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>title</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>VARCHAR(30)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>NOT NULL</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>creator</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>VARCHAR(30)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>userID from Users, FK, NOT NULL</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>password</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>CHAR(128)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>using sha512 to hash it and store, can be null if they don’t want a password</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>game</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>gameID from Game</div>
+</td>
+</tr>
+</table>
+<div><br/></div>
+<div>CREATE TABLE Lobby</div>
+<div>(</div>
+<div>lobbyID INT NOT NULL AUTO_INCREMENT,</div>
+<div>title VARCHAR(30) NOT NULL,</div>
+<div>creator VARCHAR(30) NOT NULL,</div>
+<div>password CHAR(128),</div>
+<div>game INT NOT NULL,</div>
+<div><span style="font-size: 11.000000pt; font-family: 'Calibri'">PRIMARY KEY (lobbyID),</span></div>
+<div><span style="font-size: 11pt;"><span style="font-family: Calibri;">FOREIGN KEY (creator) REFERENCES Users(userID)</span></span></div>
+<div>);</div>
+<div><br/></div>
+<div>Table Game</div>
+<table style="-evernote-table:true;border-collapse:collapse;width:100%;table-layout:fixed;margin-left:0px;">
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Name</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Type</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>Extra</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>gameID</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>AUTO INCREMENT, NOT NULL, PK</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>creatorID</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>INT</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>NOT NULL, FK</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>name</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>VARCHAR(64)</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>NOT NULL</div>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>date_created</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>TIMESTAMP</div>
+</td>
+<td style="border-style:solid;border-width:1px;border-color:rgb(219,219,219);padding:10px;margin:0px;width:33.33%;">
+<div>NOT NULL, When  inserting take the current time and date. </div>
+</td>
+</tr>
+</table>
+<div><br/></div>
+<div>CREATE TABLE Game</div>
+<div>(</div>
+<div>gameID INT NOT NULL AUTO_INCREMENT,</div>
+<div>creatorID INT NOT NULL,</div>
+<div>name VARCHAR(64) NOT NULL,</div>
+<div>date_created TIMESTAMP NOT NULL,</div>
+<div>PRIMARY KEY (gameID),</div>
+<div>FOREIGN KEY (creatorID) REFERENCES Users(userID)</div>
+<div>);</div>
+<div><br/></div>
+<div><br/></div>
+<div><br/></div>
+<div><br/></div>
+<div><br/></div>
+<div><br/></div>
+<div><br/></div>
+<div><br/></div>
+</en-note>
+]]></content><created>20151012T111215Z</created><updated>20151018T163634Z</updated><note-attributes><latitude>51.2853655167465</latitude><longitude>1.073537020363585</longitude><altitude>16.12056350708008</altitude><author>fjharrington@btinternet.com</author><source>desktop.mac</source><reminder-order>0</reminder-order></note-attributes></note>
+</en-export>
