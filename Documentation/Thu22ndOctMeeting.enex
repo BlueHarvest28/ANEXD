@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/evernote-export3.dtd">
+<en-export export-date="20151022T142156Z" application="Evernote" version="Evernote Mac 6.1.1 (452253)">
+<note><title>Week 4 Meeting - Ending 25th</title><content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
+<en-note>
+<div><u>Next meeting 27th Of October 12pm</u></div>
+<div><br/></div>
+<div>Present: Frederick Harrington, Alex Austin, Mo Waqas, James Grant.</div>
+<div><br/></div>
+<div><b>Aims:</b></div>
+<ol>
+<li>Arrange a meeting with Fred</li>
+<li>Start using Code and Repository quality assurance.</li>
+<li>Deliverables </li>
+<li>SQL database</li>
+<li>Documentation Overview</li>
+</ol>
+<div>     </div>
+<div><b>Harry</b></div>
+<ul>
+<li>Add James, Mo and Alex to go daddy</li>
+<li>Alex and Harry need talk about templates
+<ul>
+<li>lists and descriptions for those.</li>
+</ul>
+</li>
+<li>Keep working html, css front end.</li>
+</ul>
+<div><b><br/></b></div>
+<div><b>Fred</b></div>
+<ul>
+<li>Documentation Overview for the first three sections.</li>
+<li>Organise the meeting with Fred.</li>
+</ul>
+<div><b><br/></b></div>
+<div><b>James</b></div>
+<ul>
+<li>Will use Step by Step Platform Guide written in week 1 and SQL Tables to plan server side connections.</li>
+<li>Map all connections from database to server.</li>
+<li>James to research if the games should be stored on a database and run directly from them.</li>
+<li>Technical Description for the methods they have picked. </li>
+<li><br/></li>
+</ul>
+<div><b><br/></b></div>
+<div><b>Mo </b></div>
+<ul>
+<li>Map Controller to View connections.</li>
+<li>Write possible function descriptions.</li>
+</ul>
+<div><br/></div>
+<div><b>Alex</b></div>
+<ul>
+<li>UI dev environment up and running.</li>
+<li>Hopefully have a few template. Flat page, nothing will work.</li>
+<li>Technical Description for the methods they have picked. </li>
+</ul>
+<div><br/></div>
+<div><b>Ending Notes</b></div>
+<div><b><br/></b></div>
+<div>Aim for next week is to brainstorm each allocated sections,</div>
+<div>Why are you using that technology?</div>
+<div>What is required?</div>
+<div>What functions/actions will be required?</div>
+<div><br/></div>
+<div>Meeting doc posted as Evernote on Git and in PDF on chat.</div>
+</en-note>
+]]></content><created>20151022T125902Z</created><updated>20151022T140311Z</updated><note-attributes><latitude>51.29842203186395</latitude><longitude>1.069575049774768</longitude><altitude>65.62747955322266</altitude><author>fjharrington@btinternet.com</author><source>desktop.mac</source><reminder-order>0</reminder-order></note-attributes></note>
+</en-export>
