@@ -33,7 +33,7 @@ var gulp = require('gulp');
 
 // plugins
 var connect = require('gulp-connect');		 //1.
-var jshint = require('gulp-jshint');		 //2.
+//var jshint = require('gulp-jshint');		 //2.
 var uglify = require('gulp-uglify'); 		 //3.
 var clean = require('gulp-clean'); 			 //4.
 var minifycss = require('gulp-minify-css');  //5.
@@ -41,12 +41,12 @@ var sass = require('gulp-sass'); 			 //6.
 
 // Checks Js files for any errors
 // Descript: Finds all js files in app directory and checks them for errors
-gulp.task('lint', function() {
-  gulp.src(['./app/views/**/*.js', './app/*.js', '!./app/bower_components/**'])
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(jshint.reporter('fail'));
-});
+// gulp.task('lint', function() {
+//   gulp.src(['./app/views/**/*.js', './app/*.js', '!./app/bower_components/**'])
+//     .pipe(jshint())
+//     .pipe(jshint.reporter('default'))
+//     .pipe(jshint.reporter('fail'));
+// });
 
 // Converts all scss files into one css file.
 // Descript: All scss files in views/** and app/ combined into on file found in css/
@@ -135,12 +135,12 @@ gulp.task('connectDist', function () {
 // default task
 // This should be run when developing.
 gulp.task('default',
-  ['lint', 'sass', 'connect']
+  ['sass', 'connect']
 );
 
 
 // build task
 // ONLY run this task when want to compress project ready for deployment
 gulp.task('build',
-  ['lint', 'copy-css-file', 'minify-js', 'copy-html-files', 'copy-bower-components', 'connectDist']
+  ['copy-css-file', 'minify-js', 'copy-html-files', 'copy-bower-components', 'connectDist']
 );
