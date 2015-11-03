@@ -4,10 +4,10 @@
 
   angular.module('ANEXD')
 
-  .controller('MainController', [
+  .controller('HomeController', [
     '$scope',
     function($scope) {
-      $scope.test = "Testing...";
+      $scope.test = 'Testing...';
     }
   ]);
 

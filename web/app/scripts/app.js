@@ -26,8 +26,8 @@ angular
       // routes
       $routeProvider
         .when('/', {
-          templateUrl: './views/partial1/partial1.html',
-          controller: 'MainController'
+          templateUrl: './views/home.html',
+          controller: 'HomeController'
         })
         .otherwise({
            redirectTo: '/'
