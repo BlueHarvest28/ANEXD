@@ -24,23 +24,37 @@
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#"><img src="images/logo.png" height="20px" alt="ANEXD"/></a>
+          <a class="navbar-brand" href=""><img src="images/logo.png" height="20px" alt="ANEXD"/></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="./"><span class="nav-user">xXFag69Xx</span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
-            <li><a href="./"><img src="images/icon-settings.png" class="nav-icon" alt="settings"/></a></li>
-            <li><a href="./"><img src="images/icon-play.png" class="nav-icon" alt="play"/></a></li>
+            <li><a href="" data-toggle="modal" data-target=".login-modal"><span class="nav-user">xXFag69Xx</span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
+            <li><a href=""><img src="images/icon-settings.png" class="nav-icon" alt="settings"/></a></li>
+            <li><a href=""><img src="images/icon-play.png" class="nav-icon" alt="play"/></a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
+
+    <div class="modal fade login-modal" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form>
+              <div class="login-input-back email">
+                <img class="email-icon" src="../images/icon-account-small.png"/>
+                <input placeholder="email" type="text" class="login-input" name="email">
+              </div>
+              <div class="login-input-back password">
+                <img class="password-icon" src="../images/icon-password.png"/>
+                <input placeholder="password" type="password" class="login-input" name="password" disabled>
+              </div>
+              <input type="submit" value="Login / Signup" class="login-submit" name="submit" disabled>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="container-fluid main">
       <!-- views -->
