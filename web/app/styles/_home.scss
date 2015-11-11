@@ -20,8 +20,17 @@
     		margin-bottom: 0; 
 		}
 
-		.row-icon{
-			height: 65px;
+		.col-xs-4{
+			transition: margin 0.5s;
+			cursor: pointer;
+
+			.row-icon{
+				height: 65px;
+			}
+
+			&:hover{
+				margin-top: -10px;
+			}
 		}
 	}
 

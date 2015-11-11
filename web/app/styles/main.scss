@@ -100,6 +100,7 @@ textarea {
 
 body{
     min-width: 780px;
+    background-color: #eee;
 }
 
 a{
@@ -123,6 +124,16 @@ input{
 .login-modal{
     img{
         position: absolute;
+    }
+
+    small{
+        display: block;
+        opacity: 0.3;
+        margin-top: 10px;
+
+        a{
+            color: #fff !important;
+        }
     }
 
     ::-webkit-input-placeholder {
@@ -165,10 +176,6 @@ input{
         background-color: rgba(255,255,255,0.5);
         position: relative;
         box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px;
-
-        &.password{
-            opacity:0.4;
-        }
 
         .email-icon{
             width: 22px;
@@ -330,23 +337,6 @@ input:-webkit-autofill {
 
 .clearfix:after {
     clear: both;
-}
-
-/* ==========================================================================
-   EXAMPLE Media Queries for Responsive Design.
-   These examples override the primary ('mobile first') styles.
-   Modify as content requires.
-   ========================================================================== */
-
-@media only screen and (min-width: 35em) {
-    /* Style adjustments for viewports that meet the condition */
-}
-
-@media print,
-       (-webkit-min-device-pixel-ratio: 1.25),
-       (min-resolution: 1.25dppx),
-       (min-resolution: 120dpi) {
-    /* Style adjustments for high resolution devices */
 }
 
 /* ==========================================================================
