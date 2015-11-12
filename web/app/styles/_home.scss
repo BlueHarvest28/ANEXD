@@ -83,13 +83,30 @@
 			color: white;
 			box-shadow: rgba(1, 1, 1, 0.1) 0px 5px 5px;
 			cursor: pointer;
-			transition: margin-top 0.5s, box-shadow 0.5s;
+			position: relative;
 
 			&:hover{
-				margin-top: 20px;
-				box-shadow: rgba(1, 1, 1, 0.1) 0px 10px 15px;
+				.app-tile-overlay{
+					opacity: 0.75;
+				}
 
 			}
+
+			.app-tile-overlay{
+				position: absolute;
+				background-color: #3c5f72;
+				opacity: 0;
+				transition: opacity 0.3s;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+
+				img{
+					margin: 86px 139px;
+				}
+			}
+
 			.app-tile-top{
 				text-transform: uppercase;
 
@@ -98,7 +115,7 @@
 				}
 			}
 			.app-tile-bottom{
-				width: 75%;
+				width: 90%;
 			    height: 76px;
 			    text-overflow: ellipsis;
 			    max-height: 76px;
