@@ -200,17 +200,17 @@ input{
         font-weight: 100;
         letter-spacing: 1px;
     }
+}
 
-    .login-submit{
-        border: none;
-        padding: 12px 15px;
-        width: 100%;
-        font-size: 15pt;
-        background-color: rgba(107, 187, 92, 0.7);
-        color: white;
-        font-weight: 100;
-        opacity: 0.4;
-    }
+.login-submit{
+    border: none;
+    padding: 12px 15px;
+    width: 100%;
+    font-size: 15pt;
+    background-color: rgba(107, 187, 92, 1);
+    color: white;
+    font-weight: 100;
+    opacity: 0.4;
 }
 
 input:-webkit-autofill {

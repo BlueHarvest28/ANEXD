@@ -1,96 +1,86 @@
-<div class="home">
-	<div class="container icons-row">
-		<div class="row">
-			<div class="col-xs-4" data-toggle="modal" data-target=".login-modal">
-				<img class="row-icon" src="../images/icon-account-large.png" alt="login"/>
-				<h2>Login</h2>
-				<p>Sign up or login to access ANEXD</p>
+<div id="home" class="home">
+	<div class="icons-row-container container-fluid">
+		<div class="container icons-row" ng-class="{expand: hideIcons}">
+			<div class="row icons" ng-hide="hideIcons">
+				<div class="col-xs-4" data-toggle="modal" data-target=".login-modal">
+					<img class="row-icon" src="../images/icon-account-large.png" alt="login"/>
+					<h2>Login</h2>
+					<p>Sign up or login to access ANEXD</p>
+				</div>
+				<div class="col-xs-4" scroll-on-click href=".app-header">
+					<img class="row-icon" src="../images/icon-settings-large.png" alt="settings"/>
+					<h2>Create</h2>
+					<p>Choose an application to launch</p>
+				</div>
+				<div class="col-xs-4">
+					<img class="row-icon" src="../images/icon-play-large.png" alt="play"/>
+					<h2>Play</h2>
+					<p>Get a code to share with your players</p>
+				</div>
 			</div>
-			<div class="col-xs-4">
-				<img class="row-icon" src="../images/icon-settings-large.png" alt="settings"/>
-				<h2>Create</h2>
-				<p>Choose an application to launch</p>
-			</div>
-			<div class="col-xs-4">
-				<img class="row-icon" src="../images/icon-play-large.png" alt="play"/>
-				<h2>Play</h2>
-				<p>Get a code to share with your players</p>
+			<div class="app-container" ng-show="hideIcons">
+				<i class="fa fa-close" ng-click="showIcons()"></i>
+				<img src="{{app.image}}"/>
+			 	<div class="inner">
+			        <h2>{{app.name}}</h2>
+			        <form>
+		        		<div class="form-group">
+			        		<label for="max-players">Max Players:&nbsp;</label>
+				          	<select class="form-control" id="max-players">
+				        		<option>2</option>
+				        		<option>5</option>
+				        		<option>10</option>
+				        		<option>20</option>
+				        		<option>50</option>
+				        	</select>
+				        </div>
+				    	<div class="form-group">
+			        		<label for="nickname">Allow Nicknames:&nbsp;</label>
+		        			<input id="nickname" type="checkbox">
+			        	</div>
+			        	<input type="submit" value="Launch" class="login-submit">
+			    	</form>
+			    </div>
 			</div>
 		</div>
 	</div>
-	<div class="navbar navbar-default app-header">
-        <div class="container">
-         	<div class="navbar-header">
-            	<h1>Check Out Our Apps!</h1>
-          	</div>
-          	<div id="navbar" class="navbar-collapse collapse">
-            	<ul class="nav navbar-nav navbar-right">
-              		<li class="active"><span class="app-filter">All</span></li>
-              		<li><span class="app-filter">Quizzes</span></li>
-              		<li><span class="app-filter">Games</span></li>
-            	</ul>
-          	</div>
-        </div>
-    </div>
-    <div class="container-fluid app-list">
-    	<div class="row">
-    		<div class="col-lg-4 col-xs-6">
-    			<div class="app-tile">
-    				<div class="app-tile-overlay">
-    					<img src="../images/icon-settings-large.png"/>
-    				</div>
-    				<div class="app-tile-top">
-		    			<span class="type">Quiz</span>
-		    			<span class="rating">
-		    				<i class="fa fa-star"/>
-		    				<i class="fa fa-star"/>
-		    				<i class="fa fa-star"/>
-	    				</span>
-	    			</div>
-	    			<div class="app-tile-bottom">
-	    				<h3>The Satan Test</h3>
-	    				<p>Think you know Satan? Think Again in this exceptionally pagan quiz.</p>
-	    			</div>
+	<div class="app-header-list" ng-hide="hideIcons">
+		<div class="navbar navbar-default app-header">
+	        <div class="container">
+	         	<div class="navbar-header">
+	            	<h1>Check Out Our Apps!</h1>
+	          	</div>
+	          	<div id="navbar" class="navbar-collapse collapse">
+	            	<ul class="nav navbar-nav navbar-right">
+	              		<li class="active" ng-click="setFilter('')"><span class="app-filter">All</span></li>
+	              		<li ng-click="setFilter('quiz')"><span class="app-filter">Quizzes</span></li>
+	              		<li ng-click="setFilter('game')"><span class="app-filter">Games</span></li>
+	            	</ul>
+	          	</div>
+	        </div>
+	    </div>
+	    <div class="container-fluid app-list">
+	    	<div class="row">
+	    		<div class="col-lg-4 col-xs-6" ng-repeat="app in apps | filter: {type : type}">
+	    			<div class="app-tile" style="background-image: url('{{app.image}}')" scroll-on-click href="#top" ng-click="loadTile(app)">
+	    				<div class="app-tile-overlay">
+	    					<img src="../images/icon-settings-large.png"/>
+	    				</div>
+	    				<div class="app-tile-top">
+			    			<span class="type">{{app.type}}</span>
+			    			<span class="rating">
+			    				<i class="fa fa-star"/>
+			    				<i class="fa fa-star"/>
+			    				<i class="fa fa-star"/>
+		    				</span>
+		    			</div>
+		    			<div class="app-tile-bottom">
+		    				<h3>{{app.name}}</h3>
+		    				<p>{{app.description}}</p>
+		    			</div>
+		    		</div>
 	    		</div>
-    		</div>
-	    	<div class="col-lg-4 col-xs-6">
-    			<div class="app-tile">
-    				<div class="app-tile-overlay">
-    					<img src="../images/icon-settings-large.png"/>
-    				</div>
-    				<div class="app-tile-top">
-		    			<span class="type">Quiz</span>
-		    			<span class="rating">
-		    				<i class="fa fa-star"/>
-		    				<i class="fa fa-star"/>
-	    				</span>
-	    			</div>
-	    			<div class="app-tile-bottom">
-	    				<h3>The Satan Test 2</h3>
-	    				<p>MORE SATANIC GLORY FOR THE MASSES BOOYAKASHA. Redanko, meCarlos, alasinca, chupacabra.</p>
-	    			</div>
-	    		</div>
-    		</div>
-	    	<div class="col-lg-4 col-xs-6">
-    			<div class="app-tile">
-    				<div class="app-tile-overlay">
-    					<img src="../images/icon-settings-large.png"/>
-    				</div>
-    				<div class="app-tile-top">
-		    			<span class="type">Quiz</span>
-		    			<span class="rating">
-		    				<i class="fa fa-star"/>
-		    				<i class="fa fa-star"/>
-		    				<i class="fa fa-star"/>
-		    				<i class="fa fa-star"/>
-	    				</span>
-	    			</div>
-	    			<div class="app-tile-bottom">
-	    				<h3>The Satan Test 3</h3>
-	    				<p>Please stop requesting Satan quizzes.</p>
-	    			</div>
-	    		</div>
-    		</div>
-    	</div>
+	    	</div>
+	    </div>
     </div>
 </div>
