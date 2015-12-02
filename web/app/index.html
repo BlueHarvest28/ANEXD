@@ -28,11 +28,11 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="" data-toggle="modal" data-target=".login-modal"><span class="nav-user">{{user}}</span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
+            <li><a href="" data-toggle="modal" data-target=".login-modal"><span class="nav-user" ng-show="loggedIn">{{user}}</span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
             <li><a href=""><img src="images/icon-settings.png" class="nav-icon" alt="settings"/></a></li>
             <li><a href=""><img src="images/icon-play.png" class="nav-icon" alt="play"/></a></li>
           </ul>
-        </div><!--/.nav-collapse -->
+        </div>
       </div>
     </nav>
 
@@ -40,18 +40,23 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
-            <form>
+            <form ng-if="!loggedIn">
               <div class="login-input-back email">
                 <img class="email-icon" src="../images/icon-account-small.png"/>
-                <input placeholder="email" type="text" class="login-input" name="email">
+                <input placeholder="email" type="text" class="login-input" name="email" ng-model="email">
               </div>
               <div class="login-input-back password">
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="password" type="password" class="login-input" name="password">
+                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password">
               </div>
-              <input type="submit" value="Login / Signup" class="login-submit" name="submit" disabled>
+              <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="checkAccount(email, password)">
               <small><a href="">Forgotten your password?</a></small>
             </form>
+            <div class="account-info" ng-if="loggedIn">
+              <h2>Hi, {{user}}!</h2>
+              <br/>
+              <button class="login-submit" ng-click="logout();">Logout</button>
+            </div>
           </div>
         </div>
       </div>

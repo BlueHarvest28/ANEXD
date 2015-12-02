@@ -2,17 +2,17 @@
 	<div class="icons-row-container container-fluid">
 		<div class="container icons-row" ng-class="{expand: hideIcons}">
 			<div class="row icons" ng-hide="hideIcons">
-				<div class="col-xs-4" data-toggle="modal" data-target=".login-modal">
+				<div class="col-xs-4" data-toggle="modal" data-target=".login-modal" ng-class="{disabled: loggedIn}">
 					<img class="row-icon" src="../images/icon-account-large.png" alt="login"/>
 					<h2>Login</h2>
 					<p>Sign up or login to access ANEXD</p>
 				</div>
-				<div class="col-xs-4" scroll-on-click href=".app-header">
+				<div class="col-xs-4" scroll-on-click href=".app-header" ng-class="{disabled: !loggedIn}">
 					<img class="row-icon" src="../images/icon-settings-large.png" alt="settings"/>
 					<h2>Create</h2>
 					<p>Choose an application to launch</p>
 				</div>
-				<div class="col-xs-4">
+				<div class="col-xs-4 disabled">
 					<img class="row-icon" src="../images/icon-play-large.png" alt="play"/>
 					<h2>Play</h2>
 					<p>Get a code to share with your players</p>
@@ -52,9 +52,9 @@
 	          	</div>
 	          	<div id="navbar" class="navbar-collapse collapse">
 	            	<ul class="nav navbar-nav navbar-right">
-	              		<li class="active" ng-click="setFilter('')"><span class="app-filter">All</span></li>
-	              		<li ng-click="setFilter('quiz')"><span class="app-filter">Quizzes</span></li>
-	              		<li ng-click="setFilter('game')"><span class="app-filter">Games</span></li>
+	              		<li ng-class="{active: type == ''}" ng-click="setFilter('')"><span class="app-filter">All</span></li>
+	              		<li ng-class="{active: type == 'quiz'}" ng-click="setFilter('quiz')"><span class="app-filter">Quizzes</span></li>
+	              		<li ng-class="{active: type == 'game'}" ng-click="setFilter('game')"><span class="app-filter">Games</span></li>
 	            	</ul>
 	          	</div>
 	        </div>
@@ -69,9 +69,7 @@
 	    				<div class="app-tile-top">
 			    			<span class="type">{{app.type}}</span>
 			    			<span class="rating">
-			    				<i class="fa fa-star"/>
-			    				<i class="fa fa-star"/>
-			    				<i class="fa fa-star"/>
+			    				<i class="fa fa-star" ng-repeat="star in app.rating"></i>
 		    				</span>
 		    			</div>
 		    			<div class="app-tile-bottom">

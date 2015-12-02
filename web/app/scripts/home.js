@@ -11,18 +11,21 @@
     			'type': 'Quiz',
     			'description': 'Think you know Satan? Think Again in this exceptionally pagan quiz.',
     			'image': 'images/satan-tile.png',
+    			'rating': [1,2,3],
     		},
     		{
     			'name': 'The Satan Test 2',
     			'type': 'Quiz',
     			'description': 'MORE SATANIC GLORY FOR THE MASSES BOOYAKASHA. This is an unnecessarily long title, let\'s see if we can handle this one well',
     			'image': 'images/satan-tile.png',
+    			'rating': [1,2,3,4],
     		},
     		{
     			'name': 'The Satan Test 3',
     			'type': 'Game',
     			'description': 'Please stop requesting Satan quizzes.',
     			'image': 'images/satan-tile.png',
+    			'rating': [1,2],
     		}
     	];
 
@@ -35,6 +38,7 @@
     		$scope.hideIcons = false;
     	};
 
+    	$scope.type = '';
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};

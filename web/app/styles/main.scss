@@ -152,6 +152,10 @@ input{
        color: rgba(255,255,255,0.4);
     }
 
+    .account-info h2{
+        color: white;
+    }
+
     .modal-dialog {
         width: 460px;
         margin: 150px auto;
@@ -199,6 +203,12 @@ input{
         color: white;
         font-weight: 100;
         letter-spacing: 1px;
+        border: 1px solid transparent;
+        transition: border-color 0.2s;
+
+        &:focus{
+            border-color: rgba(255,255,255,0.75);
+        }
     }
 }
 
@@ -210,7 +220,11 @@ input{
     background-color: rgba(107, 187, 92, 1);
     color: white;
     font-weight: 100;
-    opacity: 0.4;
+    transition: background-color 0.2s;
+
+    &:hover{
+        background-color: rgba(127, 207, 112, 1);
+    }
 }
 
 input:-webkit-autofill {
