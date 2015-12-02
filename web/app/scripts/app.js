@@ -18,7 +18,7 @@ angular
     'ngSanitize',
     'ngTouch'
   ])
-   .config([
+  .config([
     '$locationProvider',
     '$routeProvider',
     function($locationProvider, $routeProvider) {
@@ -33,4 +33,31 @@ angular
            redirectTo: '/'
         });
     }
-  ]);
+  ])
+  .factory('LoginService', function() {
+  var user;
+  var loggedIn  = false;
+  return {
+    login: function(email, password) {
+      if(email === 'hj80@kent.ac.uk' && password === 'test'){
+        user = 'Harry Jones';
+        loggedIn = true;
+      }
+      else{
+        loggedIn = false;
+      }
+      return loggedIn;
+    },
+    logout: function() {
+      loggedIn = false;
+      user = undefined;
+      return loggedIn;
+    },
+    isLoggedIn: function() {
+      return loggedIn;
+    },
+    getUser: function() { 
+      return user; 
+    }
+  };
+});

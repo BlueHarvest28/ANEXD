@@ -1,21 +1,45 @@
 (function () {
 'use strict';
-  angular.module('ANEXD')
-  .controller('IndexController', [
+angular.module('ANEXD')
+.controller('IndexController', [
     '$scope',
-    function ($scope) 
+    '$timeout',
+    'LoginService',
+    function ($scope, $timeout, LoginService) 
     {
-    	$scope.loggedIn = false;
-    	$scope.checkAccount = function(email, password){
-    		console.log(email, password);
-    		if(email === 'hj80@kent.ac.uk' && password === 'test'){
-    			$scope.user = 'Harry Jones';
-    			$scope.loggedIn = true;
-    		}
-    	};
-    	$scope.logout = function(){
-    		$scope.loggedIn = false;
+    	$scope.loggedIn = LoginService.isLoggedIn();
+    	
+    	if($scope.loggedIn){
+    		$scope.user = LoginService.getUser();
     	}
+
+    	$scope.login = function(email, password){
+    		//Wait for the modal to animate out
+    		$timeout( function(){
+	            $scope.loggedIn = LoginService.login(email, password);
+	    		if($scope.loggedIn){
+	    			$scope.user = LoginService.getUser();
+	    		}
+	        }, 150);
+    	};
+
+    	$scope.logout = function(){
+    		//Wait for the modal to animate out
+    		$timeout( function(){
+	            $scope.loggedIn = LoginService.logout();
+    			$scope.user = LoginService.getUser();
+	        }, 150);
+    	};
     }
-  ]);
+])
+.directive('hideOnSubmit', function(){
+	return{
+		restrict: 'A',
+		link: function(scope, elm) {
+	      	$(elm).find('.login-submit').on('click', function() {
+        		elm.modal('hide');
+	      	});
+	    }
+	};
+});
 }());

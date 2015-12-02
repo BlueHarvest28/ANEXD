@@ -18,12 +18,12 @@
 					<p>Get a code to share with your players</p>
 				</div>
 			</div>
-			<div class="app-container" ng-show="hideIcons">
+			<div class="app-container" ng-show="hideIcons" ng-class="{'show-lobby': showLobby}">
 				<i class="fa fa-close" ng-click="showIcons()"></i>
-				<img src="{{app.image}}"/>
-			 	<div class="inner">
+				<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
+			 	<div class="inner" ng-class="{'show-lobby': showLobby}">
 			        <h2>{{app.name}}</h2>
-			        <form>
+			        <form ng-class="{'show-lobby': showLobby}">
 		        		<div class="form-group">
 			        		<label for="max-players">Max Players:&nbsp;</label>
 				          	<select class="form-control" id="max-players">
@@ -38,8 +38,11 @@
 			        		<label for="nickname">Allow Nicknames:&nbsp;</label>
 		        			<input id="nickname" type="checkbox">
 			        	</div>
-			        	<input type="submit" value="Launch" class="login-submit">
+			        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp()">
 			    	</form>
+			    </div>
+			    <div class="lobby" ng-show="showLobby">
+			    	<img src="../images/qr.jpg"/>
 			    </div>
 			</div>
 		</div>
@@ -62,7 +65,7 @@
 	    <div class="container-fluid app-list">
 	    	<div class="row">
 	    		<div class="col-lg-4 col-xs-6" ng-repeat="app in apps | filter: {type : type}">
-	    			<div class="app-tile" style="background-image: url('{{app.image}}')" scroll-on-click href="#top" ng-click="loadTile(app)">
+	    			<div class="app-tile" style="background-image: url('{{app.image}}')" scroll-on-click href="#top" require-login login-callback="loadApp(app)">
 	    				<div class="app-tile-overlay">
 	    					<img src="../images/icon-settings-large.png"/>
 	    				</div>

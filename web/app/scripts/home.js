@@ -1,10 +1,19 @@
 (function () {
 'use strict';
-  angular.module('ANEXD')
-  .controller('HomeController', [
+angular.module('ANEXD')
+.controller('HomeController', [
     '$scope',
-    function ($scope) 
+    'LoginService',
+    function ($scope, LoginService) 
     {
+    	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
+			$scope.isLoggedIn = isLoggedIn;
+			if(!$scope.isLoggedIn){
+				$scope.hideIcons = false;
+    			$scope.showLobby = false;
+			}
+		});
+
     	$scope.apps = [
     		{
     			'name': 'The Satan Test',
@@ -26,39 +35,78 @@
     			'description': 'Please stop requesting Satan quizzes.',
     			'image': 'images/satan-tile.png',
     			'rating': [1,2],
-    		}
+    		},
+    		{
+    			'name': 'The Satan Test 4',
+    			'type': 'Game',
+    			'description': 'BACK BY UNPOPULAR DEMAND WE JUST REALLY NEEDED THE MONEY',
+    			'image': 'images/satan-tile.png',
+    			'rating': [1,2],
+    		},
     	];
 
-    	$scope.loadTile = function(app){
+    	$scope.loadApp = function(app){
     		$scope.hideIcons = true;
     		$scope.app = app;
     	};
 
     	$scope.showIcons = function(){
     		$scope.hideIcons = false;
+    		$scope.showLobby = false;
     	};
 
     	$scope.type = '';
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};
+
+    	$scope.launchApp = function(){
+    		$scope.showLobby = true;
+    	};
     }
-  ])
-  .directive('scrollOnClick', function() {
-	  return {
+])
+.directive('scrollOnClick', function() {
+	return {
 	    restrict: 'A',
 	    link: function(scope, elm, attrs) {
-	      var idToScroll = attrs.href;
-	      elm.on('click', function() {
-	        var target;
-	        if (idToScroll) {
-	          target = $(idToScroll);
-	        } else {
-	          target = elm;
-	        }
-	        $('body, html').animate({scrollTop: target.offset().top-60}, 'slow');
-	      });
+	     	var idToScroll = attrs.href;
+	      	elm.on('click', function() {
+	        	var target;
+		        if (idToScroll) {
+		          	target = $(idToScroll);
+		        } else {
+		          	target = elm;
+		        }
+	        	$('body, html').animate({scrollTop: target.offset().top-60}, 'slow');
+	      	});
 	    }
-	  };
-	});
+	};
+})
+.directive('requireLogin', function (LoginService) {
+	return{
+		restrict: 'A',
+		scope: {
+	    	callback: '&loginCallback'
+	    },
+		link: function(scope, elm) {
+	      	elm.on('click', function() {
+	        	if(!LoginService.isLoggedIn()){
+	        		var loginModal = $('.login-modal');
+	        		loginModal.modal('show');
+	        		loginModal.on('hidden.bs.modal', function() {
+	        			//Only listen to the first modal closure
+	        			loginModal.off('hidden.bs.modal');
+	        			if(LoginService.isLoggedIn()){
+	        				scope.callback();
+	        				scope.$apply();
+	        			}
+	        		});
+	        	} else {
+	        		scope.callback();
+	        		scope.$apply();
+	        	}
+	      	});
+	    }
+	};
+});
 }());
