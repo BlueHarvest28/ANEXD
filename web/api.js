@@ -15,6 +15,24 @@ var mysql      = require('mysql');
 
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
 app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
+// ::CHANGES::
+// FOREIGN KEY (game) REFERENCES Game(gameID) 
+
+// GOOD PRACTICE ---- TO IMPLEMENT
+
+// .:SQL ESCAPE:.
+// connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function (error, results, fields) {
+  // // error will be an Error if one occurred during the query
+  // // results will contain the results of the query
+  // // fields will contain information about the returned results fields (if any)
+// });
+
+//.:GET ID BACK:.
+// connection.query('INSERT INTO posts SET ?', {title: 'test'}, function(err, result) {
+  // if (err) throw err;
+
+  // console.log(result.insertId);
+// });
 
 //DB credentials
 var credentials = {
@@ -36,10 +54,15 @@ app.get("/test",function(req,res){
 	
 	pool.getConnection(function(err,connection){
 		connection.query("Select * From User", function(err, rows, fields) {
-			if (!err)
+			connection.release();
+			if (!err){
 				console.log('The solution is: ', rows);
-			else{
-				connection.release();
+				res.json({
+					"code" : 100, 
+					"status" : "Sucess",
+					rows: rows
+					});
+			}else{
 				console.log('Error while performing Query.');
 			}
 		});
@@ -53,50 +76,76 @@ app.get("/test",function(req,res){
 //---------------------
 
 
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 // Create a user add them to database and log them in
 // Eventually this will need to return the id of the added user
 // This may also log them in when the loggedInField is added
 // Check if username or email exists since unique database will return
-app.get("/createUser",function(req,res){
+// example url:: localhost:3000/insertNewUser?username=xx&password=xx&email=xx
+app.get("/insertNewUser",function(req,res){
 	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "INSERT into User (username,password,email) VALUES(" +
-		req.params.name + "," +
-		req.params.pass + "," +
-		req.params.email + "," +
-	+")";
+	var queryStr = "INSERT INTO User SET ?";
 	
+	var params = {
+		username: req.query.username,
+		password: req.query.password,
+		email: req.query.email,
+	}
+		
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, function(err, rows, fields) {
+		connection.query(queryStr, params, function(err, result) {
+			connection.release();
+			
 			if (!err){
-				//console.log('The solution is: ', rows);
 				//and return the id of new user.
-				res.json({"code" : 100, "status" : "sucess"});
+				res.json({"sucess": "User added.", "userID": result.insertId});
 				console.log("Sucess! User added");
 			}else{
-				connection.release();
-				console.log('Error while performing Query.');
-				res.json({"code" : 303, "status" : "error"});
+				
+				if(err.code == 'ER_DUP_ENTRY'){
+					console.log('Duplication error.');
+					res.json({"code" : 303, "status" : "error",
+					"descript": "username or email exists!!"});
+				}else{
+					console.log('Error while performing Query.', err);
+					res.json({"code" : 303, "status" : "error", "err": err});
+				}
 			}
 		});
 	});
   
 });
 
+//TODO:
+// to return the single row. so if just email will return row where email matches
 
 // Get a user by an attribute and return whole row 
 // NOT THE PASSWORD
 // Ideally will be made to take one or more params
-// to return the single row.
+// example url:: localhost:3000/getUser?username=xx&password=xx&email=xx
 app.post("/getUser",function(req,res){
-	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "SELECT * FROM User WHERE(" +
-		"username=" + req.params.name + " AND" +
-		"email=" + req.params.pass + " AND" +
-		"userID=" + req.params.email +
-	+")";
+	var queryStr = "SELECT * FROM User WHERE ?";
+	
+	//REQUEST IS NOT CHECKED!!!!
+	//SHOULD JUST CHECK KEYS MATCH username userid or email
 	
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, function(err, rows, fields) {
+		connection.query(queryStr, req, function(err, rows, fields) {
+			connection.release();
+			if(rows.length > 0){
+				var jsonContent = {
+					"code" : 100, 
+					status : "sucess",
+					data : rows[0]
+				};
+			}else{
+				var jsonContent = {
+					"code" : 303, 
+					status : "fail",
+					descript: "user doesnt exist"
+				};
+			}
 			if (!err){
 				res.json({"code" : 100, "status" : "sucess"});
 				console.log("Sucess! User added");
@@ -115,17 +164,30 @@ app.post("/getUser",function(req,res){
 // will return sucess a new .
 app.post("/changePassword",function(req,res){
 	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "UPDATE User SET password=" + req.params.newpass + 
-		"WHERE userID=" + req.params.userID +
-		"AND password=" + req.params.oldpass;
+	var queryStr = "UPDATE User SET password=" + req.params.newpass +
+		" WHERE userID=" + req.params.userID +
+		" AND password=" + req.params.oldpass;
 	
 	pool.getConnection(function(err,connection){
 		connection.query(queryStr, function(err, rows, fields) {
+			connection.release();
+			if(rows.RowDataPacket.length > 0){
+				var jsonContent = {
+					"code" : 100, 
+					status : "sucess",
+					data : rows.RowDataPacket[0]
+				};
+			}else{
+				var jsonContent = {
+					"code" : 303, 
+					status : "fail",
+					descript: "user doesnt exist"
+				};
+			}
 			if (!err){
 				res.json({"code" : 100, "status" : "sucess"});
 				console.log("Sucess! Password has been changed");
 			}else{
-				connection.release();
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
 			}
@@ -137,6 +199,7 @@ app.post("/changePassword",function(req,res){
 
 // Change the user email
 // will return sucess.
+// example url:: localhost:3000/changeEmail?userID=xx&pass=xx&newemail=xx
 app.get("/changeEmail",function(req,res){
 	// req.params.name 	// req.params.pass 	// req.params.email
 	var queryStr = "UPDATE User SET email=" + req.params.newemail + 
@@ -145,11 +208,11 @@ app.get("/changeEmail",function(req,res){
 	
 	pool.getConnection(function(err,connection){
 		connection.query(queryStr, function(err, rows, fields) {
+			connection.release();
 			if (!err){
 				res.json({"code" : 100, "status" : "sucess"});
 				console.log("Sucess! Password has been changed");
 			}else{
-				connection.release();
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
 			}
@@ -168,25 +231,20 @@ app.get("/changeEmail",function(req,res){
 // Create a Anon user add them to database and log them in to the lobby
 // This may also connect them via another field.
 // Check if username and lobby exists since unique database will return
+// example url:: localhost:3000/createAnonUser?username=xx&lobby=xx
 app.get("/createAnonUser",function(req,res){
-	var queryStr = "SELECT lobbyID FROM Lobby WHERE" +
-		"qrcode=" + req.params.code;
-		// check if row count == 1 get lobby id
-	
-	var lobbyID = 0;//return of queryStr
-	
-	var queryStr2 = "INSERT into Anon_User (username, lobbyID) VALUES(" +
-		req.params.name + ")";
+	var queryStr = "INSERT into Anon_User (username, lobbyID)" +
+	" VALUES(" + req.params.username + ", " + req.params.lobby + ")";
 		
 	pool.getConnection(function(err,connection){	
 		connection.query(queryStr, function(err, rows, fields) {
+			connection.release();
 			if (!err){
 				//console.log('The solution is: ', rows);
 				//and return the id of new user.
 				res.json({"code" : 100, "status" : "sucess"});
 				console.log("Sucess! User added");
 			}else{
-				connection.release();
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
 			}
@@ -200,11 +258,13 @@ app.get("/createAnonUser",function(req,res){
 // Lobby table queries  /
 //--------------------------
 
-// Create a Anon user add them to database and log them in to the lobby
+// Create a Lobby add them to database and log them in to the lobby
 // This may also connect them via another field.
 // Check if username and lobby exists since unique database will return
+// example url:: localhost:3000/createLobby?title=xx&creator=xx&pass=xx&game=xx
 app.get("/createLobby",function(req,res){
-	var queryStr = "INSERT into Lobby (title,password,creator,game) VALUES(" +
+	var queryStr = "INSERT into Lobby (title,password,creator,game)" +
+        " VALUES(" +
 		req.params.title + "," +
 		req.params.pass + "," +
 		req.params.creat + "," +
@@ -215,13 +275,13 @@ app.get("/createLobby",function(req,res){
 			
 	pool.getConnection(function(err,connection){	
 		connection.query(queryStr, function(err, rows, fields) {
+			connection.release();
 			if (!err){
 				//console.log('The solution is: ', rows);
 				//and return the id of new user.
 				res.json({"code" : 100, "status" : "sucess"});
 				console.log("Sucess! User added");
 			}else{
-				connection.release();
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
 			}
