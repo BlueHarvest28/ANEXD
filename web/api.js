@@ -60,7 +60,7 @@ app.get("/test",function(req,res){
 				res.json({
 					"code" : 100, 
 					"status" : "Sucess",
-					rows: rows
+					"data": rows
 					});
 			}else{
 				console.log('Error while performing Query.');
@@ -82,6 +82,7 @@ app.get("/test",function(req,res){
 // Eventually this will need to return the id of the added user
 // This may also log them in when the loggedInField is added
 // Check if username or email exists since unique database will return
+
 // example url:: localhost:3000/insertNewUser?username=xx&password=xx&email=xx
 app.get("/insertNewUser",function(req,res){
 	// req.params.name 	// req.params.pass 	// req.params.email
@@ -117,40 +118,66 @@ app.get("/insertNewUser",function(req,res){
   
 });
 
-//TODO:
-// to return the single row. so if just email will return row where email matches
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 // Get a user by an attribute and return whole row 
 // NOT THE PASSWORD
 // Ideally will be made to take one or more params
-// example url:: localhost:3000/getUser?username=xx&password=xx&email=xx
-app.post("/getUser",function(req,res){
+
+// DO NOT CHECK PASSWORD
+// example url:: localhost:3000/getUser?username=xx&email=xx
+// example url:: localhost:3000/getUser?username=xx
+// example url:: localhost:3000/getUser?email=xx
+app.get("/getUser",function(req,res){
 	var queryStr = "SELECT * FROM User WHERE ?";
 	
-	//REQUEST IS NOT CHECKED!!!!
-	//SHOULD JUST CHECK KEYS MATCH username userid or email
+	var keys = Object.keys(req.query);
+	
+	if(keys.indexOf("password") != -1){//password exists
+		res.json({"code" : 303, "status" : "error", "descript": "cannot search on password"});
+		return;
+	}
+	
+	var params = [];
+	for(var i = 0; i<keys.length;i++){
+		var key = keys[i];
+
+		var pair = {};		
+		pair[key] = req.query[key];
+
+		params.push(pair);
+		if(i+1 != keys.length)
+			queryStr += " AND ?";
+	}
+	
+	// console.log("query: ", queryStr);
+	// console.log("array: ", params);
 	
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, req, function(err, rows, fields) {
+		connection.query(queryStr, params, function(err, rows, fields) {
 			connection.release();
+						
+			console.log("Query res: ", rows);
+			
+			var jsonContent = {};
 			if(rows.length > 0){
-				var jsonContent = {
+				jsonContent = {
 					"code" : 100, 
-					status : "sucess",
-					data : rows[0]
+					"status" : "sucess",
+					"data" : rows
 				};
 			}else{
-				var jsonContent = {
+				jsonContent = {
 					"code" : 303, 
-					status : "fail",
-					descript: "user doesnt exist"
+					"status" : "fail",
+					"descript" : "user doesnt exist"
 				};
 			}
 			if (!err){
-				res.json({"code" : 100, "status" : "sucess"});
-				console.log("Sucess! User added");
+				res.json(jsonContent);
+				console.log("Sucess! Query getUser executed res: ", rows);
 			}else{
-				connection.release();
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
 			}
@@ -289,5 +316,7 @@ app.get("/createLobby",function(req,res){
 	});
   
 });
+
+console.log('The API server is running.')
 
 app.listen(3000);
