@@ -16,14 +16,21 @@ var mysql      = require('mysql');
 // ::CHANGES::
 // FOREIGN KEY (game) REFERENCES Game(gameID) 
 
-// [
-	// RowDataPacket : {
-		// userID: 15,
-		// username: 'tester',
-		// password: 'test',
-		// email: 'hmm@hm.co'
-	// }
-// ]
+// GOOD PRACTICE ---- TO IMPLEMENT
+
+// .:SQL ESCAPE:.
+// connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function (error, results, fields) {
+  // // error will be an Error if one occurred during the query
+  // // results will contain the results of the query
+  // // fields will contain information about the returned results fields (if any)
+// });
+
+//.:GET ID BACK:.
+// connection.query('INSERT INTO posts SET ?', {title: 'test'}, function(err, result) {
+  // if (err) throw err;
+
+  // console.log(result.insertId);
+// });
 
 //DB credentials
 var credentials = {
@@ -50,7 +57,7 @@ app.get("/test",function(req,res){
 				console.log('The solution is: ', rows);
 				res.json({
 					"code" : 100, 
-					"status" : "Error in connection database",
+					"status" : "Sucess",
 					rows: rows
 					});
 			}else{
@@ -67,72 +74,68 @@ app.get("/test",function(req,res){
 //---------------------
 
 
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 // Create a user add them to database and log them in
 // Eventually this will need to return the id of the added user
 // This may also log them in when the loggedInField is added
 // Check if username or email exists since unique database will return
-// example url:: localhost:3000/createUser?name=xx&pass=xx&email=xx
-app.get("/createUser",function(req,res){
+// example url:: localhost:3000/insertNewUser?username=xx&password=xx&email=xx
+app.get("/insertNewUser",function(req,res){
 	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "INSERT INTO User SET ?; SELECT * FROM User ";
+	var queryStr = "INSERT INTO User SET ?";
 	
 	var params = {
-		username: req.query.name,
-		password: req.query.pass,
+		username: req.query.username,
+		password: req.query.password,
 		email: req.query.email,
 	}
 		
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, params, function(err, rows, fields) {
+		connection.query(queryStr, params, function(err, result) {
 			connection.release();
-			if(rows.RowDataPacket.length > 0){
-				var jsonContent = {
-					"code" : 100, 
-					status : "sucess",
-					userID : rows[0].userID
-				};
-			}else{
-				var jsonContent = {
-					"code" : 303, 
-					status : "fail",
-					descript: "user exists"
-				};
-			}
+			
 			if (!err){
-				//console.log('The solution is: ', rows);
 				//and return the id of new user.
-				res.json(jsonContent);
-				console.log("Sucess! User added", rows);
+				res.json({"sucess": "User added.", "userID": result.insertId});
+				console.log("Sucess! User added");
 			}else{
-				console.log('Error while performing Query.', err);
-				res.json({"code" : 303, "status" : "error"});
+				
+				if(err.code == 'ER_DUP_ENTRY'){
+					console.log('Duplication error.');
+					res.json({"code" : 303, "status" : "error",
+					"descript": "username or email exists!!"});
+				}else{
+					console.log('Error while performing Query.', err);
+					res.json({"code" : 303, "status" : "error", "err": err});
+				}
 			}
 		});
 	});
   
 });
 
+//TODO:
+// to return the single row. so if just email will return row where email matches
 
 // Get a user by an attribute and return whole row 
 // NOT THE PASSWORD
 // Ideally will be made to take one or more params
-// to return the single row.
+// example url:: localhost:3000/getUser?username=xx&password=xx&email=xx
 app.post("/getUser",function(req,res){
-	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "SELECT * FROM User WHERE(" +
-		"username=" + req.params.name + " AND " +
-		"email=" + req.params.pass + " AND " +
-		"userID=" + req.params.email +
-	+")";
+	var queryStr = "SELECT * FROM User WHERE ?";
+	
+	//REQUEST IS NOT CHECKED!!!!
+	//SHOULD JUST CHECK KEYS MATCH username userid or email
 	
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, function(err, rows, fields) {
+		connection.query(queryStr, req, function(err, rows, fields) {
 			connection.release();
-			if(rows.RowDataPacket.length > 0){
+			if(rows.length > 0){
 				var jsonContent = {
 					"code" : 100, 
 					status : "sucess",
-					data : rows.RowDataPacket[0]
+					data : rows[0]
 				};
 			}else{
 				var jsonContent = {
@@ -159,8 +162,7 @@ app.post("/getUser",function(req,res){
 // will return sucess a new .
 app.post("/changePassword",function(req,res){
 	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "UPDATE User SET password=" + req.params.newpass + 
-		" OUTPUT DELETED.password, INSERTED.password" +
+	var queryStr = "UPDATE User SET password=" + req.params.newpass +
 		" WHERE userID=" + req.params.userID +
 		" AND password=" + req.params.oldpass;
 	
@@ -230,7 +232,6 @@ app.get("/changeEmail",function(req,res){
 // example url:: localhost:3000/createAnonUser?username=xx&lobby=xx
 app.get("/createAnonUser",function(req,res){
 	var queryStr = "INSERT into Anon_User (username, lobbyID)" +
-	" OUTPUT Inserted.userID" +
 	" VALUES(" + req.params.username + ", " + req.params.lobby + ")";
 		
 	pool.getConnection(function(err,connection){	
@@ -261,7 +262,6 @@ app.get("/createAnonUser",function(req,res){
 // example url:: localhost:3000/createLobby?title=xx&creator=xx&pass=xx&game=xx
 app.get("/createLobby",function(req,res){
 	var queryStr = "INSERT into Lobby (title,password,creator,game)" +
-		" OUTPUT Inserted.lobbyID" +
         " VALUES(" +
 		req.params.title + "," +
 		req.params.pass + "," +
