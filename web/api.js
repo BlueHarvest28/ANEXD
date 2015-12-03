@@ -1,4 +1,5 @@
 var express    = require("express");
+var bodyParser = require('body-parser');
 var mysql      = require('mysql');
 
 //TABLES:
@@ -49,6 +50,8 @@ var pool = mysql.createPool(
 
 var app = express();
 
+app.use(bodyParser.json());//this is for parsing hearder in post req
+  
 //Test url to see if database connects
 app.get("/test",function(req,res){
 	
@@ -85,7 +88,6 @@ app.get("/test",function(req,res){
 
 // example url:: localhost:3000/insertNewUser?username=xx&password=xx&email=xx
 app.get("/insertNewUser",function(req,res){
-	// req.params.name 	// req.params.pass 	// req.params.email
 	var queryStr = "INSERT INTO User SET ?";
 	
 	var params = {
@@ -95,7 +97,8 @@ app.get("/insertNewUser",function(req,res){
 	}
 		
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, params, function(err, result) {
+		var query = connection.query(queryStr, params, function(err, result) {
+			// console.log(query);
 			connection.release();
 			
 			if (!err){
@@ -120,6 +123,10 @@ app.get("/insertNewUser",function(req,res){
 
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+// TODO:
+// - may have to make it so does accept password just doesnt
+//   return the password.
 
 // Get a user by an attribute and return whole row 
 // NOT THE PASSWORD
@@ -155,7 +162,8 @@ app.get("/getUser",function(req,res){
 	// console.log("array: ", params);
 	
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, params, function(err, rows, fields) {
+		var query = connection.query(queryStr, params, function(err, rows, fields) {
+			// console.log(query);
 			connection.release();
 						
 			console.log("Query res: ", rows);
@@ -187,33 +195,52 @@ app.get("/getUser",function(req,res){
 });
 
 
+// TODO:
+ // - check that the passwords are different
+
 // Change the user password
-// will return sucess a new .
+// will return sucess a new.
+
+// example url:: localhost:3000/changePassword?oldpass=xx&newpass=xx
 app.post("/changePassword",function(req,res){
-	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "UPDATE User SET password=" + req.params.newpass +
-		" WHERE userID=" + req.params.userID +
-		" AND password=" + req.params.oldpass;
+	
+	//check passwords dont match
+	if( (req.body.newpass).valueOf() == (req.body.oldpass).valueOf()){
+		res.json({"code" : 303, "status" : "error", "descript": "passwords are the same"});
+		console.log("Passwords are the same!!");
+		return;
+	}
+	
+	var queryStr = "UPDATE User SET password=? WHERE userID=? AND password=?";
+	
+	var params = [
+		req.body.newpass,
+		req.body.userID,
+		req.body.oldpass
+	];
 	
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, function(err, rows, fields) {
+		var query = connection.query(queryStr, params, function(err, result) {
+			// console.log(query);
 			connection.release();
-			if(rows.RowDataPacket.length > 0){
+			
+			if(result.changedRows > 0){
 				var jsonContent = {
 					"code" : 100, 
-					status : "sucess",
-					data : rows.RowDataPacket[0]
+					"status" : "sucess",
+					"descript" : "Sucess! Password has been changed",
+					"affectedRows" : result.changedRows
 				};
 			}else{
 				var jsonContent = {
 					"code" : 303, 
-					status : "fail",
-					descript: "user doesnt exist"
+					"status" : "fail",
+					"descript" : "information didnt match"
 				};
 			}
 			if (!err){
-				res.json({"code" : 100, "status" : "sucess"});
-				console.log("Sucess! Password has been changed");
+				res.json(jsonContent);
+				console.log("Sucess! Query changePassword executed res: ", result);
 			}else{
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
@@ -228,17 +255,38 @@ app.post("/changePassword",function(req,res){
 // will return sucess.
 // example url:: localhost:3000/changeEmail?userID=xx&pass=xx&newemail=xx
 app.get("/changeEmail",function(req,res){
-	// req.params.name 	// req.params.pass 	// req.params.email
-	var queryStr = "UPDATE User SET email=" + req.params.newemail + 
-		"WHERE userID=" + req.params.userID +
-		"AND password=" + req.params.pass;
+	var queryStr = "UPDATE User SET email=? WHERE userID=? AND password=?";
+		
+	var params = [
+		req.params.newemail, 
+		req.params.userID,
+		req.params.pass
+	];
 	
 	pool.getConnection(function(err,connection){
-		connection.query(queryStr, function(err, rows, fields) {
+		var query = connection.query(queryStr, params, function(err, result) {
+			// console.log(query);
 			connection.release();
+			
+			//if rows > 2 bad error need to roll back!!!
+			if(result.changedRows > 0 && result.changedRows < 2){
+				var jsonContent = {
+					"code" : 100, 
+					"status" : "sucess",
+					"descript" : "Sucess! Email has been changed",
+					"affectedRows" : result.changedRows
+				};
+			}else{
+				var jsonContent = {
+					"code" : 303, 
+					"status" : "fail",
+					"descript" : "Fail! Information didn't match"
+				};
+			}
+			
 			if (!err){
-				res.json({"code" : 100, "status" : "sucess"});
-				console.log("Sucess! Password has been changed");
+				res.json(jsonContent);
+				console.log("Sucess! Query changeEmail executed res: ", result);
 			}else{
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
