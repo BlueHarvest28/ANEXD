@@ -11,17 +11,6 @@
 	transition-delay: 0s;
 }
 
-.fa-close{
-	width: 25px;
-	position: relative;
-    z-index: 2;
-    text-align: left;
-    display: block;
-    margin: 5px;
-    font-size: 200%;
-    cursor: pointer;
-}
-
 .app-header-list{
 	opacity: 1;
 	transition: opacity 0.5s;
@@ -34,6 +23,21 @@
 /**************/
 
 .home{
+	.lobby-app-container{
+		position: relative;
+		transition: bottom 1s;
+		bottom: 0px;
+
+		&.ng-hide{
+			transition: bottom 1.5s 0.25s;
+			bottom: -100vh;
+		}
+
+		&.ng-hide-remove{
+			transition: bottom 1s 0.5s;
+		}
+	}
+
 	.app-container{
 		width: 500px;
 	    margin: 0 auto;
@@ -42,22 +46,12 @@
 	    overflow: hidden;
 		position: relative;
 		z-index: 0;
-		transition: bottom 1s, left 1s 1s;
-		bottom: 0px;
+		transition: left 1s 1s;
 		max-height: 100%;
 		left: 0;
 
 		&.show-lobby{
-			left: -120px;
-		}
-
-		&.ng-hide{
-			left: 0;
-			bottom: -100vh;
-		}
-
-		&.ng-hide-remove{
-			transition: bottom 1s 0.5s, left 0.25s;
+			left: -110px;
 		}
 
 	    >img{
@@ -71,6 +65,17 @@
 		    	top: -100px;
 		    }
 	    }
+
+	    >.fa-close{
+			width: 25px;
+			position: relative;
+		    z-index: 2;
+		    text-align: left;
+		    display: block;
+		    margin: 5px;
+		    font-size: 200%;
+		    cursor: pointer;
+		}
 
 	    .inner{
 	    	padding: 30px;
@@ -108,13 +113,13 @@
 		    }
 	    }
 
-	    .lobby{
+	    .qr{
 	    	transition: height 0.5s 0.5s;
-			height: 400px;
+			height: 300px;
 			background-color: white;
 			position: relative;
 			color: #222;
-			padding: 50px;
+			padding: 20px;
 
 			img{
 				max-height: 100%;
@@ -139,6 +144,8 @@
 		padding-top: 149px;
 		padding-bottom: 80px;
 		margin-top: -59px;
+		width: 750px;
+		position: relative;
 
 		h2{
 			font-weight: 200;
@@ -148,6 +155,93 @@
 			font-weight: 100;
     		font-size: 120%;
     		margin-bottom: 0; 
+		}
+		
+		.lobby{
+		    width: 220px;
+		    position: absolute;
+		    z-index: 0;
+		    right: 220px;
+		    transition: right 1s 1s;
+		    height: 100%;
+		    padding-bottom: 20px;
+
+		    &.show-lobby{
+		    	right: 0px;
+		    }
+
+		    &.ng-hide{
+		    	transition: right 0.5s;
+		    }
+
+		    h3{
+		    	margin-bottom: 20px;
+		    }
+
+		    .col-xs-3 {
+			    text-align: center;
+			}
+
+			.col-xs-9 {
+			    text-align: left;
+			}
+
+			.fa-check{
+				color: #6bbb5c;
+			}
+
+			.fa-close{
+				color: #C34848;
+			}
+
+			.lobby-header{
+			    box-shadow: rgba(0, 0, 0, 0.15) 0 5px 10px;
+			    z-index: 2;
+			    position: relative;
+			    padding: 1px;
+			    background-color: #3D6072;
+			}
+
+			.lobby-content{
+			    margin-top: -68px;
+			    padding-top: 68px;
+			    position: relative;
+			    box-shadow: rgba(0, 0, 0, 0.3) 0 5px 25px;
+			    height: 100%;
+			    background-color: #222;
+
+				.lobby-players{
+				    padding: 5px 10px 45px;
+				    max-height: 100%;
+				    overflow-y: auto;
+				    overflow-x: hidden;
+				    position: relative;
+				}
+	    	}
+
+		    .lobby-launch{
+			    position: absolute;
+			    bottom: -20px;
+			    left: 30px;
+			    width: 150px;
+			    box-shadow: rgba(0, 0, 0, 0.15) 0 10px 15px;
+			}
+		}
+
+	    .code{
+	    	width: 500px;
+		    background-color: #3D6072;;
+		    padding: 10px;
+		    opacity: 1;
+		    transition: opacity 0.5s;
+
+		    &.ng-hide-remove{
+		    	opacity: 0;
+		    }
+
+		    h3{
+		    	margin-top: 5px;
+		    }
 		}
 
 		.icons{
@@ -161,10 +255,11 @@
 			&.ng-hide {
 				height: 0;
 			  	opacity: 0;
+
 			}
 
 			&.ng-hide-remove{
-				transition: height 0.5s, opacity 0.5s 1s;	
+				transition: height 0.5s 0.75s, opacity 0.5s 1.25s;	
 			}
 
 			.col-xs-4{
