@@ -191,8 +191,7 @@ app.get("/getUser",function(req,res){
 });
 
 
-// TODO:
- // - check that the passwords are different
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 // Change the user password
 // will return sucess a new.
@@ -246,6 +245,8 @@ app.post("/changePassword",function(req,res){
   
 });
 
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 // Change the user email
 // will return sucess.
@@ -302,19 +303,90 @@ app.get("/changeEmail",function(req,res){
 // Create a Anon user add them to database and log them in to the lobby
 // This may also connect them via another field.
 // Check if username and lobby exists since unique database will return
-// example url:: localhost:3000/createAnonUser?username=xx&lobby=xx
-app.get("/createAnonUser",function(req,res){
-	var queryStr = "INSERT into Anon_User (username, lobbyID)" +
-	" VALUES(" + req.params.username + ", " + req.params.lobby + ")";
+// example url:: localhost:3000/insertNewAnonUsers?username=xx&lobby=xx
+app.get("/insertNewAnonUsers",function(req,res){
+	var queryStr = "INSERT into Anon_User (username, lobbyID) VALUES ?";
 		
 	pool.getConnection(function(err,connection){	
-		connection.query(queryStr, function(err, rows, fields) {
+		var query =connection.query(queryStr, req.query, function(err, result) {
+			// console.log(query);
 			connection.release();
+			
 			if (!err){
-				//console.log('The solution is: ', rows);
 				//and return the id of new user.
-				res.json({"code" : 100, "status" : "sucess"});
-				console.log("Sucess! User added");
+				res.json({"code" : 100, "sucess": "User added.", "userID": result.insertId});
+				console.log("Sucess! Query insertNewAnonUsers excuted res: ", result);
+			}else{
+				//check is username has been used.
+				if(err.code == 'ER_DUP_ENTRY'){
+					console.log('Duplication error.');
+					res.json({"code" : 303, "status" : "error",
+					"descript": "username exists!!"});
+				}else{
+					console.log('Error while performing Query.', err);
+					res.json({"code" : 303, "status" : "error"});
+				}
+			}
+		});
+	});
+  
+});
+
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+// Get a anon_user by either lobby or there id and return whole row 
+
+// getting by lobbyID will return more than one user!!!
+
+// example url:: localhost:3000/getAnonUser?lobby=xx
+// example url:: localhost:3000/getAnonUser?userID=xx
+app.get("/getAnonUser",function(req,res){
+	var queryStr = "SELECT * FROM Anon_User WHERE ?";
+	
+	var keys = Object.keys(req.query);
+	
+	// MIGHT NOT BE NEEDED!!!!!
+	// This stops using other fileds other than lobby and userID and not together
+	// if( (keys.indexOf("lobby") == -1 || keys.indexOf("userID") == -1) || keys.length < 2){//password exists and have another field
+		// res.json({"code" : 303, "status" : "error", "descript": "cannot search on those fields"});
+		// return;
+	// }
+		
+	var params = [];
+	for(var i = 0; i<keys.length;i++){
+		var key = keys[i];
+
+		var pair = {};		
+		pair[key] = req.query[key];
+
+		params.push(pair);
+		if(i+1 != keys.length)
+			queryStr += " AND ?";
+	}
+		
+	pool.getConnection(function(err,connection){
+		var query = connection.query(queryStr, params, function(err, rows, fields) {
+			// console.log(query);
+			connection.release();
+			
+			var jsonContent = {};
+			if(rows.length > 0){
+				jsonContent = {
+					"code" : 100, 
+					"status" : "sucess",
+					"data" : rows
+				};
+			}else{
+				jsonContent = {
+					"code" : 303, 
+					"status" : "fail",
+					"descript" : "Anon_User doesnt exist"
+				};
+			}
+			if (!err){
+				res.json(jsonContent);
+				console.log("Sucess! Query getUser executed res: ", rows);
 			}else{
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
@@ -323,6 +395,7 @@ app.get("/createAnonUser",function(req,res){
 	});
   
 });
+
 
 
 //--------------------------------------------------------------------
