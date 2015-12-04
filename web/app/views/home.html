@@ -18,32 +18,434 @@
 					<p>Get a code to share with your players</p>
 				</div>
 			</div>
-			<div class="app-container" ng-show="hideIcons" ng-class="{'show-lobby': showLobby}">
-				<i class="fa fa-close" ng-click="showIcons()"></i>
-				<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
-			 	<div class="inner" ng-class="{'show-lobby': showLobby}">
-			        <h2>{{app.name}}</h2>
-			        <form ng-class="{'show-lobby': showLobby}">
-		        		<div class="form-group">
-			        		<label for="max-players">Max Players:&nbsp;</label>
-				          	<select class="form-control" id="max-players">
-				        		<option>2</option>
-				        		<option>5</option>
-				        		<option>10</option>
-				        		<option>20</option>
-				        		<option>50</option>
-				        	</select>
-				        </div>
-				    	<div class="form-group">
-			        		<label for="nickname">Allow Nicknames:&nbsp;</label>
-		        			<input id="nickname" type="checkbox">
-			        	</div>
-			        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp()">
-			    	</form>
-			    </div>
-			    <div class="lobby" ng-show="showLobby">
-			    	<img src="../images/qr.jpg"/>
-			    </div>
+			<div class="lobby-app-container" ng-show="hideIcons">
+				<div class="lobby" ng-show="showLobby" ng-class="{'show-lobby': showLobby}">
+					<div class="lobby-header">
+						<h3>Players 6/20</h3>
+					</div>
+					<div class="lobby-content">
+						<div class="lobby-players">
+							<div class="row" ng-repeat="user in users">
+								<div class="col-xs-9">
+									<span>{{user.name}}</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa" ng-class="{'fa-check': user.ready, 'fa-close': !user.ready}"/>
+								</div>
+							</div>
+							<!-- <div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Edgar Badgerdon</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Audrey Mincebucket</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Lord Elrond</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Manuel Slimesta</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Hunch McScrape</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-close"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-9">
+									<span>Ina Sprinkfitz</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa fa-check"/>
+								</div>
+							</div> -->
+						</div>
+						<div class="lobby-launch">
+							<button class="login-submit">Play</button>
+						</div>
+					</div>
+				</div>
+				<div class="app-container" ng-class="{'show-lobby': showLobby}">
+					<i class="fa fa-close" ng-click="showIcons()"></i>
+					<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
+				 	<div class="inner" ng-class="{'show-lobby': showLobby}">
+				        <h2>{{app.name}}</h2>
+				        <form ng-class="{'show-lobby': showLobby}">
+			        		<div class="form-group">
+				        		<label for="max-players">Max Players:&nbsp;</label>
+					          	<select class="form-control" id="max-players">
+					        		<option>2</option>
+					        		<option>5</option>
+					        		<option>10</option>
+					        		<option>20</option>
+					        		<option>50</option>
+					        	</select>
+					        </div>
+					    	<div class="form-group">
+				        		<label for="nickname">Allow Nicknames:&nbsp;</label>
+			        			<input id="nickname" type="checkbox">
+				        	</div>
+				        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp()">
+				    	</form>
+				    </div>
+				    <div class="qr" ng-show="showLobby">
+				    	<img src="../images/qr.jpg"/>
+				    </div>
+				    <div class="code" ng-show="showLobby">
+				    	<h3>harrymjones.com/anxed</h3>
+				    	<h3>4675</h3>
+				    </div>
+				</div>
 			</div>
 		</div>
 	</div>

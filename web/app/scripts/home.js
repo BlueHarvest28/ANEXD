@@ -3,14 +3,14 @@
 angular.module('ANEXD')
 .controller('HomeController', [
     '$scope',
+    '$timeout',
     'LoginService',
-    function ($scope, LoginService) 
+    function ($scope, $timeout, LoginService) 
     {
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
-				$scope.hideIcons = false;
-    			$scope.showLobby = false;
+				$scope.showIcons();
 			}
 		});
 
@@ -45,6 +45,29 @@ angular.module('ANEXD')
     		},
     	];
 
+        $scope.users = [
+            {
+                'name': 'Edgar Badgerdon',
+                'ready': false,
+            },
+            {
+                'name': 'Audrey Mincebucket',
+                'ready': false,
+            },
+            {
+                'name': 'Manuel Slimesta',
+                'ready': true,
+            },
+            {
+                'name': 'Ina Sprinkfitz',
+                'ready': true,
+            },
+            {
+                'name': 'Hunch McScrape',
+                'ready': false,
+            },
+        ];
+
     	$scope.loadApp = function(app){
     		$scope.hideIcons = true;
     		$scope.app = app;
@@ -52,7 +75,10 @@ angular.module('ANEXD')
 
     	$scope.showIcons = function(){
     		$scope.hideIcons = false;
-    		$scope.showLobby = false;
+            //Wait for the windows to disappear before triggering transitions
+            $timeout( function(){
+                $scope.showLobby = false;
+            }, 1000);
     	};
 
     	$scope.type = '';
