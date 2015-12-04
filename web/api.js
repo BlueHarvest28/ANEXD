@@ -14,8 +14,6 @@ var mysql      = require('mysql');
 // anonUser
 // createUser & login
 
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
-app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 // ::CHANGES::
 // FOREIGN KEY (game) REFERENCES Game(gameID) 
 
@@ -50,8 +48,11 @@ var pool = mysql.createPool(
 
 var app = express();
 
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
+app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 app.use(bodyParser.json());//this is for parsing hearder in post req
   
+// -:-:-:-:-:TEST QUERY:-:-:-:-:-
 //Test url to see if database connects
 app.get("/test",function(req,res){
 	
@@ -125,14 +126,12 @@ app.get("/insertNewUser",function(req,res){
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 // TODO:
-// - may have to make it so does accept password just doesnt
-//   return the password.
+// - DO NOT RETURN THE PASSWORD
 
 // Get a user by an attribute and return whole row 
 // NOT THE PASSWORD
 // Ideally will be made to take one or more params
 
-// DO NOT CHECK PASSWORD
 // example url:: localhost:3000/getUser?username=xx&email=xx
 // example url:: localhost:3000/getUser?username=xx
 // example url:: localhost:3000/getUser?email=xx
@@ -141,7 +140,7 @@ app.get("/getUser",function(req,res){
 	
 	var keys = Object.keys(req.query);
 	
-	if(keys.indexOf("password") != -1){//password exists
+	if(keys.indexOf("password") != -1 && keys.length > 1){//password exists and have another field
 		res.json({"code" : 303, "status" : "error", "descript": "cannot search on password"});
 		return;
 	}
@@ -157,10 +156,7 @@ app.get("/getUser",function(req,res){
 		if(i+1 != keys.length)
 			queryStr += " AND ?";
 	}
-	
-	// console.log("query: ", queryStr);
-	// console.log("array: ", params);
-	
+		
 	pool.getConnection(function(err,connection){
 		var query = connection.query(queryStr, params, function(err, rows, fields) {
 			// console.log(query);
@@ -258,9 +254,9 @@ app.get("/changeEmail",function(req,res){
 	var queryStr = "UPDATE User SET email=? WHERE userID=? AND password=?";
 		
 	var params = [
-		req.params.newemail, 
-		req.params.userID,
-		req.params.pass
+		req.query.newemail, 
+		req.query.userID,
+		req.query.pass
 	];
 	
 	pool.getConnection(function(err,connection){
