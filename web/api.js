@@ -4,35 +4,29 @@ var mysql      = require('mysql');
 
 //TABLES:
 // User, Anon_User, Lobby & Game
-// I dont think will access game directly will be done
-// through the backend. the same may apply to Lobby.
 
 // user
 // loginUser
 // logoutUser
 
 // anonUser
-// createUser & login
 
-// ::CHANGES::
+// ::DB_CHANGES::
 // FOREIGN KEY (game) REFERENCES Game(gameID) 
 
-// GOOD PRACTICE ---- TO IMPLEMENT
+//TODO::
+// - ROBUSTNESS check what values comming in eg dont accept id being set
+//	 also check what is being returned. DONT RETURN PASSWORDS!!
+// - ROLLBACK IF UPDATE MORE THAN ONE!!!!
+//
+//	CLEAN UP!!!!! 
+//	use of variable for api names so can easily change
 
-// .:SQL ESCAPE:.
-// connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function (error, results, fields) {
-  // // error will be an Error if one occurred during the query
-  // // results will contain the results of the query
-  // // fields will contain information about the returned results fields (if any)
-// });
+//TESTING
+ // - lobby need testing
+ // - thourogh testing need on all
 
-//.:GET ID BACK:.
-// connection.query('INSERT INTO posts SET ?', {title: 'test'}, function(err, result) {
-  // if (err) throw err;
-
-  // console.log(result.insertId);
-// });
-
+ 
 //DB credentials
 var credentials = {
 	connectionLimit: 100,
@@ -300,21 +294,23 @@ app.get("/changeEmail",function(req,res){
 
 // USERNAME AND LOBBYID IN DATABASE NEED TO BE COMPOSITE KEY
 
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 // Create a Anon user add them to database and log them in to the lobby
 // This may also connect them via another field.
 // Check if username and lobby exists since unique database will return
 // example url:: localhost:3000/insertNewAnonUsers?username=xx&lobby=xx
 app.get("/insertNewAnonUsers",function(req,res){
-	var queryStr = "INSERT into Anon_User (username, lobbyID) VALUES ?";
+	var queryStr = "INSERT into Anon_User SET ?";
 		
 	pool.getConnection(function(err,connection){	
-		var query =connection.query(queryStr, req.query, function(err, result) {
-			// console.log(query);
+		var query = connection.query(queryStr, req.query, function(err, result) {
+			//console.log(query);
 			connection.release();
 			
 			if (!err){
 				//and return the id of new user.
-				res.json({"code" : 100, "sucess": "User added.", "userID": result.insertId});
+				res.json({"code" : 100, "sucess": "Sucess! Anon_User added", "userID": result.insertId});
 				console.log("Sucess! Query insertNewAnonUsers excuted res: ", result);
 			}else{
 				//check is username has been used.
@@ -386,7 +382,7 @@ app.get("/getAnonUser",function(req,res){
 			}
 			if (!err){
 				res.json(jsonContent);
-				console.log("Sucess! Query getUser executed res: ", rows);
+				console.log("Sucess! Query getAnonUser executed res: ", rows);
 			}else{
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
@@ -402,29 +398,192 @@ app.get("/getAnonUser",function(req,res){
 // Lobby table queries  /
 //--------------------------
 
+//Select lobbies by lobbyid or the creator
+
+//insert new lobby
+
+//update
+//	- password
+//	- game
+//
+
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 // Create a Lobby add them to database and log them in to the lobby
 // This may also connect them via another field.
 // Check if username and lobby exists since unique database will return
-// example url:: localhost:3000/createLobby?title=xx&creator=xx&pass=xx&game=xx
-app.get("/createLobby",function(req,res){
-	var queryStr = "INSERT into Lobby (title,password,creator,game)" +
-        " VALUES(" +
-		req.params.title + "," +
-		req.params.pass + "," +
-		req.params.creat + "," +
-		req.params.game +
-	+")";
-	
-	var lobbyID = 0;//return of queryStr
-			
+// example url:: localhost:3000/newLobby?title=xx&creator=xx&pass=xx&game=xx
+app.get("/newLobby",function(req,res){
+	var queryStr = "INSERT into Lobby SET ?";
+		
 	pool.getConnection(function(err,connection){	
-		connection.query(queryStr, function(err, rows, fields) {
+		var query = connection.query(queryStr, req.query, function(err, result) {
+			//console.log(query);
 			connection.release();
+			
 			if (!err){
-				//console.log('The solution is: ', rows);
 				//and return the id of new user.
-				res.json({"code" : 100, "status" : "sucess"});
-				console.log("Sucess! User added");
+				res.json({"code" : 100, "sucess": "Sucess! Lobby added", "lobbyID": result.insertId});
+				console.log("Sucess! Query newLobby excuted res: ", result);
+			}else{
+				//check is username has been used.
+				if(err.code == 'ER_DUP_ENTRY'){
+					console.log('Duplication error.');
+					res.json({"code" : 303, "status" : "error",
+					"descript": "Lobby exists!!"});
+				}else{
+					console.log('Error while performing Query.', err);
+					res.json({"code" : 303, "status" : "error"});
+				}
+			}
+		});
+	});
+  
+});
+
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+// Get a Lobby by either creator or there id and return whole row 
+
+// getting by lobbyID will return more than one user!!!
+
+// example url:: localhost:3000/getAnonUser?lobbyID=xx
+// example url:: localhost:3000/getAnonUser?creator=xx
+app.get("/getLobby",function(req,res){
+	var queryStr = "SELECT * FROM Lobby WHERE ?";
+	
+	var keys = Object.keys(req.query);
+	
+	var params = [];
+	for(var i = 0; i<keys.length;i++){
+		var key = keys[i];
+
+		var pair = {};		
+		pair[key] = req.query[key];
+
+		params.push(pair);
+		if(i+1 != keys.length)
+			queryStr += " AND ?";
+	}
+		
+	pool.getConnection(function(err,connection){
+		var query = connection.query(queryStr, params, function(err, rows, fields) {
+			// console.log(query);
+			connection.release();
+			
+			var jsonContent = {};
+			if(rows.length > 0){
+				jsonContent = {
+					"code" : 100, 
+					"status" : "sucess",
+					"data" : rows
+				};
+			}else{
+				jsonContent = {
+					"code" : 303, 
+					"status" : "fail",
+					"descript" : "Lobby doesnt exist"
+				};
+			}
+			if (!err){
+				res.json(jsonContent);
+				console.log("Sucess! Query getLobby executed res: ", rows);
+			}else{
+				console.log('Error while performing Query.');
+				res.json({"code" : 303, "status" : "error"});
+			}
+		});
+	});
+  
+});
+
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+// Change the Lobby password
+
+// example url:: localhost:3000/newLobbyPassword?password=xx&lobbyID=xx
+app.get("/newLobbyPassword",function(req,res){
+	var queryStr = "UPDATE Lobby SET password=? WHERE lobbyID=?";
+		
+	var params = [
+		req.query.password, 
+		req.query.lobbyID,
+	];
+	
+	pool.getConnection(function(err,connection){
+		var query = connection.query(queryStr, params, function(err, result) {
+			// console.log(query);
+			connection.release();
+			
+			//if rows > 2 bad error need to roll back!!!
+			if(result.changedRows > 0 && result.changedRows < 2){
+				var jsonContent = {
+					"code" : 100, 
+					"status" : "sucess",
+					"descript" : "Sucess! Password has been changed",
+					"affectedRows" : result.changedRows
+				};
+			}else{
+				var jsonContent = {
+					"code" : 303, 
+					"status" : "fail",
+					"descript" : "Fail! Information didn't match"
+				};
+			}
+			
+			if (!err){
+				res.json(jsonContent);
+				console.log("Sucess! Query newLobbyPassword executed res: ", result);
+			}else{
+				console.log('Error while performing Query.');
+				res.json({"code" : 303, "status" : "error"});
+			}
+		});
+	});
+  
+});
+
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-WORKS-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+// Change the Lobby title
+
+// example url:: localhost:3000/newLobbyPassword?title=xx&lobbyID=xx
+app.get("/newLobbyTitle",function(req,res){
+	var queryStr = "UPDATE Lobby SET title=? WHERE lobbyID=?";
+		
+	var params = [
+		req.query.title, 
+		req.query.lobbyID,
+	];
+	
+	pool.getConnection(function(err,connection){
+		var query = connection.query(queryStr, params, function(err, result) {
+			// console.log(query);
+			connection.release();
+			
+			//if rows > 2 bad error need to roll back!!!
+			if(result.changedRows > 0 && result.changedRows < 2){
+				var jsonContent = {
+					"code" : 100, 
+					"status" : "sucess",
+					"descript" : "Sucess! Title has been changed",
+					"affectedRows" : result.changedRows
+				};
+			}else{
+				var jsonContent = {
+					"code" : 303, 
+					"status" : "fail",
+					"descript" : "Fail! Information didn't match"
+				};
+			}
+			
+			if (!err){
+				res.json(jsonContent);
+				console.log("Sucess! Query newLobbyTitle executed res: ", result);
 			}else{
 				console.log('Error while performing Query.');
 				res.json({"code" : 303, "status" : "error"});
