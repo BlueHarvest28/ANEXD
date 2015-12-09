@@ -1,0 +1,22 @@
+INSERT INTO `Lobby`(`creator`, `password`, `game`, 'title', 'size') VALUES ('14','password123','3','Head to Head','2');
+INSERT INTO `Lobby`(`creator`, `password`, `game`, 'title', 'size') VALUES ('18','SatanQuiz10','7','3 v 3 Quiz fight!','6');
+INSERT INTO `Lobby`(`creator`, `password`, `game`, 'title', 'size') VALUES ('8','123654','5','Lecture Quiz','120');
+INSERT INTO `Lobby`(`creator`, `password`, `game`, 'title', 'size') VALUES ('16','999Quiz','4','End of the term test','30');
+INSERT INTO `Lobby`(`creator`, `password`, `game`, 'title', 'size') VALUES ('20','Pass99','9','Revision quiz','16');
+
+INSERT INTO `Lobby`(`creator`, `password`, `game`, 'title', 'size') VALUES ('','','','','');
+
+CREATE TABLE Lobby
+(
+ALTER TABLE Lobby
+ALTER COLUMN password CHAR(30);lobbyID INT NOT NULL AUTO_INCREMENT,
+title VARCHAR(30) NOT NULL,
+creator VARCHAR(30) NOT NULL,
+password CHAR(30),
+game INT NOT NULL,
+size INT NOT NULL,
+PRIMARY KEY (lobbyID),
+FOREIGN KEY (creator) REFERENCES Users(userID)
+);
+
+

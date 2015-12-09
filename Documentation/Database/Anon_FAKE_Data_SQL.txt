@@ -1,0 +1,19 @@
+insert into Anon_User (`username`,`lobby`) values ('rfrazier0','4');
+insert into Anon_User (`username`,`lobby`) values ('agriffin1','6');
+insert into Anon_User (`username`,`lobby`) values ('lcampbell2','6');
+insert into Anon_User (`username`,`lobby`) values ('thughes3','6');
+insert into Anon_User (`username`,`lobby`) values ('tcox4','6');
+insert into Anon_User (`username`,`lobby`) values ('amyers5','8');
+insert into Anon_User (`username`,`lobby`) values ('lfoster6','7');
+insert into Anon_User (`username`,`lobby`) values ('sbaker7','6');
+insert into Anon_User (`username`,`lobby`) values ('mburton8','4');
+insert into Anon_User (`username`,`lobby`) values ('hreed9','8');
+insert into Anon_User (`username`,`lobby`) values ('rlittlea','7');
+insert into Anon_User (`username`,`lobby`) values ('rmitchellb','7');
+insert into Anon_User (`username`,`lobby`) values ('jhuntc','7');
+insert into Anon_User (`username`,`lobby`) values ('larmstrongd','6');
+insert into Anon_User (`username`,`lobby`) values ('cwhitee','6');
+
+
+
+ALTER TABLE Anon_User DROP UNIQUE

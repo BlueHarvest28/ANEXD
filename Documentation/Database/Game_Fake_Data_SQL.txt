@@ -1,0 +1,42 @@
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES (,'22','Simpsons Hit and Run 8','3','file://org.anexd.provider.bitmaps/IMGafe1348nkafeh198392njagebe172824kfea3','Game','omnis sit excepturi ipsa illo voluptas perspiciatis sed quisquamquis corporis omnis labore blanditiis at');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('24','Fallout 4 Quiz','4','file://org.anexd.provider.bitmaps/IMGfhue2inf1yf89n1ifu1893foiufijfio319f1','Quiz','quis iusto nemo nihil voluptates occaecati quia quaerat et sint in sequi alias vel ut aut eos');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('30','Return of the Aliens','1','file://org.anexd.provider.bitmaps/IMG1fn1ufh18fu1hf1of1fn9ucynf8z3qg3nyaxf','Game','esse molestiae aut aut voluptatemdolorum fugiat deserunt voluptates atque minima eos eligendi est labore consequatur');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('44','</theEnd>','0','file://org.anexd.provider.bitmaps/IMGfneuafh819fhekmff81fshjkbbb1sss128482','Quiz','illo illum voluptas doloremqueaperiam illum vitae ullam dicta vero reprehenderit qui maxime a doloremque sunt consequatur asperiores');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('32','HTML Quiz 1','5','file://org.anexd.provider.bitmaps/IMG1hfuhu1981fh1fdjhfhbb8b2283479aijjlki','Quiz','ccaecati quibusdam et modi quod qui nequeaut ea est eos ut ut que  rerum dolorem');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('41','Politics: The Game','2','file://org.anexd.provider.bitmaps/IMG1fh18f18ft79g74101hfekshhfuey91180113','Game','neque officia earum optio illoquas est magnam autem nulla excepturi  aperiam quam rerum');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('34','Cipher text Decryption 3','3','file://org.anexd.provider.bitmaps/IMGfheu1h97fyfhuhhhjf1uf81u08f183uf38yf7','Game','accusamus facere officiis totam laborum laudantiummolestiae eligendi vitae est nrepellendus animi non qui porro');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('41','Politics: The Game','2','file://org.anexd.provider.bitmaps/IMG1fh18f18ft79g74101hfekshhfuey91180113','Game','neque officia earum optio illoquas est magnam autem nulla excepturi  aperiam quam rerum');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('38','Satan Test 8 - Return of the Easter Bunny','4','file://org.anexd.provider.bitmaps/IMGhf72f20fh8ysfhu32hjhf7199yfay1y2172y2','Game','placeat possimus qui itaque architecto voluptatum et ea ut vel sit porro eum optio minima laudantium voluptas at eos commodi molestias');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('37','CSS Quiz 9000','5','file://org.anexd.provider.bitmaps/IMGfejhajfhjkeah17hy713f11u091uf109fu292','Quiz','facilis voluptatem quia dignissimos necessitatibus eum natus autem etnnon voluptas nisi incidunt doloremnecessitatibus tenetur labore sint qui commodi');
+
+INSERT INTO `Game`(`creatorID`,`name`,`rating`,`image`,`type`,`description`) VALUES ('26','MBED What you should know','1','file://org.anexd.provider.bitmaps/IMGfeafeafhjkeahfjkeabfh3174812ujn1wyu1e','Quiz','maiores quis est molestias laudantium explicabo quia quia nostrum soluta');
+
+
+CREATE TABLE Game
+(
+gameID INT NOT NUL,L AUTO_INCREMENT,
+creatorID INT NOT NULL,
+name VARCHAR(64) NOT NULL,
+date_created TIMESTAMP NOT NULL,
+rating INT(1) NOT NULL,
+image VARCHAR(128) NOT NULL;
+type CHAR(30) NOT NULL,
+description TEXT NOT NULL,
+PRIMARY KEY (gameID),
+FOREIGN KEY (creatorID) REFERENCES Users(userID)
+);
+
+ALTER TABLE Game
+ADD rating INT(1) NOT NULL,
+ADD type CHAR(30) NOT NULL,
+ADD description TEXT NOT NULL,
+ADD image VARCHAR(128) NOT NULL;

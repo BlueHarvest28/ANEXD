@@ -1,0 +1,35 @@
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Randi.Gleichner','209b1007f59e0cb3656dfd1fe46183860129','Rickey_Ortiz@vida.biz');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Kailyn.Leffler','3222f4325c2af69dba6eff822e83abfaea7a','Blanca_Reichert@abbigail.us');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Oscar63261993','4396a51907d50ea2d8d3326dfcf75bd1d034"','Samantha@reagan.net');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Lue_Harann','e0ee91b303f656dd696fc0204da9d29cd1cd','Claudie.Schimmel@jerome.us');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Delaney.Cormier','191796149f7f55f37aa05a0951116102a64b','Hollie@roger.io');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Deontae.Dooley','8e7edbe93152cfa64845c2c59f2d83d4dfb8','Esteban@eleazar.biz');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Beulah_Gutkowski','deb1703e55b1f752af01e570f237f43ba28f','Ashlee@immanuel.com');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Russel123','3decf64afbd165c5bbcbea2ab3b6c78ada6b','Bertram@yvette.me');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('123Shane654','ad0553177771ab127f6c7c7622cdac57f893','Alexander_Leuschke@cydney.net');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Gerardo1994','ed55967caaa30eb30ff06a20b1464a14e27d','Gianni@patsy.com');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Demarcoz','733493b69d919905b568fc9b6037aff28a71','Selina_Cartwright@jazmyne.info');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Jan_Feeney','27d10ca38df7cca59af1c62f33688fb607cf','Kristian_DAmore@tessie.us');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Ewald_Gislason','8c00d09bdfacf2dc56fdd518e340df60eb7e','Curt_Murazik@darion.name');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('SageLt118','35accbab35d96648ef3d8289f1e02ee7a66a','Lavinia.Kihn@alessandro.io');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Tamara_Spinka','f40f4451f2d2bdd8c9d81b5b92989e37044c','Richmond.Gorczany@clifford.us');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Dell','f02daf5e5f73c771f1c1af915dab8536bae8','Mckenzie.Gottlieb@yessenia.info');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Eileen','b91d910b0f7a43318c905b709259cd0aba31','Citlalli@callie.net');
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('Forrest___Rippin','425d3b050eb84e6ec98c168893907eaf8d75','Orie@shana.co.uk');
+
+INSERT INTO `User`(`username`,`password`,`email`) VALUES ('harry','harry1','hj88@kent.com');
+INSERT INTO `User`(`username`,`password`,`email`) VALUES ('alex','alex1','aa22@kent.com');
+INSERT INTO `User`(`username`,`password`,`email`) VALUES ('mo','mo1','wa90@kent.com');
+INSERT INTO `User`(`username`,`password`,`email`) VALUES ('james','james1','jg15@kent.com');
+INSERT INTO `User`(`username`,`password`,`email`) VALUES ('fred','fred1','fj89@kent.com');
+
+INSERT INTO `User`(`username`, `password`, `email`) VALUES ('','','');
+
+
+
+
+
+
+
+
+
