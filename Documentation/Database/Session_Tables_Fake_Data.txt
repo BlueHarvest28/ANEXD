@@ -1,0 +1,29 @@
+CREATE TABLE Anon_Sesh
+(
+seshID INT NOT NULL AUTO_INCREMENT,
+user INT UNIQUE NOT NULL,
+logged TINYINT(1) NOT NULL,
+PRIMARY KEY (seshID),
+FOREIGN KEY (user) REFERENCES Anon_User(userID)
+);
+
+CREATE TABLE User_Sesh
+(
+seshID INT NOT NULL AUTO_INCREMENT,
+user INT UNIQUE NOT NULL,
+logged TINYINT(1) NOT NULL,
+PRIMARY KEY (seshID),
+FOREIGN KEY (user) REFERENCES Lobby(userID)
+);
+
+INSERT INTO `Anon_Sesh`(`user`, `logged`) VALUES ('3','1');
+INSERT INTO `Anon_Sesh`(`user`, `logged`) VALUES ('6','1');
+INSERT INTO `Anon_Sesh`(`user`, `logged`) VALUES ('17','1');
+INSERT INTO `Anon_Sesh`(`user`, `logged`) VALUES ('12','1');
+INSERT INTO `Anon_Sesh`(`user`, `logged`) VALUES ('42','0');
+
+INSERT INTO `User_Sesh`(`user`, `logged`) VALUES ('22','1');
+INSERT INTO `User_Sesh`(`user`, `logged`) VALUES ('37','1');
+INSERT INTO `User_Sesh`(`user`, `logged`) VALUES ('41','1');
+INSERT INTO `User_Sesh`(`user`, `logged`) VALUES ('32','0');
+INSERT INTO `User_Sesh`(`user`, `logged`) VALUES ('25','1');
