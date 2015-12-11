@@ -6,7 +6,7 @@ angular.module('ANEXD')
     '$timeout',
     'LoginService',
     function ($scope, $timeout, LoginService) 
-    {
+    {		
     	$scope.loggedIn = LoginService.isLoggedIn();
     	
     	if($scope.loggedIn){
@@ -30,7 +30,7 @@ angular.module('ANEXD')
     			$scope.user = LoginService.getUser();
 	        }, 150);
     	};
-    }
+	}
 ])
 .directive('hideOnSubmit', function(){
 	return{

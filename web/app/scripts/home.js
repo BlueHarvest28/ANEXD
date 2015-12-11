@@ -2,18 +2,18 @@
 'use strict';
 angular.module('ANEXD')
 .controller('HomeController', [
-    '$scope',
+	'$scope',
     '$timeout',
     'LoginService',
     function ($scope, $timeout, LoginService) 
-    {
+    {			
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
 				$scope.showIcons();
 			}
 		});
-
+	
     	$scope.apps = [
     		{
     			'name': 'The Satan Test',
@@ -90,6 +90,7 @@ angular.module('ANEXD')
     		$scope.showLobby = true;
     	};
     }
+	
 ])
 .directive('scrollOnClick', function() {
 	return {

@@ -34,14 +34,16 @@ angular
         });
     }
   ])
-  .factory('LoginService', function() {
+    
+  .factory('LoginService', ['$cookies', function($cookies) {
   var user;
-  var loggedIn  = false;
+  var loggedIn = false;
   return {
     login: function(email, password) {
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
         loggedIn = true;
+		$cookies.put('userCookie', user);
       }
       else{
         loggedIn = false;
@@ -51,13 +53,21 @@ angular
     logout: function() {
       loggedIn = false;
       user = undefined;
+	  $cookies.remove('userCookie');
       return loggedIn;
     },
     isLoggedIn: function() {
-      return loggedIn;
+		var cookie = $cookies.get('userCookie');
+		if(cookie){
+			user = cookie;
+			//console.log(user);
+			loggedIn = true;
+			//console.log(loggedIn);
+		}
+		return loggedIn;
     },
-    getUser: function() { 
+     getUser: function() { 
       return user; 
     }
   };
-});
+}]);
