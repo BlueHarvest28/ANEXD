@@ -39,14 +39,18 @@ angular
   var user;
   var loggedIn = false;
   return {
+
     login: function(email, password) {
+
+      //call API, passing password, username or email
+      //Regex to check if its a username or email
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
         loggedIn = true;
-		$cookies.put('userCookie', user);
+		    $cookies.put('userCookie', user);
       }
       else{
-        loggedIn = false;
+        loggedIn = false;a
       }
       return loggedIn;
     },

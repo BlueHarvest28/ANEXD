@@ -14,6 +14,8 @@ angular.module('ANEXD')
 			}
 		});
 	
+        // Make function to get games from API. 
+        // Put into array like below.
     	$scope.apps = [
     		{
     			'name': 'The Satan Test',
@@ -86,6 +88,7 @@ angular.module('ANEXD')
     		$scope.type = type;
     	};
 
+        // Pass prams from form and send to APIh
     	$scope.launchApp = function(){
     		$scope.showLobby = true;
     	};

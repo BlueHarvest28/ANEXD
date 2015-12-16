@@ -415,15 +415,18 @@
 						</div>
 					</div>
 				</div>
+				<!-- Form, action on div to send selected data to the API -->
+				<!-- docs.angularjs.org/guide/forms -->
 				<div class="app-container" ng-class="{'show-lobby': showLobby}">
 					<i class="fa fa-close" ng-click="showIcons()"></i>
 					<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
 				 	<div class="inner" ng-class="{'show-lobby': showLobby}">
 				        <h2>{{app.name}}</h2>
 				        <form ng-class="{'show-lobby': showLobby}">
-			        		<div class="form-group">
+			        		<div class="form-group"> 
 				        		<label for="max-players">Max Players:&nbsp;</label>
 					          	<select class="form-control" id="max-players">
+					          		<!-- ng-modal to set the var -->
 					        		<option>2</option>
 					        		<option>5</option>
 					        		<option>10</option>
@@ -435,6 +438,7 @@
 				        		<label for="nickname">Allow Nicknames:&nbsp;</label>
 			        			<input id="nickname" type="checkbox">
 				        	</div>
+				        	<!-- on this submit pass data to a function -->
 				        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp()">
 				    	</form>
 				    </div>
