@@ -42,8 +42,16 @@ angular
 
     login: function(email, password) {
 
-      //call API, passing password, username or email
-      //Regex to check if its a username or email
+      /*
+        FRED ADDED
+        call API, passing password, username or email
+        if it returns true set the email to user and log them in.
+
+        function fetch() {
+        $http.get("http://www.theAPI.com/?t=" + email + "&" + password)
+          .success(function(response){$scope.details = response;});
+      */
+
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
         loggedIn = true;

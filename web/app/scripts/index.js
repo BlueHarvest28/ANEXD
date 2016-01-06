@@ -13,8 +13,7 @@ angular.module('ANEXD')
     		$scope.user = LoginService.getUser();
     	}
 
-        // Make another function to setErrorModal on any error.
-        // http://getbootstrap.com/javascript/#modals-examples
+        
     	$scope.login = function(email, password){
     		//Wait for the modal to animate out
     		$timeout( function(){
@@ -33,6 +32,7 @@ angular.module('ANEXD')
 	        }, 150);
     	};
 	}
+    
 ])
 .directive('hideOnSubmit', function(){
 	return{

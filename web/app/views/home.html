@@ -424,9 +424,10 @@
 				        <h2>{{app.name}}</h2>
 				        <form ng-class="{'show-lobby': showLobby}">
 			        		<div class="form-group"> 
-				        		<label for="max-players">Max Players:&nbsp;</label>
+				        		<label for="maxplayers">Max Players:&nbsp;</label>
+				        		<!-- ng-modal to set the var -->
+				        		<!-- FRED ADDED <select class="form-control" ng-modal="lobby.maxplayers" id="max-players"> -->
 					          	<select class="form-control" id="max-players">
-					          		<!-- ng-modal to set the var -->
 					        		<option>2</option>
 					        		<option>5</option>
 					        		<option>10</option>
@@ -436,9 +437,11 @@
 					        </div>
 					    	<div class="form-group">
 				        		<label for="nickname">Allow Nicknames:&nbsp;</label>
+				        		<!-- FRED ADDED <input id="nickname" ng.model="lobby.nickname" type="checkbox"> -->
 			        			<input id="nickname" type="checkbox">
 				        	</div>
 				        	<!-- on this submit pass data to a function -->
+				        	<!-- FRED ADDED <input type="submit" value="Launch" class="login-submit" ng-click="launchApp(lobby)"> -->
 				        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp()">
 				    	</form>
 				    </div>

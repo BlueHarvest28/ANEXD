@@ -14,8 +14,18 @@ angular.module('ANEXD')
 			}
 		});
 	
-        // Make function to get games from API. 
-        // Put into array like below.
+        /*
+            FRED ADDED
+            Make function to get games from API. 
+            Put into array like below.
+
+            $scope.apps = [];
+                $http.get('www.theAPI.com/getAllGames')
+                .then(function(result) {
+                $scope.apps = result.data;
+            });
+        */
+
     	$scope.apps = [
     		{
     			'name': 'The Satan Test',
@@ -47,6 +57,18 @@ angular.module('ANEXD')
     		},
     	];
 
+        /*
+            FRED ADDED
+            Make function to get users from API per lobby. 
+            Put into array like below.
+
+            $scope.users = [];
+                $http.get('www.theAPI.com/getUsersOn' + lobbyId)
+                .then(function(result) {
+                $scope.users = result.data;
+            });
+        */
+
         $scope.users = [
             {
                 'name': 'Edgar Badgerdon',
@@ -58,7 +80,7 @@ angular.module('ANEXD')
             },
             {
                 'name': 'Manuel Slimesta',
-                'ready': true,
+                'ready': false,
             },
             {
                 'name': 'Ina Sprinkfitz',
@@ -88,9 +110,20 @@ angular.module('ANEXD')
     		$scope.type = type;
     	};
 
-        // Pass prams from form and send to APIh
+        // Pass prams from form and send to API
+        // FRED ADDED $scope.launchApp = function(app){
     	$scope.launchApp = function(){
     		$scope.showLobby = true;
+
+            /*  FRED ADDED
+                //Get from form and send to API.
+
+                $scope.master = angular.copy(app);
+                $http({
+                    url: "www.theAPI.com/?", 
+                    method: "GET",
+                    params: {$scope.master}
+            */
     	};
     }
 	
