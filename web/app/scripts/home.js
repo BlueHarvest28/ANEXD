@@ -5,7 +5,8 @@ angular.module('ANEXD')
 	'$scope',
     '$timeout',
     'LoginService',
-    function ($scope, $timeout, LoginService) 
+    '$http',
+    function ($scope, $timeout, LoginService, $http) 
     {			
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
@@ -14,17 +15,18 @@ angular.module('ANEXD')
 			}
 		});
 	
-        /*
+        var host = 'localhost:3000/';
+/*
             FRED ADDED
             Make function to get games from API. 
             Put into array like below.
 
             $scope.apps = [];
-                $http.get('www.theAPI.com/getAllGames')
+                $http.get(host + getAllGames')
                 .then(function(result) {
                 $scope.apps = result.data;
             });
-        */
+*/
 
     	$scope.apps = [
     		{
@@ -56,18 +58,6 @@ angular.module('ANEXD')
     			'rating': [1,2],
     		},
     	];
-
-        /*
-            FRED ADDED
-            Make function to get users from API per lobby. 
-            Put into array like below.
-
-            $scope.users = [];
-                $http.get('www.theAPI.com/getUsersOn' + lobbyId)
-                .then(function(result) {
-                $scope.users = result.data;
-            });
-        */
 
         $scope.users = [
             {
@@ -110,23 +100,31 @@ angular.module('ANEXD')
     		$scope.type = type;
     	};
 
-        // Pass prams from form and send to API
-        // FRED ADDED $scope.launchApp = function(app){
-    	$scope.launchApp = function(){
+    	$scope.launchApp = function(lobby){
     		$scope.showLobby = true;
 
-            /*  FRED ADDED
-                //Get from form and send to API.
+/*
+            FRED ADDED
+            Get from form and send to API.  
+            localhost:3000/newLobby?title=xx&creator=xx&pass=xx&game=xx&size==xx&nick=xx
+            https://github.com/monospaced/angular-qrcode
+*/          
+            $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
+            $scope.lobbyQR = "harrymjones.com/anxed/" + $scope.lobbyPassword
 
-                $scope.master = angular.copy(app);
-                $http({
-                    url: "www.theAPI.com/?", 
-                    method: "GET",
-                    params: {$scope.master}
-            */
+            $http({
+                method: "GET",
+                url: host + 'newLobby?creator=' + LoginService.getUser() + '&pass=' + $scope.lobbyPassword + 
+                        '&game' + app.name + '&size=' + lobby.size + '&nick=' + lobby.nickname,   
+            }).then(function successCallback(response) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+            }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+            });
     	};
     }
-	
 ])
 .directive('scrollOnClick', function() {
 	return {

@@ -42,7 +42,7 @@ angular
 
     login: function(email, password) {
 
-      /*
+/*
         FRED ADDED
         call API, passing password, username or email
         if it returns true set the email to user and log them in.
@@ -50,7 +50,7 @@ angular
         function fetch() {
         $http.get("http://www.theAPI.com/?t=" + email + "&" + password)
           .success(function(response){$scope.details = response;});
-      */
+*/
 
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
