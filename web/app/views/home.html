@@ -49,7 +49,7 @@
 				        <form ng-class="{'show-lobby': showLobby}">
 			        		<div class="form-group"> 	        				
 				        		<label for="maxplayers">Max Players:&nbsp;</label>
-					          	<select class="form-control" ng-modal="lobby.maxplayers" id="max-players">
+					          	<select class="form-control" ng-model="lobby.max" id="max-players">
 					        		<option>2</option>
 					        		<option>5</option>
 					        		<option>10</option>
@@ -59,14 +59,13 @@
 					        </div>
 					    	<div class="form-group">
 				        		<label for="nickname">Allow Nicknames:&nbsp;</label>
-				        		<input id="nickname" ng.model="lobby.nickname" type="checkbox">
+				        		<input id="nickname" ng-model="lobby.nickname" type="checkbox">
 				        	</div>
 				        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp(lobby)">
 				    	</form>
 				    </div>
-				    <!-- NEED GENERATE QR -->
 				    <div class="qr" ng-show="showLobby">
-				    	<img src="../images/qr.jpg"/>
+				    	<qr text="lobbyQR" ng-show="showLobby"></qr>
 				    </div>
 				    <div class="code" ng-show="showLobby">
 				    	<h3>harrymjones.com/anxed/{{lobbyPassword}}</h3>

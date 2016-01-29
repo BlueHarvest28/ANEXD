@@ -82,6 +82,14 @@ angular.module('ANEXD')
             },
         ];
 
+        $scope.lobbyPassword = "";
+        $scope.lobbyQR = "";
+        
+        $scope.lobby = {
+            max: "0",
+            nickname: false,
+        };
+
     	$scope.loadApp = function(app){
     		$scope.hideIcons = true;
     		$scope.app = app;
@@ -100,22 +108,16 @@ angular.module('ANEXD')
     		$scope.type = type;
     	};
 
+        $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
+        $scope.lobbyQR = "harrymjones.com/anxed/" + $scope.lobbyPassword;
+        
     	$scope.launchApp = function(lobby){
     		$scope.showLobby = true;
-
-/*
-            FRED ADDED
-            Get from form and send to API.  
-            localhost:3000/newLobby?title=xx&creator=xx&pass=xx&game=xx&size==xx&nick=xx
-            https://github.com/monospaced/angular-qrcode
-*/          
-            $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
-            $scope.lobbyQR = "harrymjones.com/anxed/" + $scope.lobbyPassword
 
             $http({
                 method: "GET",
                 url: host + 'newLobby?creator=' + LoginService.getUser() + '&pass=' + $scope.lobbyPassword + 
-                        '&game' + app.name + '&size=' + lobby.size + '&nick=' + lobby.nickname,   
+                        '&game' + $scope.app.name + '&size=' + $scope.lobby.max + '&nickname=' + $scope.lobby.nickname,   
             }).then(function successCallback(response) {
                     // this callback will be called asynchronously
                     // when the response is available
