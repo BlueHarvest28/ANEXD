@@ -25,7 +25,7 @@ angular.module('ANEXD')
                 $http.get(host + getAllGames')
                 .then(function(result) {
                 $scope.apps = result.data;
-            });
+            });2
 */
 
     	$scope.apps = [
@@ -86,7 +86,7 @@ angular.module('ANEXD')
         $scope.lobbyQR = "";
         
         $scope.lobby = {
-            max: "0",
+            max: "5",
             nickname: false,
         };
 
@@ -110,7 +110,7 @@ angular.module('ANEXD')
 
         $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
         $scope.lobbyQR = "harrymjones.com/anxed/" + $scope.lobbyPassword;
-        
+
     	$scope.launchApp = function(lobby){
     		$scope.showLobby = true;
 
@@ -119,11 +119,7 @@ angular.module('ANEXD')
                 url: host + 'newLobby?creator=' + LoginService.getUser() + '&pass=' + $scope.lobbyPassword + 
                         '&game' + $scope.app.name + '&size=' + $scope.lobby.max + '&nickname=' + $scope.lobby.nickname,   
             }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
             }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
             });
     	};
     }
