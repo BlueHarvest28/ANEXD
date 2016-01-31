@@ -11,7 +11,8 @@
     "angular-route": "^1.4.0",
     "angular-sanitize": "^1.4.0",
     "angular-touch": "^1.4.0",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "angular-qr": "latest"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"

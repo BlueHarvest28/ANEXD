@@ -5,7 +5,8 @@ angular.module('ANEXD')
 	'$scope',
     '$timeout',
     'LoginService',
-    function ($scope, $timeout, LoginService) 
+    '$http',
+    function ($scope, $timeout, LoginService, $http) 
     {			
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
@@ -14,17 +15,18 @@ angular.module('ANEXD')
 			}
 		});
 	
-        /*
+        var host = 'localhost:3000/';
+/*
             FRED ADDED
             Make function to get games from API. 
             Put into array like below.
 
             $scope.apps = [];
-                $http.get('www.theAPI.com/getAllGames')
+                $http.get(host + getAllGames')
                 .then(function(result) {
                 $scope.apps = result.data;
-            });
-        */
+            });2
+*/
 
     	$scope.apps = [
     		{
@@ -57,18 +59,6 @@ angular.module('ANEXD')
     		},
     	];
 
-        /*
-            FRED ADDED
-            Make function to get users from API per lobby. 
-            Put into array like below.
-
-            $scope.users = [];
-                $http.get('www.theAPI.com/getUsersOn' + lobbyId)
-                .then(function(result) {
-                $scope.users = result.data;
-            });
-        */
-
         $scope.users = [
             {
                 'name': 'Edgar Badgerdon',
@@ -92,6 +82,14 @@ angular.module('ANEXD')
             },
         ];
 
+        $scope.lobbyPassword = "";
+        $scope.lobbyQR = "";
+        
+        $scope.lobby = {
+            max: "5",
+            nickname: false,
+        };
+
     	$scope.loadApp = function(app){
     		$scope.hideIcons = true;
     		$scope.app = app;
@@ -110,23 +108,21 @@ angular.module('ANEXD')
     		$scope.type = type;
     	};
 
-        // Pass prams from form and send to API
-        // FRED ADDED $scope.launchApp = function(app){
-    	$scope.launchApp = function(){
+        $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
+        $scope.lobbyQR = "harrymjones.com/anxed/" + $scope.lobbyPassword;
+
+    	$scope.launchApp = function(lobby){
     		$scope.showLobby = true;
 
-            /*  FRED ADDED
-                //Get from form and send to API.
-
-                $scope.master = angular.copy(app);
-                $http({
-                    url: "www.theAPI.com/?", 
-                    method: "GET",
-                    params: {$scope.master}
-            */
+            $http({
+                method: "GET",
+                url: host + 'newLobby?creator=' + LoginService.getUser() + '&pass=' + $scope.lobbyPassword + 
+                        '&game' + $scope.app.name + '&size=' + $scope.lobby.max + '&nickname=' + $scope.lobby.nickname,   
+            }).then(function successCallback(response) {
+            }, function errorCallback(response) {
+            });
     	};
     }
-	
 ])
 .directive('scrollOnClick', function() {
 	return {
