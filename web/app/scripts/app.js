@@ -16,7 +16,8 @@ angular
 	'ngResource',
 	'ngRoute',
 	'ngSanitize',
-	'ngTouch'
+	'ngTouch',
+	'ja.qr'
 ])
 .config([
 	'$locationProvider',
