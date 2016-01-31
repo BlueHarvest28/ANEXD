@@ -72,7 +72,9 @@
       <!-- views -->
       <div ng-view></div>
     </div>
-
+	
+	<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+	  
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -85,10 +87,9 @@
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
-<!--
     <script src="bower_components/qrcode/lib/qrcode.js"></script>
+	<script src="bower_components/angular-socket-io/socket.js"></script>
     <script src="bower_components/angular-qr/src/angular-qr.js"></script>
--->
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -98,6 +99,7 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/home.js"></script>
+	<script src="scripts/mobile-home.js"></script>
     <script src="scripts/index.js"></script>
     <!-- endbuild -->
 

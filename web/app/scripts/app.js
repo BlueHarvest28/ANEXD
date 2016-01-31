@@ -17,7 +17,8 @@ angular
 	'ngRoute',
 	'ngSanitize',
 	'ngTouch',
-	'ja.qr'
+	'ja.qr',
+	'btford.socket-io'
 ])
 .config([
 	'$locationProvider',
@@ -116,4 +117,14 @@ angular
       return user; 
     }
   };
-}]);
+}])
+.factory('SocketService', function (socketFactory) {
+  var myIoSocket = io.connect('http://localhost:3002/');
+	console.log(myIoSocket); 
+	
+  var socket = socketFactory({
+    ioSocket: myIoSocket
+  });
+
+  return socket;
+});

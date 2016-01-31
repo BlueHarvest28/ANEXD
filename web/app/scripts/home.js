@@ -6,8 +6,13 @@ angular.module('ANEXD')
     '$timeout',
     'LoginService',
     '$http',
-    function ($scope, $timeout, LoginService, $http) 
+	'SocketService',
+    function ($scope, $timeout, LoginService, $http, SocketService) 
     {			
+		SocketService.on('message', function (message) {
+        	console.log(message);
+        });
+		
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
