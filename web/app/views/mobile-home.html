@@ -1,0 +1,17 @@
+<div id="home" class="mobile home">
+	<div class="menu">
+		<div class="login-input-back">
+			<img class="password-icon" src="../images/icon-password.png"/>
+			<input class="login-input" type="text" ng-model="id" placeholder="Lobby ID"/>
+		</div>
+		<div class="login-input-back">
+			<img class="email-icon" src="../images/icon-account-small.png"/>
+			<input class="login-input" type="text" ng-model="email" placeholder="Email"/>
+		</div>
+		<div class="login-input-back" ng-show="allowNicknames">	
+			<img class="email-icon" src="../images/icon-account-small.png"/>
+			<input class="login-input" type="text" ng-model="nickname" placeholder="Nickname"/>
+		</div>
+		<input class="login-submit" type="submit"/>
+	</div>
+</div>

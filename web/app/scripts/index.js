@@ -3,9 +3,10 @@
 angular.module('ANEXD')
 .controller('IndexController', [
     '$scope',
+	'$rootScope',
     '$timeout',
     'LoginService',
-    function ($scope, $timeout, LoginService) 
+    function ($scope, $rootScope, $timeout, LoginService) 
     {		
     	$scope.loggedIn = LoginService.isLoggedIn();
     	
@@ -31,8 +32,9 @@ angular.module('ANEXD')
     			$scope.user = LoginService.getUser();
 	        }, 150);
     	};
-	}
-    
+	
+		$scope.isMobile = $rootScope.isMobile;
+	}    
 ])
 .directive('hideOnSubmit', function(){
 	return{

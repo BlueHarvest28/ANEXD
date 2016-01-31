@@ -12,8 +12,14 @@
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <!-- endbower -->
     <!-- endbuild -->
-    <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
+    <!-- build:css(.tmp) -->
+	<link rel="stylesheet" href="styles/main.css">
+    <div ng-if="!isMobile">
+		<link rel="stylesheet" href="styles/home.css">
+	</div>
+	<div ng-if="isMobile">
+		<link rel="stylesheet" href="styles/mobile-home.css">
+	</div>
     <!-- endbuild -->
   </head>
   <body ng-app="ANEXD" ng-controller="IndexController" id="top">
@@ -24,7 +30,7 @@
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href=""><img src="images/logo.png" height="20px" alt="ANEXD"/></a>
+          <a class="navbar-brand" href=""><img src="images/logo.png" alt="ANEXD"/></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
