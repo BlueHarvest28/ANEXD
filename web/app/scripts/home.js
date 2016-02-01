@@ -87,11 +87,11 @@ angular.module('ANEXD')
             },
         ];
 
-        $scope.lobbyPassword = "";
-        $scope.lobbyQR = "";
+        $scope.lobbyPassword = '';
+        $scope.lobbyQR = '';
         
         $scope.lobby = {
-            max: "5",
+            max: '5',
             nickname: false,
         };
 
@@ -114,13 +114,13 @@ angular.module('ANEXD')
     	};
 
         $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
-        $scope.lobbyQR = "harrymjones.com/anxed/" + $scope.lobbyPassword;
+        $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPassword;
 
     	$scope.launchApp = function(){
     		$scope.showLobby = true;
 
             $http({
-                method: "GET",
+                method: 'GET',
                 url: host + 'newLobby?creator=' + LoginService.getUser() + '&pass=' + $scope.lobbyPassword + 
                         '&game' + $scope.app.name + '&size=' + $scope.lobby.max + '&nickname=' + $scope.lobby.nickname,   
             }).then(function successCallback(response) {
