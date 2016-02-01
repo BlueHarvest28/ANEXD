@@ -1,17 +1,55 @@
 <div id="home" class="mobile home">
-	<div class="menu">
-		<div class="login-input-back">
-			<img class="password-icon" src="../images/icon-password.png"/>
-			<input class="login-input" type="text" ng-model="id" placeholder="Lobby ID"/>
+	<div class="back" ng-click="goBack()" ng-show="showLobby">
+		<i class="fa fa-chevron-left"/>
+	</div>
+	
+	<div class="menu" ng-show="!showLobby">
+		<form ng-submit="submitUser()">
+			<div class="login-input-back">
+				<img class="password-icon" src="../images/icon-password.png"/>
+				<input class="login-input" type="text" ng-model="id" placeholder="Lobby ID" required/>
+			</div>
+			<div class="login-input-back">
+				<img class="email-icon" src="../images/icon-account-small.png"/>
+				<input class="login-input" type="email" ng-model="anonUser.email" placeholder="Email" required/>
+			</div>
+			<div class="login-input-back" ng-show="allowNicknames">	
+				<img class="email-icon" src="../images/icon-account-small.png"/>
+				<input class="login-input" type="text" ng-model="anonUser.nickname" placeholder="Nickname"/>
+			</div>
+			<input class="login-submit" type="submit"/>
+		</form>
+	</div>
+	
+	<div class="lobby-app-container" ng-show="showLobby">
+		<div class="lobby">
+			<div class="lobby-header">
+				<h3>Players {{users.length}}/50</h3>
+			</div>
+			<div class="lobby-content">
+				<div class="lobby-players">
+					<div class="row">
+						<div class="col-xs-9">
+							<span>{{anonUser.nickname}}</span>
+						</div>
+						<div class="col-xs-3">
+							<i class="fa" ng-class="{'fa-check': ready, 'fa-close': !ready}"/>
+						</div>
+					</div>
+					<hr/>
+					<div class="row" ng-repeat="user in users">
+						<div class="col-xs-9">
+							<span>{{user.name}}</span>
+						</div>
+						<div class="col-xs-3">
+							<i class="fa" ng-class="{'fa-check': user.ready, 'fa-close': !user.ready}"/>
+						</div>
+					</div>
+				</div>
+				<div class="lobby-launch">
+					<button class="login-submit" ng-click="toggleReady()" ng-class="{'not-ready' : ready}">SET READY</button>
+				</div>
+			</div>
 		</div>
-		<div class="login-input-back">
-			<img class="email-icon" src="../images/icon-account-small.png"/>
-			<input class="login-input" type="text" ng-model="email" placeholder="Email"/>
-		</div>
-		<div class="login-input-back" ng-show="allowNicknames">	
-			<img class="email-icon" src="../images/icon-account-small.png"/>
-			<input class="login-input" type="text" ng-model="nickname" placeholder="Nickname"/>
-		</div>
-		<input class="login-submit" type="submit"/>
 	</div>
 </div>
