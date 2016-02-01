@@ -14,6 +14,7 @@ html {
     color: #222;
     font-size: 1em;
     line-height: 1.4;
+	height: 100%;
 }
 
 /*
@@ -95,11 +96,7 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
-@import '_home.scss';
-@import '_non-responsive.scss';
-
 body{
-    min-width: 780px;
     background-color: #eee;
 }
 
@@ -122,10 +119,6 @@ input{
 }
 
 .login-modal{
-    img{
-        position: absolute;
-    }
-
     small{
         display: block;
         opacity: 0.3;
@@ -134,22 +127,6 @@ input{
         a{
             color: #fff !important;
         }
-    }
-
-    ::-webkit-input-placeholder {
-       color: rgba(255,255,255,0.4);
-    }
-
-    :-moz-placeholder {
-       color: rgba(255,255,255,0.4);
-    }
-
-    ::-moz-placeholder {
-       color: rgba(255,255,255,0.4);
-    }
-
-    :-ms-input-placeholder {  
-       color: rgba(255,255,255,0.4);
     }
 
     .account-info h2{
@@ -174,42 +151,62 @@ input{
     .modal-body{
         padding: 55px;
     }
+}
 
-    .login-input-back{
-        margin-bottom: 15px;
-        background-color: rgba(255,255,255,0.5);
-        position: relative;
-        box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px;
+::-webkit-input-placeholder {
+   color: rgba(255,255,255,0.4);
+}
 
-        .email-icon{
-            width: 22px;
-            left: 13px;
-            top: 12px;
-        }
+:-moz-placeholder {
+   color: rgba(255,255,255,0.4);
+}
 
-        .password-icon{
-            width: 20px;
-            left: 14px;
-            top: 12px;
-        }
+::-moz-placeholder {
+   color: rgba(255,255,255,0.4);
+}
+
+:-ms-input-placeholder {  
+   color: rgba(255,255,255,0.4);
+}
+
+.login-input-back{
+	margin-bottom: 15px;
+	background-color: rgba(255,255,255,0.5);
+	position: relative;
+	box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px;
+	
+	img{
+        position: absolute;
     }
 
-    .login-input{
-        background-color: transparent !important;
-        border: none;
-        padding: 12px 15px 12px 50px;
-        width: 100%;
-        font-size: 15pt;
-        color: white;
-        font-weight: 100;
-        letter-spacing: 1px;
-        border: 1px solid transparent;
-        transition: border-color 0.2s;
+	.email-icon{
+		width: 22px;
+		left: 13px;
+		top: 12px;
+	}
 
-        &:focus{
-            border-color: rgba(255,255,255,0.75);
-        }
-    }
+	.password-icon{
+		width: 20px;
+		left: 14px;
+		top: 12px;
+	}
+}
+
+.login-input{
+	background-color: transparent !important;
+	border: none;
+	padding: 12px 15px 12px 50px;
+	width: 100%;
+	font-size: 15pt;
+	color: white;
+	font-weight: 100;
+	letter-spacing: 1px;
+	border: 1px solid transparent;
+	transition: border-color 0.2s;
+
+	&:focus{
+		border-color: rgba(255,255,255,0.75);
+	}
 }
 
 .login-submit{
@@ -251,6 +248,12 @@ input:-webkit-autofill {
 .navbar-brand{
     height: 60px;
     padding: 20px 15px;
+	width: 100%;
+	
+	img{
+		margin: 0 auto;
+		max-height: 100%
+	}
 }
 
 .navbar-default {
