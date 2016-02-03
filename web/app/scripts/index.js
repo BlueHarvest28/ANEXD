@@ -3,10 +3,9 @@
 angular.module('ANEXD')
 .controller('IndexController', [
     '$scope',
-	'$rootScope',
     '$timeout',
     'LoginService',
-    function ($scope, $rootScope, $timeout, LoginService) 
+    function ($scope, $timeout, LoginService) 
     {		
     	$scope.loggedIn = LoginService.isLoggedIn();
     	
@@ -14,7 +13,6 @@ angular.module('ANEXD')
     		$scope.user = LoginService.getUser();
     	}
 
-		$scope.shouldHide = false;
         
     	$scope.login = function(email, password){
     		//Wait for the modal to animate out
@@ -33,27 +31,16 @@ angular.module('ANEXD')
     			$scope.user = LoginService.getUser();
 	        }, 150);
     	};
-	
-		$scope.isMobile = $rootScope.isMobile;
-	}    
+	}
+    
 ])
 .directive('hideOnSubmit', function(){
 	return{
 		restrict: 'A',
-		link: function(scope, elm, attrs) {
-//			console.log(attrs.shouldHide);
-//			var shouldHide = attrs.shouldHide;
-//			if(shouldHide){
-//				console.log('anus');
-//				return;
-//			} else {
-				//in js, set variable for whether the form was successful or not 
-				//Put that variable into an html attribute, might have to wrap in {{variable name}}
-				$(elm).find('.login-submit').on('click', function() {
-					elm.modal('hide');
-				});
-			//}
-			
+		link: function(scope, elm) {
+	      	$(elm).find('.login-submit').on('click', function() {
+        		elm.modal('hide');
+	      	});
 	    }
 	};
 });

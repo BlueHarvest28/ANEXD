@@ -1,24 +1,6 @@
-var express = require('express');
-var http    = require('http');
-var app     = express();
-var server  = http.createServer(app);
-var io      = require('socket.io').listen(server);
-
-var mysql = require('mysql');
-
-//Openshift setup
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
-app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "localhost");
-
-//Launch server
-server.listen(app.get('port') ,app.get('ip'), function () {
-    console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
-});
-
-io.on('connect', function () {
-	console.log('connection');
-});
-
+var express    = require("express");
+var bodyParser = require('body-parser');
+var mysql      = require('mysql');
 
 //TABLES:
 // User, Anon_User, Lobby & Game
@@ -57,6 +39,12 @@ var credentials = {
 var pool = mysql.createPool(
 	credentials
 );
+
+var app = express();
+
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
+app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
+app.use(bodyParser.json());//this is for parsing hearder in post req
   
 // -:-:-:-:-:TEST QUERY:-:-:-:-:-
 //Test url to see if database connects
@@ -604,3 +592,7 @@ app.get("/newLobbyTitle",function(req,res){
 	});
   
 });
+
+console.log('The API server is running.')
+
+app.listen(3000);

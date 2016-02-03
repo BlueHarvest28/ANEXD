@@ -12,9 +12,7 @@
     "angular-sanitize": "^1.4.0",
     "angular-touch": "^1.4.0",
     "jquery": "~2.1.4",
-    "angular-qr": "latest",
-    "angular-socket-io": "~0.7.0",
-    "socket.io-client": "~1.4.5"
+    "angular-qr": "latest"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"
