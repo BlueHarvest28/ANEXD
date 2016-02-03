@@ -9,36 +9,6 @@
  * Main module of the application.
  */
 angular
-<<<<<<< HEAD
-  .module('ANEXD', [
-    'ngAnimate',
-    'ngCookies',
-    'ngMessages',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch',
-    'ja.qr'
-  ])
-  .config([
-    '$locationProvider',
-    '$routeProvider',
-    function($locationProvider, $routeProvider) {
-      $locationProvider.hashPrefix('!');
-      // routes
-      $routeProvider
-        .when('/', {
-          templateUrl: './views/home.html',
-          controller: 'HomeController'
-        })
-        .otherwise({
-           redirectTo: '/'
-        });
-    }
-  ])
-    
-  .factory('LoginService', ['$cookies', function($cookies) {
-=======
 .module('ANEXD', [
 	'ngAnimate',
 	'ngCookies',
@@ -83,7 +53,6 @@ angular
 	}
 ])
 .factory('LoginService', ['$cookies', function($cookies) {
->>>>>>> parent of 06e237c... Revert "Dependency conflict fix"
   var user;
   var loggedIn = false;
   return {
