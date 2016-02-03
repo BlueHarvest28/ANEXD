@@ -1,0 +1,79 @@
+body{
+	background: url('../images/bg.png');
+	background-size: cover;
+
+	.container-fluid.main{
+		margin-top: 80px;
+	}
+	
+	.navbar-brand{
+		height: 70px;
+	}
+	
+	.menu{
+		padding: 20px;
+	}
+	
+	.fa-chevron-left{
+		font-size: 25pt;
+		position: absolute;
+		top: 18px;
+		left: 20px;
+		z-index: 1030;
+	}
+	
+	.lobby-app-container{
+		padding: 25px;
+	}
+	
+	.lobby{
+		box-shadow: rgba(0,0,0,0.2) 0 10px 10px;
+	
+		hr{
+			border-top: 1px solid #333;
+		}
+		
+		.lobby-header{
+			padding: 5px 10px;
+			background-color: #3D6072;
+			color: white;
+		}
+		
+		h3{
+			margin-top: 10px;
+    		text-align: center;
+		}
+		
+		.lobby-players{
+			min-height: 50px;
+			background-color: #222;
+			padding: 15px;
+			max-height: 60vh;
+    		overflow: scroll;
+		}
+		
+		.fa-check{
+			color: #6bbb5c;
+		}
+
+		.fa-close{
+			color: #C34848;
+		}
+		
+		.col-xs-3 {
+			text-align: center;
+		}
+
+		.col-xs-9 {
+			text-align: left;
+			
+			span{
+				color: white;
+			}
+		}
+	}
+	
+	.login-submit.not-ready{
+		background-color: #C34848;
+	}
+}

@@ -12,8 +12,14 @@
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <!-- endbower -->
     <!-- endbuild -->
-    <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
+    <!-- build:css(.tmp) -->
+	<link rel="stylesheet" href="styles/main.css">
+    <div ng-if="!isMobile">
+		<link rel="stylesheet" href="styles/home.css">
+	</div>
+	<div ng-if="isMobile">
+		<link rel="stylesheet" href="styles/mobile-home.css">
+	</div>
     <!-- endbuild -->
   </head>
   <body ng-app="ANEXD" ng-controller="IndexController" id="top">
@@ -24,7 +30,7 @@
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href=""><img src="images/logo.png" height="20px" alt="ANEXD"/></a>
+          <a class="navbar-brand" href=""><img src="images/logo.png" alt="ANEXD"/></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -36,7 +42,7 @@
       </div>
     </nav>
     <!-- Use to write error modal, function in index.js to call it afer any error and display erorr. -->
-    <div class="modal fade login-modal" role="dialog" hide-on-submit>
+    <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="{{shouldHide}}">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
@@ -66,7 +72,9 @@
       <!-- views -->
       <div ng-view></div>
     </div>
-
+	
+	<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+	  
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -79,6 +87,9 @@
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
+    <script src="bower_components/qrcode/lib/qrcode.js"></script>
+    <script src="bower_components/angular-qr/src/angular-qr.js"></script>
+    <script src="bower_components/angular-socket-io/socket.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -88,6 +99,7 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/home.js"></script>
+	<script src="scripts/mobile-home.js"></script>
     <script src="scripts/index.js"></script>
     <!-- endbuild -->
 
