@@ -12,13 +12,14 @@ angular
 .module('ANEXD', [
 	'ngAnimate',
 	'ngCookies',
-	'ngMessages',
+	//'ngMessages',
 	'ngResource',
 	'ngRoute',
 	'ngSanitize',
 	'ngTouch',
 	'ja.qr',
 	'btford.socket-io',
+  //'ngPasswordStrength'
 	//'ng-token-auth',
 ])
 .config([
@@ -88,17 +89,7 @@ angular
                 again password hashed.
 
 */
-	/* user.getCurrent().then(function(currentUser){
-		console.log(currentUser.first_name);
-	}); */
-	/* $rootScope.$on('user.login', function() {
-    $http.defaults.headers.common.Authorization = 'Basic ' + btoa(':' + user.token());
-	});
 
-	$rootScope.$on('user.logout', function() {
-		$http.defaults.headers.common.Authorization = null;
-	});
- */
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
         loggedIn = true;
@@ -130,6 +121,7 @@ angular
     }
   };
 }])
+
 .factory('SocketService', function (socketFactory) {
   var myIoSocket = io.connect('http://localhost:3002/');
 	console.log(myIoSocket); 
