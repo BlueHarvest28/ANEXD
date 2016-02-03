@@ -42,7 +42,7 @@
       </div>
     </nav>
     <!-- Use to write error modal, function in index.js to call it afer any error and display erorr. -->
-    <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="{{shouldHide}}">
+    <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="shouldHide">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
@@ -50,9 +50,9 @@
               <div class="login-input-back email">
                 <img class="email-icon" src="../images/icon-account-small.png"/>
                 <input name="email" placeholder="email" type="email" class="login-input" ng-model="email" required>
-  				        <div ng-messages="indexForm.email.$error" role="alert"> 
+  				        <!-- <div ng-messages="indexForm.email.$error" role="alert"> 
                   <div ng-message="required">This field is required</div>
-  					      <div ng-message="email">Valid Email required</div>
+  					      <div ng-message="email">Valid Email required</div> -->
 			       <!-- <div ng-show="errorDisp">Enter Valid Email</div>-->				
 				</div>
               </div>
@@ -66,16 +66,16 @@
                         ng-model="password" 
                         ng-minlength="4" 
                         required>
-                  <div ng-password-strength="password"></div>
-                  <div ng-message="required">You did not enter a field</div>
+                  <!-- <div ng-password-strength="password"></div> -->
+                 <!--  <div ng-message="required">You did not enter a field</div>
 				          <div ng-message="indexForm.password.$error" role="alert"></div>
                   <div ng-message="minlength" ng-show="indexForm.password.$error.minlength">Your field is too short</div>
-				          <div ng-message="password">Enter Valid Password</div>
+				          <div ng-message="password">Enter Valid Password</div> -->
                   <!-- <div ng-show="indexForm.password.$error.password" ng-message="password">Enter Valid Password</div> -->
  			            <!-- 	<div ng-show="verificationEmailSent">An email has been sent to your inbox. Click on the link to verify your password.</div> -->
 				</div> 
               <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
-              <small><a href="">Forgotten your password?</a></small>
+              <small><a ng-click="dontHide()" href="">Forgotten your password?</a></small>
 			</form>
             <div class="account-info" ng-show="loggedIn">
               <h2>Hi, {{user}}!</h2>
