@@ -14,18 +14,6 @@ package main
 
 // result.LastInsertId only works for inserts otherwise use rows affected.
 
-
-// PUSHING TO OPENSHIFT
-//--------------------------------------------------
-// git clone ssh://56af8b9a0c1e66c6e90002a2@api-anexd.rhcloud.com/~/git/api.git/
-// cd api/
-// This will create a folder with the source code of your application. After making a change, add, commit, and push your changes.
-
-// git add .
-// git commit -m 'My changes'
-// git push
-
-
 //.------:ToDo:------.
 // - insertNewAnonUsers()
 // - getAnonUser()
@@ -40,9 +28,6 @@ package main
 // + make things in func's to make more readable
 // + to make the insert check for username and email 
 // seperatly 2x queries will be needed
-// + getLobby can return null if 2 fields dont match
-// + no checks if ID's from other tables exist
-// + lastId not returning get /n instead
 
 //.------:DONE:------.
 // - test()
@@ -388,8 +373,6 @@ func changeEmail(w http.ResponseWriter, r *http.Request) {
 //---------------------------------------------\\
 //         ANON_USER TABLE FUNCTIONS           \\
 //---------------------------------------------\\
-
-//NOT TESTED
 func insertNewAnonUsers(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	decoder := json.NewDecoder(r.Body)
@@ -399,7 +382,7 @@ func insertNewAnonUsers(w http.ResponseWriter, r *http.Request) {
 	
 	params := f.(map[string]interface{})
 	
-	var queryString string = "INSERT INTO Anon_User (username,lobby) VALUES (?,?)"
+	var queryString string = "INSERT INTO User (username,lobby) VALUES (?,?,?)"
 
 	useVars := []string{"username","lobby"}//useable fields
 	var args []interface{}
@@ -474,273 +457,20 @@ func getAnonUser(w http.ResponseWriter, r *http.Request) {
 //---------------------------------------------\\
 //           LOBBY TABLE FUNCTIONS             \\
 //---------------------------------------------\\
-
-type Lobby struct {
-	LobbyID int		 `json:"lobbyID"`
-	Title string	 `json:"title"`
-	Creator int		 `json:"creator"`
-	Password sql.NullString  `json:"password"`
-	Game int 		 `json:"game"`
-	Size int		 `json:"size"`
-}
-
-//POST
-//Example - url:: localhost:3000/newLobby?title=xx&creator=xx&pass=xx&game=xx&size=xx
 func newLobby(w http.ResponseWriter, r *http.Request) {
-	//Reading json from request
-	decoder := json.NewDecoder(r.Body)
-	var f interface{}   
-	err := decoder.Decode(&f)
-	checkErr("Decoding request: ",err)
 	
-	params := f.(map[string]interface{})
-	
-	var queryString string = "INSERT INTO Lobby (title,creator,game,size) VALUES (?,?,?,?)"
-
-	useVars := []string{"title","creator","game","size"}//useable fields
-	var args []interface{}
-	
-	for _, field := range useVars{
-		val, valid := params[field]
-		if valid {
-			args = append(args, val)
-		}
-	}
-	
-	result, err := db.Exec(queryString, args...)
-	// checkErr("Query Execute: ",err)
-	
-	var response string
-	
-	if sqlError, ok := err.(*mysql.MySQLError); ok {
-		if sqlError.Number == 1062 {
-			//user already exists
-			response = `{`+
-				`"code" : 303, `+
-				`"status" : "fail",`+
-				`"descript" : "Fail! Duplicate Key user exists",`+
-				`"reason" : "` + sqlError.Message + `"` +
-			`}`			
-		}else{
-			checkErr("Query Execute: ",err)
-		}
-	}else{
-		lastId, err := result.LastInsertId()
-		checkErr("Getting LastInserted: ",err)
-		log.Println(lastId)
-		
-		rowCnt, err := result.RowsAffected()
-		checkErr("Getting RowsAffected: ",err)
-		
-		if rowCnt == 1{
-			//correctly changed the user
-			response = `{` +
-				`"code" : 100, `+
-				`"status" : "sucess",`+
-				`"descript" : "Sucess! Lobby has been changed",`+
-				`"userID" : "` + string(lastId) + `"` +
-			`}`
-		}else if rowCnt < 1{
-			//no change
-			response = `{`+
-				`"code" : 303, `+
-				`"status" : "fail",`+
-				`"descript" : "Fail! Information didn't match"`+
-			`}`
-		}else {
-			//more than one row changed
-			//SHOULDN'T HAPPEN BUT ...
-			//ROLLBACK!!!!!
-		}
-	
-	}
-		
-	//--RESPONSE--	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", response)
-	
-	log.Printf("/newLobby has been excuted sucessfully!")
 }
 
-// Examples:
-// 		url:: localhost:3000/getLobby?title=xx&creator
-// 		url:: localhost:3000/getLobby?title=xx&creator=xx&pass=xx&game=xx
-// 		url:: localhost:3000/getLobby?pass=xx&game=xx
 func getLobby(w http.ResponseWriter, r *http.Request) {
-	//Reading json from request
-	decoder := json.NewDecoder(r.Body)
-	var f interface{}   
-	err := decoder.Decode(&f)
-	checkErr("Decoding request: ",err)
 	
-	params := f.(map[string]interface{})
-	
-	var queryString string = "SELECT * FROM Lobby WHERE "
-
-	useVars := []string{"lobbyID","title","creator","game","size"}//useable fields
-	var args []interface{}
-	
-	for _, field := range useVars{
-		val, valid := params[field]
-		if valid {
-			queryString += field + " = ? AND "
-			args = append(args, val)
-		}
-	}
-	rem := len(queryString)-4 //remove last 'AND '
-	queryString = queryString[:rem]
-	
-	var response string
-	
-	rows, err := db.Query(queryString, args...)
-	switch{
-		case err == sql.ErrNoRows:
-				response = `{`+
-					`"code" : 303, ` +
-					`"status" : "fail",` +
-					`"descript" : "Lobby doesnt exist"` +
-				`}`
-		case err != nil:
-				log.Fatal("Query Execute: ",err)
-				panic(err)
-		default:
-				var res []Lobby
-				for rows.Next() {
-					var lobby Lobby
-					err = rows.Scan(&lobby.LobbyID, &lobby.Title, &lobby.Creator, &lobby.Password, &lobby.Game, &lobby.Size)
-					checkErr("Row retrevial: ",err)
-					
-					res = append(res, lobby)
-				}	
-		
-				b, err := json.Marshal(res)
-				checkErr("Parsing data to json: ", err)	
-				response = string(b)
-    }
-	defer rows.Close()
-		
-	//--RESPONSE--	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", response)
-	
-	log.Printf("/getLobby has been excuted sucessfully!")
 }
 
-// example url:: localhost:3000/newLobbyPassword?password=xx&lobbyID=xx
 func newLobbyPassword(w http.ResponseWriter, r *http.Request) {
-	//Reading json from request
-	decoder := json.NewDecoder(r.Body)
-	var f interface{}   
-	err := decoder.Decode(&f)
-	checkErr("Decoding request: ",err)
 	
-	params := f.(map[string]interface{})
-	
-	var queryString string = "UPDATE Lobby SET password=? WHERE lobbyID=?"
-
-	useVars := []string{"password","lobbyID"}//useable fields
-	var args []interface{}
-	
-	for _, field := range useVars{
-		val, valid := params[field]
-		if valid {
-			args = append(args, val)
-		}
-	}
-	
-	result, err := db.Exec(queryString, args...)
-	checkErr("Query Execute: ",err)
-	
-	// lastId, err := result.LastInsertId()
-	// checkErr("Getting LastInserted: ",err)
-	rowCnt, err := result.RowsAffected()
-	checkErr("Getting RowsAffected: ",err)
-
-	var response string
-	if rowCnt == 1{
-		//correctly changed the user
-		response = `{` +
-			`"code" : 100, `+
-			`"status" : "sucess",`+
-			`"descript" : "Sucess! Title has been changed"`+
-		`}`
-	}else if rowCnt < 1{
-		//no change
-		response = `{`+
-			`"code" : 303, `+
-			`"status" : "fail",`+
-			`"descript" : "Fail! Information didn't match"`+
-		`}`
-	}else {
-		//more than one row changed
-		//ROLLBACK!!!!!
-	}
-		
-	//--RESPONSE--	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", response)
-	
-	log.Printf("/newLobbyPassword has been excuted sucessfully!")
 }
 
 func newLobbyTitle(w http.ResponseWriter, r *http.Request) {
-	//Reading json from request
-	decoder := json.NewDecoder(r.Body)
-	var f interface{}   
-	err := decoder.Decode(&f)
-	checkErr("Decoding request: ",err)
 	
-	params := f.(map[string]interface{})
-	
-	var queryString string = "UPDATE Lobby SET title=? WHERE lobbyID=?"
-
-	useVars := []string{"title","lobbyID"}//useable fields
-	var args []interface{}
-	
-	for _, field := range useVars{
-		val, valid := params[field]
-		if valid {
-			args = append(args, val)
-		}
-	}
-	
-	result, err := db.Exec(queryString, args...)
-	checkErr("Query Execute: ",err)
-	
-	// lastId, err := result.LastInsertId()
-	// checkErr("Getting LastInserted: ",err)
-	rowCnt, err := result.RowsAffected()
-	checkErr("Getting RowsAffected: ",err)
-
-	var response string
-	if rowCnt == 1{
-		//correctly changed the user
-		response = `{` +
-			`"code" : 100, `+
-			`"status" : "sucess",`+
-			`"descript" : "Sucess! Title has been changed"`+
-		`}`
-	}else if rowCnt < 1{
-		//no change
-		response = `{`+
-			`"code" : 303, `+
-			`"status" : "fail",`+
-			`"descript" : "Fail! Information didn't match"`+
-		`}`
-	}else {
-		//more than one row changed
-		//ROLLBACK!!!!!
-	}
-		
-	//--RESPONSE--	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", response)
-	
-	log.Printf("/newLobbyTitle has been excuted sucessfully!")
 }
 
 func checkErr(place string, err error) {
@@ -786,11 +516,5 @@ func main() {
     }	
 
 	log.Printf("API server is Running!")
-	
-	//For local testing purposes
     log.Fatal(http.ListenAndServe(":8080", router))
-	
-	// //For deployment on openshift
-	// bind := fmt.Sprintf("%s:%s", os.Getenv("OPENSHIFT_GO_IP"), os.Getenv("OPENSHIFT_GO_PORT"))
-    // log.Fatal(http.ListenAndServe(bind, r))	
 }
