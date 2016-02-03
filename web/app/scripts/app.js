@@ -12,15 +12,12 @@ angular
 .module('ANEXD', [
 	'ngAnimate',
 	'ngCookies',
-	//'ngMessages',
 	'ngResource',
 	'ngRoute',
 	'ngSanitize',
 	'ngTouch',
 	'ja.qr',
-	'btford.socket-io',
-  //'ngPasswordStrength'
-	//'ng-token-auth',
+	'btford.socket-io'
 ])
 .config([
 	'$locationProvider',
@@ -55,8 +52,6 @@ angular
 ])
 .factory('LoginService', ['$cookies', function($cookies) {
   var user;
- // var currentUser = user.current;
- // var token = user.token;
   var loggedIn = false;
   return {
 
@@ -89,11 +84,10 @@ angular
                 again password hashed.
 
 */
-
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
         loggedIn = true;
-		   $cookies.put('userCookie', user);
+		    $cookies.put('userCookie', user);
       }
       else{
         loggedIn = false;

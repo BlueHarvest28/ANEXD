@@ -358,7 +358,11 @@
 				left: 0;
 
 				img{
-					margin: 86px 139px;
+					left: 50%;
+					position: absolute;
+					margin-left: -50px;
+					top: 50%;
+					margin-top: -50px;
 				}
 			}
 

@@ -20,19 +20,23 @@ angular.module('ANEXD')
 			}
 		});
 	
-        var host = 'localhost:3000/';
+        var host = 'http://api-anexd.rhcloud.com/';
+        
 /*
-            FRED ADDED
-            Make function to get games from API. 
-            Put into array like below.
-
-            $scope.apps = [];
-                $http.get(host + getAllGames')
-                .then(function(result) {
-                $scope.apps = result.data;
-            });2
+        NEED TO WAIT UNTIL ALEX HAS DONE THE API FUNCTION FOR THIS
+        $scope.apps;    
+        var req = {
+             method: 'POST',
+             url: host + 'getAllGames',
+        };   
+        
+        //POST REQUEST for all games
+        $http(req).success(function(results)  {         
+            $scope.apps = results.data;
+        });   
 */
-
+        
+        //Will be removed when api is working
     	$scope.apps = [
     		{
     			'name': 'The Satan Test',
@@ -63,7 +67,32 @@ angular.module('ANEXD')
     			'rating': [1,2],
     		},
     	];
-
+        
+/*
+        $scope.users = [
+            {
+                'id': '',
+                'nickname': '',
+                'ready': false,             
+        }];
+        
+        //SOCKET.ON for lobby anonUsers.
+        SocketService.on('anonUsers', function (data) {
+            
+            for (var i = 0; i < data.length(); i++) {       
+                var incomingId = data[i].id;
+                var incomingNickname = data[i].data.nickname;
+                var incomingReady = data[i].data.ready;
+                
+                $scope.users.push({
+                    'id': incomingId,
+                    'nickname': incomingNickname,
+                    'ready': incomingReady});
+            }
+        });
+*/
+        
+        //Will be removed when api is working
         $scope.users = [
             {
                 'name': 'Edgar Badgerdon',
@@ -118,16 +147,26 @@ angular.module('ANEXD')
 
     	$scope.launchApp = function(){
     		$scope.showLobby = true;
-
-            $http({
-                method: 'GET',
-                url: host + 'newLobby?creator=' + LoginService.getUser() + '&pass=' + $scope.lobbyPassword + 
-                        '&game' + $scope.app.name + '&size=' + $scope.lobby.max + '&nickname=' + $scope.lobby.nickname,   
-            }).then(function successCallback(response) {
+            
+            var payload = {
+                'creator': LoginService.getUser(),                         'pass': $scope.lobbyPassword,
+                'game': $scope.app.name,
+                'size': $scope.lobby.max, 
+                'nickname': $scope.lobby.nickname
+            };
+            
+            var req = {
+                 method: 'POST',
+                 url: host + 'newLobby',
+                 data: payload,
+            };
+            
+            //POST For New Lobby
+            $http(req).then(function successCallback(response) {
 				console.log(response);
             }, function errorCallback(response) {
 				console.log(response);
-            });
+            });        
     	};
     }
 ])
