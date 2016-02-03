@@ -94,7 +94,7 @@ angular
 		    $cookies.put('userCookie', user);
       }
       else{
-        loggedIn = false;a
+        loggedIn = false;
       }
       return loggedIn;
     },

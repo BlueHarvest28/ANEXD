@@ -40,7 +40,7 @@ angular.module('ANEXD')
 .directive('hideOnSubmit', function(){
 	return{
 		restrict: 'A',
-		link: function(scope, elm, attrs) {
+		link: function(scope, elm) {
 //			console.log(attrs.shouldHide);
 //			var shouldHide = attrs.shouldHide;
 //			if(shouldHide){
