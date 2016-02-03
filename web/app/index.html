@@ -40,26 +40,18 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
-            <form name="indexForm" ng-show="!loggedIn">
+            <form ng-show="!loggedIn">
               <div class="login-input-back email">
                 <img class="email-icon" src="../images/icon-account-small.png"/>
-                <input name="email" placeholder="email" type="email" class="login-input" ng-model="email" required>
-				<div ng-messages="indexForm.email.$error" role="alert"> 
-					<div ng-message="email">Valid Email required.</div>
-					<div ng-message="required">This field is required</div>
-			<!-- <div ng-show="errorDisp">Enter Valid Email</div>-->				
-				</div>
+                <input placeholder="email" type="text" class="login-input" name="email" ng-model="email">
               </div>
               <div class="login-input-back password">
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input name="password" placeholder="password" type="password" class="login-input" ng-model="password" required>
-				<div ng-messages="indexForm.password.$error" role="alert">
-				<div ng-message="password"> Enter Valid Password</div>
- 				<div ng-show="verificationEmailSent">An email has been sent to your inbox. Click on the link to verify your password.</div>
-				</div>
+                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password">
+              </div>
               <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
               <small><a href="">Forgotten your password?</a></small>
-			</form>
+            </form>
             <div class="account-info" ng-show="loggedIn">
               <h2>Hi, {{user}}!</h2>
               <br/>
@@ -69,7 +61,6 @@
         </div>
       </div>
     </div>
-	</div>
 
     <div class="container-fluid main">
       <!-- views -->
@@ -88,14 +79,12 @@
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-touch/angular-touch.js"></script>
-    <script src="bower_components/qrcode/lib/qrcode.js"></script>
-    <script src="bower_components/angular-qr/src/angular-qr.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <script type="text/javascript" src="bower_components/qrcode/lib/qrcode.min.js"></script>
     <script type="text/javascript" src="bower_components/angular-qr/angular-qr.min.js"></script>
-	
+
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/home.js"></script>

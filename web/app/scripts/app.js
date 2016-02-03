@@ -17,8 +17,6 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-	'ngMessages',
-	//'ng-token-auth',
     'ja.qr'
   ])
   .config([
@@ -37,11 +35,9 @@ angular
         });
     }
   ])
-
+    
   .factory('LoginService', ['$cookies', function($cookies) {
   var user;
- // var currentUser = user.current;
- // var token = user.token;
   var loggedIn = false;
   return {
 
@@ -74,24 +70,15 @@ angular
                 again password hashed.
 
 */
-	/* user.getCurrent().then(function(currentUser){
-		console.log(currentUser.first_name);
-	}); */
-	/* $rootScope.$on('user.login', function() {
-    $http.defaults.headers.common.Authorization = 'Basic ' + btoa(':' + user.token());
-	});
 
-	$rootScope.$on('user.logout', function() {
-		$http.defaults.headers.common.Authorization = null;
-	});
- */
+
       if(email === 'hj80@kent.ac.uk' && password === 'test'){
         user = 'Harry Jones';
         loggedIn = true;
-		   $cookies.put('userCookie', user);
+		    $cookies.put('userCookie', user);
       }
       else{
-        loggedIn = false;
+        loggedIn = false;a
       }
       return loggedIn;
     },
