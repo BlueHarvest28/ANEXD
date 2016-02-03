@@ -66,7 +66,7 @@
                         ng-model="password" 
                         ng-minlength="4" 
                         required>
-                  <div ng-password-strength="password"></div>
+
                   <div ng-message="required">You did not enter a field</div>
 				          <div ng-message="indexForm.password.$error" role="alert"></div>
                   <div ng-message="minlength" ng-show="indexForm.password.$error.minlength">Your field is too short</div>
