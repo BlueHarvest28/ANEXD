@@ -15,7 +15,7 @@ angular.module('ANEXD')
     	}
 
 		// $scope.shouldHide = false;
-        
+
     	$scope.login = function(email, password){
     		//Wait for the modal to animate out
     		$timeout( function(){
@@ -37,6 +37,7 @@ angular.module('ANEXD')
 		$scope.isMobile = $rootScope.isMobile;
 	}    
 ])
+
 // .directive('hideOnSubmit', function(){
 // 	return{
 // 		restrict: 'A',
@@ -44,7 +45,7 @@ angular.module('ANEXD')
 // 			console.log(attrs.shouldHide);
 // 			var shouldHide = attrs.shouldHide;
 // 			if(shouldHide){
-// 				console.log('anus');
+// 				console.log('panic');
 // 				return;
 // 			} else {
 // 				//in js, set variable for whether the form was successful or not 

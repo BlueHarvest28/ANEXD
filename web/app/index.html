@@ -46,21 +46,29 @@
     <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="shouldHide">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="modal-body">
-            <form ng-show="!loggedIn">
-              <div class="login-input-back email">
-                <img class="email-icon" src="../images/icon-account-small.png"/>
+          <div class="modal-body">       
 
-                <input placeholder="email" type="text" class="login-input" name="email" ng-model="email">
+            <!-- Form w-->
+            <form name="userForm" ng-show="!loggedIn">
+
+              <!-- Email/Username -->   
+              <div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }" required>
+                <img class="email-icon" src="../images/icon-account-small.png"/>
+                <input placeholder="email" type="email" class="login-input" name="email" ng-model="email">      
+                  <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Valid Email is required.</p>           
+                  <!--  invalid: {{userForm.email.$invalid}}/ valid: {{userForm.email.$valid}}/ dirty: {{userForm.email.$dirty}}/ Pristine: {{userForm.email.$pristine}} -->
               </div>
-              <div class="login-input-back password">
+
+              <!-- Password -->
+              <div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }" required>
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password">
+                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3">
+                  <p ng-show="userForm.password.$error.minlength" class="help-block">Password is too short</p>
               </div>
-              <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
-              <small><a href="">Forgotten your password?</a></small>
+                <!-- Submit -->
+                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
+                <small><a href="">Forgotten your password?</a></small>
             </form>
->>>>>>> origin/master
             <div class="account-info" ng-show="loggedIn">
               <h2>Hi, {{user}}!</h2>
               <br/>

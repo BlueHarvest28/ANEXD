@@ -149,7 +149,7 @@ angular.module('ANEXD')
     		$scope.showLobby = true;
             
             var payload = {
-                'creator': LoginService.getUser(),                         'pass': $scope.lobbyPassword,
+                'creator': LoginService.getUser(), 'pass': $scope.lobbyPassword,
                 'game': $scope.app.name,
                 'size': $scope.lobby.max, 
                 'nickname': $scope.lobby.nickname
