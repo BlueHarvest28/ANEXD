@@ -47,24 +47,33 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
-            <form ng-show="!loggedIn">
-              <div class="login-input-back email">
-                <img class="email-icon" src="../images/icon-account-small.png"/>
+           
+            <!-- Form w-->
+            <form name="userForm" ng-show="!loggedIn" novalidate>
 
+              <!-- Email/Username -->   
+              <div class="login-input-back email" ng-class"{ 'has-error' - userForm.email.$invalid && !userForm.email.$pristine }">
+                <img class="email-icon" src="../images/icon-account-small.png"/>
                 <input placeholder="email" type="text" class="login-input" name="email" ng-model="email">
+                  <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block" ng-class="{ success: userForm.username.$valid, danger: userForm.username.$invalid }">Valid Email is required.</p>
               </div>
+
+              <!-- Password -->
               <div class="login-input-back password">
                 <img class="password-icon" src="../images/icon-password.png"/>
                 <input placeholder="password" type="password" class="login-input" name="password" ng-model="password">
               </div>
-              <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
-              <small><a href="">Forgotten your password?</a></small>
+
+                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
+                <small><a href="">Forgotten your password?</a></small>
             </form>
->>>>>>> origin/master
+
             <div class="account-info" ng-show="loggedIn">
               <h2>Hi, {{user}}!</h2>
               <br/>
+
               <input type="submit" class="login-submit" value="Logout" ng-click="logout();">
+
             </div>
           </div>
         </div>
