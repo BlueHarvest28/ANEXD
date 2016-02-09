@@ -121,7 +121,7 @@ angular.module('ANEXD')
         
         $scope.lobby = {
             max: '5',
-            nickname: false,
+            title: 'title'
         };
 
     	$scope.loadApp = function(app){
@@ -149,10 +149,11 @@ angular.module('ANEXD')
     		$scope.showLobby = true;
             
             var payload = {
-                'creator': LoginService.getUser(),                         'pass': $scope.lobbyPassword,
+                'creator': LoginService.getUser(),                         
+                'pass': $scope.lobbyPassword,
                 'game': $scope.app.name,
                 'size': $scope.lobby.max, 
-                'nickname': $scope.lobby.nickname
+                'title': $scope.lobby.title
             };
             
             var req = {

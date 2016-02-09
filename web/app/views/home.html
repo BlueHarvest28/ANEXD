@@ -47,7 +47,14 @@
 				 	<div class="inner" ng-class="{'show-lobby': showLobby}">
 				        <h2>{{app.name}}</h2>
 				        <form ng-class="{'show-lobby': showLobby}">
-			        		<div class="form-group"> 	        				
+			        	    
+<!--     Removed nicknames and added title, this needs styling     -->
+                            <div class="form-group">
+                                <label for="title">Title:&nbsp;</label>
+                                <input id="title" class="title-input" ng-model="lobby.title" type="text">  
+                            </div>
+                            
+                            <div class="form-group">		
 				        		<label for="maxplayers">Max Players:&nbsp;</label>
 					          	<select class="form-control" ng-model="lobby.max" id="max-players">
 					        		<option>5</option>
@@ -58,10 +65,6 @@
 					        		<option>250</option>
 					        	</select>
 					        </div>
-					    	<div class="form-group">
-				        		<label for="nickname">Allow Nicknames:&nbsp;</label>
-				        		<input id="nickname" ng-model="lobby.nickname" type="checkbox">
-				        	</div>
 				        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp(lobby)">
 				    	</form>
 				    </div>
