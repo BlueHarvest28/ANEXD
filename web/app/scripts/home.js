@@ -24,7 +24,17 @@ angular.module('ANEXD')
         
 /*
         NEED TO WAIT UNTIL ALEX HAS DONE THE API FUNCTION FOR THIS
-        $scope.apps;    
+        $scope.apps = [
+           { 
+            'id': '',
+            'name': '',
+            'type': '',
+            'description': '',
+            'image': '',
+            'rating': [1,2,3],
+            }
+        ];  
+        
         var req = {
              method: 'POST',
              url: host + 'getAllGames',
@@ -121,7 +131,7 @@ angular.module('ANEXD')
         
         $scope.lobby = {
             max: '5',
-            nickname: false,
+            title: 'title'
         };
 
     	$scope.loadApp = function(app){
@@ -148,17 +158,26 @@ angular.module('ANEXD')
     	$scope.launchApp = function(){
     		$scope.showLobby = true;
             
+            
+            //game = $scope.app.name, //This will be the gameID when login stuff is done.
+            //'creator': LoginService.getUser(),
+            
+            var temp1 = Math.floor(Math.random() * 90 + 10);
+            var temp2 = Math.floor(Math.random() * 90 + 10);
+            
             var payload = {
-                'creator': LoginService.getUser(), 'pass': $scope.lobbyPassword,
-                'game': $scope.app.name,
-                'size': $scope.lobby.max, 
-                'nickname': $scope.lobby.nickname
+                'creator': temp1.toString(),
+                'pass': $scope.lobbyPassword.toString(),
+                'game': temp2.toString(),
+                'size': $scope.lobby.max,
+                'title': $scope.lobby.title,
             };
             
             var req = {
-                 method: 'POST',
-                 url: host + 'newLobby',
-                 data: payload,
+                method: 'POST',
+                url: host + 'newLobby',
+                headers: {'Content-Type': 'application/json'},
+                data: payload,
             };
             
             //POST For New Lobby
