@@ -66,7 +66,7 @@
 					        		<option>250</option>
 					        	</select>
 					        </div>
-				        	<input type="submit" value="Launch" class="login-submit" ng-click="launchApp(lobby)">
+				        	<input type="submit" value="Launch" class="login-submit" ng-disabled="isDisabled" ng-click="launchApp(lobby); disableButton()">
 				    	</form>
 				    </div>
 				    <div class="qr" ng-show="showLobby">

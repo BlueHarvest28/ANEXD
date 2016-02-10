@@ -145,26 +145,49 @@ angular.module('ANEXD')
             $timeout( function(){
                 $scope.showLobby = false;
             }, 1000);
+            
+            //Lobby Deletion Post
+            var payload = {
+                'creator': temp1.toString(),
+            };
+            var req = {
+                method: 'POST',
+                url: host + 'removeLobby',
+                headers: {'Content-Type': 'application/json'},
+                data: payload,
+            };
+            $http(req).then(function successCallback(response) {
+				console.log(response);
+            }, function errorCallback(response) {
+				console.log(response);
+            });
+            //End of Lobby Deletion Post
     	};
 
     	$scope.type = '';
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};
-
+        
+        //Lobby QR and password creation.
         $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
         $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPassword;
-
+        
+        //Disable multiple lobby submits
+        $scope.isDisabled = false;
+        $scope.disableButton = function() {
+            $scope.isDisabled = true;
+        }    
+        
+        //Called on lobby creation submit
     	$scope.launchApp = function(){
-    		$scope.showLobby = true;
-            
-            
+    		
             //game = $scope.app.name, //This will be the gameID when login stuff is done.
             //'creator': LoginService.getUser(),
-            
             var temp1 = Math.floor(Math.random() * 90 + 10);
             var temp2 = Math.floor(Math.random() * 90 + 10);
             
+            //Lobby Post
             var payload = {
                 'creator': temp1.toString(),
                 'pass': $scope.lobbyPassword.toString(),
@@ -172,20 +195,22 @@ angular.module('ANEXD')
                 'size': $scope.lobby.max,
                 'title': $scope.lobby.title,
             };
-            
+
             var req = {
                 method: 'POST',
                 url: host + 'newLobby',
                 headers: {'Content-Type': 'application/json'},
                 data: payload,
             };
-            
-            //POST For New Lobby
+
             $http(req).then(function successCallback(response) {
 				console.log(response);
+                $scope.showLobby = true;
+                $scope.isDisabled = false;
             }, function errorCallback(response) {
 				console.log(response);
-            });        
+            });
+            //End of Lobby Post
     	};
     }
 ])
