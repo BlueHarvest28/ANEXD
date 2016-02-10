@@ -13,8 +13,20 @@ angular.module('ANEXD')
         });
         
         $scope.anonUser = {
-			'nickname': ''
+			'nickname': '',
+            'pass': '',
 		};
+        /*
+        //READY AND SUBMIT DISABLES
+        $scope.readyIsDisabled = false;
+        $scope.disableReadyButton = function() {
+            $scope.readyIsDisabled = true;
+        }
+        $scope.submitIsDisabled = false;
+        $scope.disableSubtmitButton = function() {
+            $scope.submitIsDisabled = true;
+        }
+        */
 		
 		$scope.ready = false;
     	$scope.allowNicknames = true;	
@@ -25,39 +37,52 @@ angular.module('ANEXD')
 		$scope.goBack = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
-		};
-		
-		$scope.submitUser = function(){
-			$scope.showLobby = true;
-            
+            //AnonUser Deletion Post
             var req = {
-                 method: 'POST',
-                 url: host + 'userReady',
-                 data: $scope.anonUser
-            };            
-            
+                method: 'POST',
+                url: host + 'removeAnonUser',
+                headers: {'Content-Type': 'application/json'},
+                data: $scope.anonUser,
+            };
             $http(req).then(function successCallback(response) {
 				console.log(response);
             }, function errorCallback(response) {
 				console.log(response);
-            }); 
+            });
+            //End of AnonUser Deletion Post
+		};
+		
+		$scope.submitUser = function(){
+			$scope.showLobby = true; //Will move in the post
+            //AnonUser Submit Post
+            var req = {
+                method: 'POST',
+                url: host + 'newAnonUser',
+                headers: {'Content-Type': 'application/json'},
+                data: $scope.anonUser,
+            };
+            $http(req).then(function successCallback(response) {
+				console.log(response);
+            }, function errorCallback(response) {
+				console.log(response);
+            });
+            //End of AnonUser Submit Post
 		};
 		
 		$scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
-            
+            //AnonUser Ready Post
             var req = {
                  method: 'POST',
                  url: host + 'userReady',
                  data: {ready: true},
             };
-            
-            //POST For player ready
             $http(req).then(function successCallback(response) {
 				console.log(response);
             }, function errorCallback(response) {
 				console.log(response);
-            });        
+            });
+            //End of AnonUser Ready Post
 		};
 
 /*

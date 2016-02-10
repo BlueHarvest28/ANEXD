@@ -148,7 +148,7 @@ angular.module('ANEXD')
             
             //Lobby Deletion Post
             var payload = {
-                'creator': temp1.toString(),
+                'creator': '1', //The userid is in here
             };
             var req = {
                 method: 'POST',
