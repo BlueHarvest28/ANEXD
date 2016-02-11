@@ -179,7 +179,7 @@ angular.module('ANEXD')
         $scope.isDisabled = false;
         $scope.disableButton = function() {
             $scope.isDisabled = true;
-        };    
+        };
         
         //Called on lobby creation submit
     	$scope.launchApp = function(){

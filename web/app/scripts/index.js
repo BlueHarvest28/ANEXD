@@ -51,7 +51,6 @@ angular.module('ANEXD')
 					elm.modal('hide');
 				});
 			}
-
 		}
 	};
 });
