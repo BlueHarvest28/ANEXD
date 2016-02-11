@@ -5,8 +5,12 @@ angular.module('ANEXD')
 	'$scope',
     '$http',
     'SocketService',
-    function ($scope, $http, SocketService) 
+	'$routeParams',
+    function ($scope, $http, SocketService, $routeParams) 
     {			
+		if($routeParams.lobbyId){
+			$scope.id = parseInt($routeParams.lobbyId);
+		}
 		
         SocketService.on('message', function (message) {
         	console.log(message);

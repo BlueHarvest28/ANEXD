@@ -35,6 +35,10 @@ angular
 			templateUrl: (isMobile ) ? './views/mobile-home.html' : './views/home.html',
 			controller: (isMobile ) ? 'MobileHomeController' : 'HomeController'
 		})
+		.when('/:lobbyId', {
+			templateUrl: '/views/mobile-home.html',
+			controller: 'MobileHomeController'
+		})
 		.otherwise({
 			redirectTo: '/'
 		});
