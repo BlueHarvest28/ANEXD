@@ -8,9 +8,6 @@ angular.module('ANEXD')
 	'$routeParams',
     function ($scope, $http, SocketService, $routeParams) 
     {			
-		if($routeParams.lobbyId){
-			$scope.id = parseInt($routeParams.lobbyId);
-		}
 		
         $scope.ready = false;
     	$scope.allowNicknames = true;
@@ -24,6 +21,11 @@ angular.module('ANEXD')
 			'nickname': '',
             'lobbyId': '',
 		};
+		
+		if($routeParams.lobbyId){
+			$scope.anonUser.lobbyId = $routeParams.lobbyId;
+		}
+		
         /*
         //READY AND SUBMIT DISABLES
         $scope.readyIsDisabled = false;

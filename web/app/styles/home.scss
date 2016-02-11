@@ -27,14 +27,16 @@
 		position: relative;
 		transition: bottom 1s;
 		bottom: 0px;
+		opacity: 1;
 
 		&.ng-hide{
-			transition: bottom 1.5s 0.25s;
-			bottom: -100vh;
+			transition: bottom 1s 0.25s, opacity 0.25s 0.5s;
+			bottom: -35vh;
+			opacity: 0;
 		}
 
 		&.ng-hide-remove{
-			transition: bottom 1s 0.5s;
+			transition: bottom 0.5s 0.5s, opacity 0.5s;
 		}
 	}
 
