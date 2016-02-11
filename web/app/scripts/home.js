@@ -149,7 +149,7 @@ angular.module('ANEXD')
                 $scope.showLobby = false;
             }, 1000);
             
-            if($scope.lobbyDelFlag==true){
+            if($scope.lobbyDelFlag === true){
                 //Lobby Deletion Post
                 var payload = {
                     'creator': '1', //The userid is in here
@@ -179,7 +179,7 @@ angular.module('ANEXD')
         $scope.isDisabled = false;
         $scope.disableButton = function() {
             $scope.isDisabled = true;
-        }    
+        };
         
         //Called on lobby creation submit
     	$scope.launchApp = function(){

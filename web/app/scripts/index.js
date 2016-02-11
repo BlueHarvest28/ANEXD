@@ -36,7 +36,7 @@ angular.module('ANEXD')
 	
 		$scope.isMobile = $rootScope.isMobile;
 	}    
-])
+]);
 
 // .directive('hideOnSubmit', function(){
 // 	return{
