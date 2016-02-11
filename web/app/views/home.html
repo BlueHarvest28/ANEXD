@@ -47,14 +47,6 @@
 				 	<div class="inner" ng-class="{'show-lobby': showLobby}">
 				        <h2>{{app.name}}</h2>
 				        <form ng-class="{'show-lobby': showLobby}">
-                        
-                        <!-- -->
-                            <label for="title">Title:&nbsp;</label>   
-                            <div class="title-group">  
-                                <input class="title" class="title-input" ng-model="lobby.title" type="text"> 
-                            </div>
-                        <!-- -->
-                            
                             <div class="form-group">		
 				        		<label for="maxplayers">Max Players:&nbsp;</label>
 					          	<select class="form-control" ng-model="lobby.max" id="max-players">
@@ -73,7 +65,7 @@
 				    	<qr text="lobbyQR" ng-show="showLobby"></qr>
 				    </div>
 				    <div class="code" ng-show="showLobby">
-				    	<h3>harrymjones.com/anxed/{{lobbyPassword}}</h3>
+				    	<h3>harrymjones.com/anxed/{{lobbyCode}}</h3>
 				    </div>
 				</div>
 			</div>

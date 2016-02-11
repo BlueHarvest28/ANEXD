@@ -12,8 +12,7 @@ angular.module('ANEXD')
 		SocketService.on('message', function (message) {
         	console.log(message);
         });
-		
-        
+		        
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
@@ -24,8 +23,8 @@ angular.module('ANEXD')
         var host = 'http://api-anexd.rhcloud.com/';
         //Flag stops lobby deletion 
         $scope.lobbyDelFlag = false;
-        $scope.lobbyPassword = '';
         $scope.lobbyQR = '';
+        $scope.lobbyCode= '000000';
         
         /*
         NEED TO WAIT UNTIL ALEX HAS DONE THE API FUNCTION FOR THIS
@@ -134,7 +133,6 @@ angular.module('ANEXD')
         //Local lobby information
         $scope.lobby = {
             max: '5',
-            title: 'title'
         };
 
     	$scope.loadApp = function(app){
@@ -193,9 +191,9 @@ angular.module('ANEXD')
             var payload = {
                 'creator': temp1.toString(),    // Will be the id of the user - LoginService.getUser()
                 'game': temp2.toString(),       // Will be the id of the game - $scope.app.name, or something
-                'pass': $scope.lobbyPassword.toString(), //Will be removing
+                'pass': $scope.lobbyCode.toString(), //Will be removing
                 'size': $scope.lobby.max,
-                'title': $scope.lobby.title,
+                'title': 'will be removed', // will be removing
             };
 
             var req = {
