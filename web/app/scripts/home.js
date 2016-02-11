@@ -13,6 +13,7 @@ angular.module('ANEXD')
         	console.log(message);
         });
 		
+        
     	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
@@ -21,8 +22,12 @@ angular.module('ANEXD')
 		});
 	
         var host = 'http://api-anexd.rhcloud.com/';
+        //Flag stops lobby deletion 
+        $scope.lobbyDelFlag = false;
+        $scope.lobbyPassword = '';
+        $scope.lobbyQR = '';
         
-/*
+        /*
         NEED TO WAIT UNTIL ALEX HAS DONE THE API FUNCTION FOR THIS
         $scope.apps = [
            { 
@@ -78,7 +83,7 @@ angular.module('ANEXD')
     		},
     	];
         
-/*
+        /*
         $scope.users = [
             {
                 'id': '',
@@ -125,10 +130,8 @@ angular.module('ANEXD')
                 'ready': false,
             },
         ];
-
-        $scope.lobbyPassword = '';
-        $scope.lobbyQR = '';
         
+        //Local lobby information
         $scope.lobby = {
             max: '5',
             title: 'title'
@@ -146,32 +149,31 @@ angular.module('ANEXD')
                 $scope.showLobby = false;
             }, 1000);
             
-            //Lobby Deletion Post
-            var payload = {
-                'creator': '1', //The userid is in here
-            };
-            var req = {
-                method: 'POST',
-                url: host + 'removeLobby',
-                headers: {'Content-Type': 'application/json'},
-                data: payload,
-            };
-            $http(req).then(function successCallback(response) {
-				console.log(response);
-            }, function errorCallback(response) {
-				console.log(response);
-            });
-            //End of Lobby Deletion Post
+            if($scope.lobbyDelFlag==true){
+                //Lobby Deletion Post
+                var payload = {
+                    'creator': '1', //The userid is in here
+                };
+                var req = {
+                    method: 'POST',
+                    url: host + 'removeLobby',
+                    headers: {'Content-Type': 'application/json'},
+                    data: payload,
+                };
+                $http(req).then(function successCallback(response) {
+                    console.log(response);
+                }, function errorCallback(response) {
+                    console.log(response);
+                });
+                //End of Lobby Deletion Post
+                $scope.lobbyDelFlag = false;
+            }
     	};
 
     	$scope.type = '';
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};
-        
-        //Lobby QR and password creation.
-        $scope.lobbyPassword = Math.floor(Math.random()*90000) + 10000;
-        $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPassword;
         
         //Disable multiple lobby submits
         $scope.isDisabled = false;
@@ -181,17 +183,17 @@ angular.module('ANEXD')
         
         //Called on lobby creation submit
     	$scope.launchApp = function(){
-    		
-            //game = $scope.app.name, //This will be the gameID when login stuff is done.
-            //'creator': LoginService.getUser(),
+    		$scope.lobbyDelFlag = true;
+
+            //Tempory
             var temp1 = Math.floor(Math.random() * 90 + 10);
             var temp2 = Math.floor(Math.random() * 90 + 10);
             
             //Lobby Post
             var payload = {
-                'creator': temp1.toString(),
-                'pass': $scope.lobbyPassword.toString(),
-                'game': temp2.toString(),
+                'creator': temp1.toString(),    // Will be the id of the user - LoginService.getUser()
+                'game': temp2.toString(),       // Will be the id of the game - $scope.app.name, or something
+                'pass': $scope.lobbyPassword.toString(), //Will be removing
                 'size': $scope.lobby.max,
                 'title': $scope.lobby.title,
             };
@@ -203,11 +205,17 @@ angular.module('ANEXD')
                 data: payload,
             };
 
-            $http(req).then(function successCallback(response) {
+            $http(req).success(function successCallback(response) {
 				console.log(response);
                 $scope.showLobby = true;
                 $scope.isDisabled = false;
+                $scope.lobbyCode = response.id;
+                
+                //Lobby QR and password creation.
+                $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyCode;
+                
             }, function errorCallback(response) {
+                //show error and send again
 				console.log(response);
             });
             //End of Lobby Post

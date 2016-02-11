@@ -12,13 +12,17 @@ angular.module('ANEXD')
 			$scope.id = parseInt($routeParams.lobbyId);
 		}
 		
+        $scope.ready = false;
+    	$scope.allowNicknames = true;
+		$scope.showLobby = false;
+        var host = 'http://api-anexd.rhcloud.com/';
         SocketService.on('message', function (message) {
         	console.log(message);
         });
         
         $scope.anonUser = {
 			'nickname': '',
-            'pass': '',
+            'lobbyId': '',
 		};
         /*
         //READY AND SUBMIT DISABLES
@@ -31,13 +35,7 @@ angular.module('ANEXD')
             $scope.submitIsDisabled = true;
         }
         */
-		
-		$scope.ready = false;
-    	$scope.allowNicknames = true;	
-		$scope.showLobby = false;
-        
-        var host = 'http://api-anexd.rhcloud.com/';
-		
+			
 		$scope.goBack = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
@@ -61,7 +59,7 @@ angular.module('ANEXD')
             //AnonUser Submit Post
             var req = {
                 method: 'POST',
-                url: host + 'newAnonUser',
+                url: host + 'newAnonUsers',
                 headers: {'Content-Type': 'application/json'},
                 data: $scope.anonUser,
             };
