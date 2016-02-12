@@ -17,9 +17,12 @@ angular.module('ANEXD')
         	console.log(message);
         });
         
+        $scope.anonUserID = {
+            'userID': ''   
+        };
         $scope.anonUser = {
-			'nickname': '',
-            'lobbyId': '',
+			'username': '',
+            'lobby': '',
 		};
 		
 		if($routeParams.lobbyId){
@@ -41,15 +44,17 @@ angular.module('ANEXD')
 		$scope.goBack = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
+            
             //AnonUser Deletion Post
             var req = {
                 method: 'POST',
-                url: host + 'removeAnonUser',
+                url: host + 'delAnonUser',
                 headers: {'Content-Type': 'application/json'},
-                data: $scope.anonUser,
+                data: $scope.anonUserID,
             };
             $http(req).then(function successCallback(response) {
 				console.log(response);
+                
             }, function errorCallback(response) {
 				console.log(response);
             });
@@ -61,12 +66,13 @@ angular.module('ANEXD')
             //AnonUser Submit Post
             var req = {
                 method: 'POST',
-                url: host + 'newAnonUsers',
+                url: host + 'newAnonUser',
                 headers: {'Content-Type': 'application/json'},
                 data: $scope.anonUser,
             };
             $http(req).then(function successCallback(response) {
 				console.log(response);
+                $scope.anonUserID.userID = response.data.id;
             }, function errorCallback(response) {
 				console.log(response);
             });
