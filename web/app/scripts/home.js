@@ -25,17 +25,15 @@ angular.module('ANEXD')
         $scope.lobbyDelFlag = false;
         $scope.lobbyQR = '';
         $scope.lobbyCode= '000000';
+        $scope.type = '';
         
-        /*
-        NEED TO WAIT UNTIL ALEX HAS DONE THE API FUNCTION FOR THIS
         $scope.apps = [
            { 
-            'id': '',
             'name': '',
             'type': '',
             'description': '',
             'image': '',
-            'rating': [1,2,3],
+            'rating': '',
             }
         ];  
         
@@ -45,44 +43,19 @@ angular.module('ANEXD')
         };   
         
         //POST REQUEST for all games
-        $http(req).success(function(results)  {         
-            $scope.apps = results.data;
+        $http(req).then(function(response)  {
+            console.log(response);
+            $scope.apps = response.data;
+ 
+            for(var i = 0; i < $scope.apps.length; i++) {
+                var obj = $scope.apps[i];
+                $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
+            }
         });   
-*/
-        
-        //Will be removed when api is working
-    	$scope.apps = [
-    		{
-    			'name': 'The Satan Test',
-    			'type': 'Quiz',
-    			'description': 'Think you know Satan? Think Again in this exceptionally pagan quiz.',
-    			'image': 'images/satan-tile.png',
-    			'rating': [1,2,3],
-    		},
-    		{
-    			'name': 'The Satan Test 2',
-    			'type': 'Quiz',
-    			'description': 'MORE SATANIC GLORY FOR THE MASSES BOOYAKASHA. This is an unnecessarily long title, let\'s see if we can handle this one well',
-    			'image': 'images/satan-tile.png',
-    			'rating': [1,2,3,4],
-    		},
-    		{
-    			'name': 'The Satan Test 3',
-    			'type': 'Game',
-    			'description': 'Please stop requesting Satan quizzes.',
-    			'image': 'images/satan-tile.png',
-    			'rating': [1,2],
-    		},
-    		{
-    			'name': 'The Satan Test 4',
-    			'type': 'Game',
-    			'description': 'BACK BY UNPOPULAR DEMAND WE JUST REALLY NEEDED THE MONEY',
-    			'image': 'images/satan-tile.png',
-    			'rating': [1,2],
-    		},
-    	];
         
         /*
+        Socket for the lobby
+        
         $scope.users = [
             {
                 'id': '',
@@ -167,8 +140,7 @@ angular.module('ANEXD')
                 $scope.lobbyDelFlag = false;
             }
     	};
-
-    	$scope.type = '';
+          	
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};
@@ -189,11 +161,9 @@ angular.module('ANEXD')
             
             //Lobby Post
             var payload = {
-                'creator': temp1.toString(),    // Will be the id of the user - LoginService.getUser()
-                'game': temp2.toString(),       // Will be the id of the game - $scope.app.name, or something
-                'pass': $scope.lobbyCode.toString(), //Will be removing
+                'creator': temp1.toString(),
+                'game': temp2.toString(),
                 'size': $scope.lobby.max,
-                'title': 'will be removed', // will be removing
             };
 
             var req = {
@@ -203,15 +173,20 @@ angular.module('ANEXD')
                 data: payload,
             };
 
-            $http(req).success(function successCallback(response) {
-				console.log(response);
-                $scope.showLobby = true;
-                $scope.isDisabled = false;
-                $scope.lobbyCode = response.id;
-                
-                //Lobby QR and password creation.
-                $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyCode;
-                
+            $http(req).then(function(response) {
+                if(response.data.status === 'fail') {
+                    console.log(response);
+                    //Will add function for deleting the lobby
+                }
+                else {
+                    console.log(response);
+                    $scope.showLobby = true;
+                    $scope.isDisabled = false;
+                    //Get the lobbyCode
+                    $scope.lobbyCode = response.data.id;
+                    //Lobby QR and password creation.
+                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyCode;
+                }    
             }, function errorCallback(response) {
                 //show error and send again
 				console.log(response);

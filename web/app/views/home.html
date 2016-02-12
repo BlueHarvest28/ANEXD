@@ -96,7 +96,7 @@
 	    				<div class="app-tile-top">
 			    			<span class="type">{{app.type}}</span>
 			    			<span class="rating">
-			    				<i class="fa fa-star" ng-repeat="star in app.rating"></i>
+			    				<i class="fa fa-star" ng-repeat="star in app.rating track by $index"></i>
 		    				</span>
 		    			</div>
 		    			<div class="app-tile-bottom">
