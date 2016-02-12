@@ -24,8 +24,26 @@ angular.module('ANEXD')
         //Flag stops lobby deletion 
         $scope.lobbyDelFlag = false;
         $scope.lobbyQR = '';
-        $scope.lobbyCode= '000000';
+        $scope.lobbyId = '000000';
         $scope.type = '';
+        
+        function deleteLobby(){
+            //Lobby Deletion Post
+                var payload = {
+                    'lobbyID': $scope.lobbyId, //The userid is in here
+                };
+                var req = {
+                    method: 'POST',
+                    url: host + 'delLobby',
+                    headers: {'Content-Type': 'application/json'},
+                    data: payload,
+                };
+                $http(req).then(function successCallback(response) {
+                    console.log(response);
+                }, function errorCallback(response) {
+                    console.log(response);
+                });
+        }
         
         $scope.apps = [
            { 
@@ -121,21 +139,8 @@ angular.module('ANEXD')
             }, 1000);
             
             if($scope.lobbyDelFlag === true){
-                //Lobby Deletion Post
-                var payload = {
-                    'creator': '1', //The userid is in here
-                };
-                var req = {
-                    method: 'POST',
-                    url: host + 'removeLobby',
-                    headers: {'Content-Type': 'application/json'},
-                    data: payload,
-                };
-                $http(req).then(function successCallback(response) {
-                    console.log(response);
-                }, function errorCallback(response) {
-                    console.log(response);
-                });
+                deleteLobby();
+                
                 //End of Lobby Deletion Post
                 $scope.lobbyDelFlag = false;
             }
@@ -183,9 +188,9 @@ angular.module('ANEXD')
                     $scope.showLobby = true;
                     $scope.isDisabled = false;
                     //Get the lobbyCode
-                    $scope.lobbyCode = response.data.id;
+                    $scope.lobbyId = response.data.id;
                     //Lobby QR and password creation.
-                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyCode;
+                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyId;
                 }    
             }, function errorCallback(response) {
                 //show error and send again
