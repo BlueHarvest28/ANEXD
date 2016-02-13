@@ -19,7 +19,7 @@ type Anon_User struct {
 }
 
 //NOT TESTED
-func insertNewAnonUsers(w http.ResponseWriter, r *http.Request) {
+func newAnonUsers(w http.ResponseWriter, r *http.Request) {
 	var queryString string = "INSERT INTO Anon_User (username,lobby) VALUES (?,?)"
 
 	//Reading json from request
@@ -123,4 +123,39 @@ func getAnonUser(w http.ResponseWriter, r *http.Request) {
 	writeJsonResponse(response, w)
 	
 	log.Printf("/getLobby has been excuted sucessfully!")
+}
+
+func delAnonUser(w http.ResponseWriter, r *http.Request) {
+	var queryString string = "DELETE FROM Anon_User WHERE userID = ?"
+
+	//Reading json from request
+	params := requestDecode(r)
+	
+	var response string
+
+	result, err := db.Exec(queryString, params["userID"])
+	checkErr("Query Execute: ",err)
+		
+	// lastId, err := result.LastInsertId()
+	// checkErr("Getting LastInserted: ",err)
+	// log.Println(lastId)
+	
+	rowCnt, err := result.RowsAffected()
+	checkErr("Getting RowsAffected: ",err)
+	
+	if rowCnt == 1{
+		//correctly changed the user
+		response = jsonDeleted("Anon_User", params["userID"].(float64))
+	}else if rowCnt < 1{
+		//no change
+		response = jsonFail()
+	}else {
+		//more than one row changed
+		//SHOULDN'T HAPPEN BUT ...
+		//ROLLBACK!!!!!
+	}
+		
+	writeJsonResponse(response, w)
+	
+	log.Printf("/delAnonUser has been excuted sucessfully!")
 }

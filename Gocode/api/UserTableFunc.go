@@ -124,6 +124,49 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/getUser has been excuted sucessfully!")
 }
 
+func login(w http.ResponseWriter, r *http.Request) {
+	
+	params := requestDecode(r)
+	
+	var queryString string = "SELECT userID, username, email FROM User WHERE "
+
+	var required = []string{"email","password"}
+	args := requiredVariables(required, params, &queryString)
+
+	
+	var user User
+	var response string
+	
+	//check for any valid args
+	if len(args) == 0 { //isEmpty
+		response = jsonFail()
+		writeJsonResponse(response, w)
+		return
+	}
+	
+	err := db.QueryRow(queryString, args...).
+			  Scan(&user.UserID, &user.Username, &user.Email)
+	switch{
+		case err == sql.ErrNoRows:
+				response = `{`+
+					`"code" : 303, ` +
+					`"status" : "fail",` +
+					`"descript" : "user doesnt exist"` +
+				`}`
+		case err != nil:
+				log.Fatal("Query Execute: ",err)
+				panic(err)
+		default:
+				b, err := json.Marshal(user)
+				checkErr("Parsing data to json: ", err)	
+				response = string(b)
+    }
+			
+	writeJsonResponse(response, w)
+	
+	log.Printf("/login has been excuted sucessfully!")
+}
+
 func changeUserData(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	params := requestDecode(r)	

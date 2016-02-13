@@ -27,6 +27,32 @@ func jsonAdded(table string, id int64) (string){
 	return string(b)
 }
 
+func jsonAddedData(table string, data map[string]interface{}) (string){
+	var f = map[string]interface{}{
+		"code": 100,
+		"status": "sucess",
+		"descript": "Sucess! "+ table +" has been added",
+	}
+	for key, value := range data{
+		f[key] = value
+	}	
+	b, err := json.Marshal(f)
+	checkErr("Parsing data to json: ", err)
+	return string(b)
+}
+
+func jsonDeleted(table string, id float64) (string){
+	var f = map[string]interface{}{
+		"code": 100,
+		"status": "sucess",
+		"descript": "Sucess! "+ table +" has been deleted",
+		"id": id,
+	}
+	b, err := json.Marshal(f)
+	checkErr("Parsing data to json: ", err)
+	return string(b)
+}
+
 func jsonFail()(string){
 	return `{`+
 			`"code" : 303, `+

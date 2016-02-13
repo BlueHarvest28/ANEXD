@@ -29,18 +29,21 @@ package main
 // result.LastInsertId only works for inserts otherwise use rows affected.
 
 //.------:ToDo:------.
-// All quiers to do with backend??
-// /changeXXData needs to pass all inputs used into return
-// so the json response.
+// All quiers to do with backend??(James)
 //
 // + TOKEN'S need to be added to stop anyone using api
 // + ADD rollback to failed insert statments
 // + getLobby can return null if 2 fields dont match
 // + no checks if ID's from other tables exist
 // + change so all methods take map so can have custom vars so not username but user etc
+// + make it so users can only get information about lobbies, players related to them.
+// + del for all anon users by lobbyid
+// + /changeXXData needs to pass all inputs used into return
+// so the json response.
 //
 // + to make the insert check for username and email 
 // seperatly 2x queries will be needed
+// + make the random 6 digits password generator
 
 //.------:DONE:------.
 // - test()
@@ -61,11 +64,11 @@ package main
 //'------------------'
 
 //.------:CURRENT WORK:------.
-// IMP: if wrong credentials dont query
-// - newGame()
+// Token
 //
 // + MOSTLY DONE:: make json so not in string formats
 // + ADDING DELETE Lobbies, Anon etc.
+// + Update readme.md with del functions
 //'--------------------------'
 
 import (
@@ -75,6 +78,7 @@ import (
 	"database/sql"
 	"github.com/gorilla/mux"
 	//"os"
+	//"fmt"
 )
 
 //For adding new apis - see main()
@@ -164,26 +168,31 @@ func main() {
 	
 	err = db.Ping()
 	checkErr("Database connection check: ", err)
-	
+		
 	apis := []Api{		
 		Api{"GET", "/test", test},
 	
 		Api{"POST", "/newUser", newUser},
 		Api{"POST", "/getUser", getUser},
+		Api{"POST", "/login", login},
 		Api{"POST", "/changePassword", changeUserData},
 		Api{"POST", "/changeEmail", changeUserData},
 		Api{"POST", "/changeUserData", changeUserData},
 		
-		Api{"POST", "/newAnonUsers", insertNewAnonUsers},
+		Api{"POST", "/newAnonUser", newAnonUsers},
 		Api{"POST", "/getAnonUser", getAnonUser},
+		Api{"POST", "/delAnonUser", delAnonUser},
 		
 		Api{"POST", "/newLobby", newLobby},
 		Api{"POST", "/getLobby", getLobby},
-		Api{"POST", "/newLobbyPassword", changeLobbyData},
-		Api{"POST", "/newLobbyTitle", changeLobbyData},
+		Api{"POST", "/changeLobbyPassword", changeLobbyData},
+		Api{"POST", "/changeLobbySize", changeLobbyData},
+		Api{"POST", "/delLobby", delLobby},
 		
 		Api{"POST", "/newGame", newGame},
 		Api{"POST", "/changeGameData", changeGameData},
+		Api{"POST", "/getGame", getGame},
+		Api{"POST", "/getAllGames", getAllGames},
 	}
 	
 	

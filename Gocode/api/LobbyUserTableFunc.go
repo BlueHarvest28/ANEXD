@@ -6,6 +6,10 @@ import (
 	"encoding/json"
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
+	"math/rand"
+	"time"
+	"strings"
+	"strconv"
 )
 
 
@@ -15,7 +19,7 @@ import (
 
 type Lobby struct {
 	LobbyID int				 `json:"lobbyID"`
-	Title string			 `json:"title"`
+	// Title string			 `json:"title"`   deprecated
 	Creator int				 `json:"creator"`
 	Password sql.NullString  `json:"password"`
 	Game int 				 `json:"game"`
@@ -23,25 +27,44 @@ type Lobby struct {
 }
 
 func newLobby(w http.ResponseWriter, r *http.Request) {
-	var queryString string = "INSERT INTO Lobby (title,creator,game,size,password) VALUES (?,?,?,?,?)"
+	var queryString string = "INSERT INTO Lobby (creator,game,size,password) VALUES (?,?,?,?)"
 
 	//Reading json from request
 	params := requestDecode(r)
-	var required = []string{"title","creator","game","size","pass"}
+	var required = []string{"creator","game","size"}
 	args := requiredVariables(required, params, nil)
 
 	var response string
-
+	
 	//check for any valid args
-	if len(args) == len(required) { //isEmpty
+	if len(args) != len(required) { //isEmpty
 		response = jsonFail()
 		writeJsonResponse(response, w)
 		return
 	}
 	
+	var randNum = newRandStr()
+	
+	unqiueRnd := true
+	//Keep getting new rndNum till its doesn't exist
+	for unqiueRnd {
+		var queryRndStr string = "SELECT lobbyID FROM Lobby WHERE password = ?"
+		var lobbyID int
+		err := db.QueryRow(queryRndStr, randNum). Scan(&lobbyID)
+		if err == sql.ErrNoRows{
+			unqiueRnd = false
+		}else if err != nil{
+			checkErr("Query execute: ",err)
+		}else {
+			//gen new key
+			randNum = newRandStr()
+			log.Println("Needed New Rand")
+		}
+	}	
+	args = append(args, randNum)
+	
 	result, err := db.Exec(queryString, args...)
 	// checkErr("Query Execute: ",err)
-	
 	
 	if sqlError, ok := err.(*mysql.MySQLError); ok {
 		if sqlError.Number == 1062 {
@@ -51,16 +74,21 @@ func newLobby(w http.ResponseWriter, r *http.Request) {
 			checkErr("Query Execute: ",err)
 		}
 	}else{
+		var data = make(map[string]interface{})
+			
 		lastId, err := result.LastInsertId()
 		checkErr("Getting LastInserted: ",err)
 		log.Println(lastId)
+		data["id"] = lastId	
+		data["pass"] = randNum	
 		
 		rowCnt, err := result.RowsAffected()
 		checkErr("Getting RowsAffected: ",err)
 		
 		if rowCnt == 1{
 			//correctly changed the user
-			response = jsonAdded("Lobby", lastId)
+			// response = jsonAdded("Lobby", lastId)
+			response = jsonAddedData("Lobby", data)
 		}else if rowCnt < 1{
 			//no change
 			response = jsonFail()
@@ -83,7 +111,7 @@ func getLobby(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	params := requestDecode(r)
 	//technically can search on just size
-	args := requiredVariables([]string{"lobbyID","title","creator","game","size"}, params, &queryString)
+	args := requiredVariables([]string{"lobbyID","creator","game"}, params, &queryString)
 	
 	var response string
 	
@@ -109,7 +137,7 @@ func getLobby(w http.ResponseWriter, r *http.Request) {
 				var res []Lobby
 				for rows.Next() {
 					var lobby Lobby
-					err = rows.Scan(&lobby.LobbyID, &lobby.Title, &lobby.Creator, &lobby.Password, &lobby.Game, &lobby.Size)
+					err = rows.Scan(&lobby.LobbyID, &lobby.Creator, &lobby.Password, &lobby.Game, &lobby.Size)
 					checkErr("Row retrevial: ",err)
 					
 					res = append(res, lobby)
@@ -132,7 +160,8 @@ func changeLobbyData(w http.ResponseWriter, r *http.Request) {
 		
 	var changable = map[string]string{
 		"title": "title",
-		"pass": "password",
+		// "pass": "password",
+		"size": "size",
 	}
 	
 	var qVars []interface{}
@@ -199,4 +228,47 @@ func changeLobbyData(w http.ResponseWriter, r *http.Request) {
 	writeJsonResponse(response, w)
 	
 	log.Printf("/changeLobbyData has been excuted sucessfully!")
+}
+
+func delLobby(w http.ResponseWriter, r *http.Request) {
+	var queryString string = "DELETE FROM Lobby WHERE lobbyID = ?"
+
+	//Reading json from request
+	params := requestDecode(r)
+	
+	var response string
+
+	result, err := db.Exec(queryString, params["lobbyID"])
+	checkErr("Query Execute: ",err)
+		
+	// lastId, err := result.LastInsertId()
+	// checkErr("Getting LastInserted: ",err)
+	// log.Println(lastId)
+	
+	rowCnt, err := result.RowsAffected()
+	checkErr("Getting RowsAffected: ",err)
+	
+	if rowCnt == 1{
+		//correctly changed the user
+		response = jsonDeleted("Lobby", params["lobbyID"].(float64))
+	}else if rowCnt < 1{
+		//no change
+		response = jsonFail()
+	}else {
+		//more than one row changed
+		//SHOULDN'T HAPPEN BUT ...
+		//ROLLBACK!!!!!
+	}
+		
+	writeJsonResponse(response, w)
+	
+	log.Printf("/delLobby has been excuted sucessfully!")
+}
+
+func newRandStr() (string){
+	rand.NewSource(time.Now().UnixNano())
+	rndSize := 999999
+	rndInt := rand.Intn(rndSize)
+	intStr := strconv.Itoa(rndInt)
+	return strings.Repeat("0", 6-len(intStr)) + intStr
 }

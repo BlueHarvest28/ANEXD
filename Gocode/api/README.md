@@ -132,7 +132,7 @@ Payload
 ```
 Can be any combination of the following "lobbyID","title","creator" and "game"
 
-####/newLobbyPassword
+####/changeLobbyPassword
 Similar to /changePassword of User but for when users are required to enter a lobby password
 
 Payload
@@ -143,19 +143,7 @@ Payload
 }
 ```
 
-DEPRECATED
-####/newLobbyTitle
-To change the title of the lobby
-
-Payload
-```javascript
-{
-  "lobbyID": "xx",
-  "pass": "xx"
-}
-```
-
-####/newLobbySize
+####/changeLobbySize
 To change the size of the lobby so how many people it can hold
 
 Payload

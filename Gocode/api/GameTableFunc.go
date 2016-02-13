@@ -3,8 +3,8 @@ package main
 import (
     "log"
     "net/http"
-	//"encoding/json"
-	//"database/sql"
+	"encoding/json"
+	"database/sql"
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -12,6 +12,18 @@ import (
 //---------------------------------------------\\
 //            GAME TABLE FUNCTIONS             \\
 //---------------------------------------------\\
+
+type Game struct {
+	GameID  int				`json:"gameID, "`
+	CreatorID int			`json:"creatorID"`
+	Name string			 	`json:"name"`
+	Date_created string		`json:"date_created"`
+	Rating int  			`json:"rating"`
+	Type string				`json:"type"`
+	Description string		`json:"description"`
+	Image string			`json:"image"`
+}
+
 func newGame(w http.ResponseWriter, r *http.Request) {
 	var queryString string = "INSERT INTO Game (creatorID, name, date_created, rating, type, description, image) VALUES (?,?,NOW(),0,?,?,?)"
 	
@@ -26,8 +38,8 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 	
 	if sqlError, ok := err.(*mysql.MySQLError); ok {
 		if sqlError.Number == 1062 {
-			//user already exists			
-			response = jsonDupKey("User", sqlError.Message)			
+			//game already exists			
+			response = jsonDupKey("game", sqlError.Message)			
 		}else{
 			checkErr("Query Execute: ",err)
 		}
@@ -40,8 +52,8 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 		checkErr("Getting RowsAffected: ",err)
 		
 		if rowCnt == 1{
-			//correctly changed the user
-			response = jsonAdded("User", lastId)
+			//correctly changed the game
+			response = jsonAdded("game", lastId)
 		}else if rowCnt < 1{
 			//no change
 			response = jsonFail()
@@ -56,6 +68,78 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 	writeJsonResponse(response, w)
 	
 	log.Printf("/newGame has been excuted sucessfully!")
+}
+
+func getGame(w http.ResponseWriter, r *http.Request){
+	var queryString string = "SELECT * FROM Game WHERE "
+
+	//Reading json from request
+	params := requestDecode(r)
+	//technically can search on just size
+	args := requiredVariables([]string{"gameID", "creatorID", "name", "date_created", "rating", "type"}, params, &queryString)
+	
+	var response string
+	
+	//check for any valid args
+	if len(args) == 0 { //isEmpty
+		response = jsonFail()
+		writeJsonResponse(response, w)
+		return
+	}
+	
+	rows, err := db.Query(queryString, args...)
+	switch{
+		case err == sql.ErrNoRows:
+				response = `{`+
+					`"code" : 303, ` +
+					`"status" : "fail",` +
+					`"descript" : "Game doesnt exist"` +
+				`}`
+		case err != nil:
+				log.Fatal("Query Execute: ",err)
+				panic(err)
+		default:
+				var res []Game
+				for rows.Next() {
+					var game Game
+					
+					err = rows.Scan(&game.GameID, &game.CreatorID, &game.Name, &game.Date_created, &game.Rating, &game.Type, &game.Description, &game.Image)
+					checkErr("Row retrevial: ",err)
+					
+					res = append(res, game)
+				}	
+		
+				b, err := json.Marshal(res)
+				checkErr("Parsing data to json: ", err)	
+				response = string(b)
+    }
+	defer rows.Close()
+		
+	writeJsonResponse(response, w)
+	
+	log.Printf("/getGame has been excuted sucessfully!")
+}
+
+func getAllGames(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT * FROM Game")
+	checkErr("Query execute: ",err)
+	defer rows.Close()
+	
+	var res []Game
+	for rows.Next() {
+        var game Game
+		err = rows.Scan(&game.GameID, &game.CreatorID, &game.Name, &game.Date_created, &game.Rating, &game.Type, &game.Description, &game.Image)
+        checkErr("Row retrevial: ",err)
+		
+		res = append(res, game)
+    }
+	b, err := json.Marshal(res)
+	checkErr("Parsing data to json: ", err)	
+	
+	response := string(b)
+	writeJsonResponse(response, w)
+	
+	log.Printf("/getAllGameUsers has been excuted sucessfully!")
 }
 
 func changeGameData(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +200,7 @@ func changeGameData(w http.ResponseWriter, r *http.Request) {
 	checkErr("Getting RowsAffected: ",err)
 
 	if rowCnt == 1{
-		//correctly changed the user
+		//correctly changed the game
 		response = jsonChanged("Game Data was changed")
 	}else if rowCnt < 1{
 		//no change
