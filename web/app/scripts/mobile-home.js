@@ -12,11 +12,11 @@ angular.module('ANEXD')
         $scope.ready = false;
     	$scope.allowNicknames = true;
 		$scope.showLobby = false;
+        $scope.inputError = false;
         var host = 'http://api-anexd.rhcloud.com/';
         SocketService.on('message', function (message) {
         	console.log(message);
         });
-        
         $scope.anonUserID = {
             'userID': ''   
         };
@@ -24,23 +24,11 @@ angular.module('ANEXD')
 			'username': '',
             'lobby': '',
 		};
-		
 		if($routeParams.lobbyId){
 			$scope.anonUser.lobbyId = $routeParams.lobbyId;
 		}
-		
-        /*
-        //READY AND SUBMIT DISABLES
-        $scope.readyIsDisabled = false;
-        $scope.disableReadyButton = function() {
-            $scope.readyIsDisabled = true;
-        }
-        $scope.submitIsDisabled = false;
-        $scope.disableSubtmitButton = function() {
-            $scope.submitIsDisabled = true;
-        }
-        */
-			
+        
+        //Trigged on the back button from the lobby
 		$scope.goBack = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
@@ -60,9 +48,11 @@ angular.module('ANEXD')
             });
             //End of AnonUser Deletion Post
 		};
-		
+        
+        //Trigged by clicking submit
 		$scope.submitUser = function(){
-			$scope.showLobby = true; //Will move in the post
+            $scope.inputError = false;
+            
             //AnonUser Submit Post
             var req = {
                 method: 'POST',
@@ -73,13 +63,17 @@ angular.module('ANEXD')
             $http(req).then(function successCallback(response) {
 				console.log(response);
                 $scope.anonUserID.userID = response.data.id;
+                $scope.showLobby = true;
+                $scope.submitIsDisabled = false;
             }, function errorCallback(response) {
+                $scope.inputError = true;
 				console.log(response);
             });
             //End of AnonUser Submit Post
 		};
 		
-		$scope.toggleReady = function(){
+        //Trigged by clicking the ready submit
+        $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
             //AnonUser Ready Post
             var req = {
@@ -95,7 +89,7 @@ angular.module('ANEXD')
             //End of AnonUser Ready Post
 		};
 
-/*
+        /*
         $scope.users = [{
                 'id': '',
                 'nickname': '',

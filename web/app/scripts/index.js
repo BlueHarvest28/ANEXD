@@ -6,14 +6,17 @@ angular.module('ANEXD')
 	'$rootScope',
     '$timeout',
     'LoginService',
-    function ($scope, $rootScope, $timeout, LoginService) 
+    '$http',
+    function ($scope, $rootScope, $timeout, LoginService, $http) 
     {		
     	$scope.loggedIn = LoginService.isLoggedIn();
-    	
+        $scope.errorDisabled = false;
+        var host = 'http://api-anexd.rhcloud.com/';
+        
     	if($scope.loggedIn){
     		$scope.user = LoginService.getUser();
     	}
-
+        
     	$scope.login = function(email, password){
     		//Wait for the modal to animate out
     		$timeout( function(){
@@ -23,6 +26,45 @@ angular.module('ANEXD')
 	    		}
 	        }, 150);
     	};
+        
+        //Settings FRED WIP
+        $scope.update = function(data){
+            console.log(data);
+            $scope.errorDisabled = false;
+            
+            if(data.pass === data.rpass){
+                console.log('Password Changed');
+                //Hash here
+                //Want Alex to REMOVE password field
+                
+            /*
+                var payload = {
+                    "userID": "",
+                    "password": "",
+                    "newpass": ""
+                };
+                var req = {
+                    method: 'POST',
+                    url: host + 'changePassword',
+                    headers: {'Content-Type': 'application/json'},
+                    data: payload,
+                };
+                $http(req).then(function(response) {
+                    console.log(response);
+                }, function errorCallback(response) {
+                    console.log(response);
+                });
+            */
+  
+            } else {
+                console.log('Passwords do not Match');
+                $scope.errorDisabled = true;
+            }
+            
+            if(data.user !== '') {
+                console.log('Username Changed');
+            }
+        };
 
     	$scope.logout = function(){
     		//Wait for the modal to animate out

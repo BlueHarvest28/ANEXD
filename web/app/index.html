@@ -70,6 +70,23 @@
             <div class="account-info" ng-show="loggedIn">
               <h2>Hi, {{user}}!</h2>
               <br/>
+                
+                <!--S Settings WIP Fred S-->
+                <form class="updateInfoForm">
+                    <h4>Change Username:</h4>
+                    <input name="user" type="text" class="login-input" ng-model="data.user" />
+                    <h4>Change Password:</h4>
+                    <input name="pass" type="text" class="login-input" ng-model="data.pass" ng-change="reenterDisabled = true;"/>
+                    <h4>Retype Password:</h4>
+                    <input name="rpass" class="login-input" type="text" ng-model="data.rpass" />
+                    <div ng-show="errorDisabled">
+                        Error: Please Fix Inputs
+                    </div>
+                </form>
+                 <input type="submit" class="login-submit" value="Update" ng-click="update(data);">
+              <br/>
+                <!--E Settings WIP Fred E-->
+                
               <input type="submit" class="login-submit" value="Logout" ng-click="logout();">
             </div>
           </div>
