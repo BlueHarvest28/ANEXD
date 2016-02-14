@@ -6,11 +6,20 @@ import (
 	"encoding/json"
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
+	"crypto/md5"
+	"encoding/hex"
 )
 
 //---------------------------------------------\\
 //            USER TABLE FUNCTIONS             \\
 //---------------------------------------------\\
+
+
+// {
+    // "username":"salttest",
+    // "password":"test",
+    // "email": "test@test.test"
+// }
 
 type User struct {
 	UserID int		 `json:"userID"`
@@ -21,7 +30,7 @@ type User struct {
 //POST
 // example url:: localhost:3000/insertNewUser?username=xx&password=xx&email=xx
 func newUser(w http.ResponseWriter, r *http.Request) {
-	var queryString string = "INSERT INTO User (username,password,email) VALUES (?,?,?)"
+	var queryString string = "INSERT INTO User (username,password,email,passwordSalt) VALUES (?,?,?,?)"
 	
 	//Reading json from request
 	params := requestDecode(r)
@@ -36,6 +45,14 @@ func newUser(w http.ResponseWriter, r *http.Request) {
 		writeJsonResponse(response, w)
 		return
 	}	
+	
+	passwordSalt := RandStringRunes(8)
+	
+	hashed := md5.Sum([]byte(args[1].(string) + passwordSalt))
+	hashedVal:= hex.EncodeToString(hashed[:])
+	args[1] = hashedVal
+	
+	args = append(args, passwordSalt)
 	
 	result, err := db.Exec(queryString, args...)
 	// checkErr("Query Execute: ",err)
@@ -128,6 +145,26 @@ func login(w http.ResponseWriter, r *http.Request) {
 	
 	params := requestDecode(r)
 	
+	//Get salt 
+	var passSalt string
+	var querySaltString string = "SELECT passwordSalt FROM User WHERE email = ?"
+	err := db.QueryRow(querySaltString, params["email"]).Scan(&passSalt)
+	switch{
+		case err == sql.ErrNoRows:
+			res := jsonNtExist("User")
+			writeJsonResponse(res, w)
+			return
+		case err != nil:
+			log.Fatal("Query Execute: ",err)
+			panic(err)
+		default:
+			//make the hask	
+			hashed := md5.Sum([]byte(params["password"].(string) + passSalt))
+			hashedVal:= hex.EncodeToString(hashed[:])
+			params["password"] = hashedVal
+    }
+	
+	
 	var queryString string = "SELECT userID, username, email FROM User WHERE "
 
 	var required = []string{"email","password"}
@@ -144,15 +181,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	err := db.QueryRow(queryString, args...).
+	err = db.QueryRow(queryString, args...).
 			  Scan(&user.UserID, &user.Username, &user.Email)
 	switch{
 		case err == sql.ErrNoRows:
-				response = `{`+
-					`"code" : 303, ` +
-					`"status" : "fail",` +
-					`"descript" : "user doesnt exist"` +
-				`}`
+				response = jsonNtExist("User")
 		case err != nil:
 				log.Fatal("Query Execute: ",err)
 				panic(err)
@@ -239,4 +272,40 @@ func changeUserData(w http.ResponseWriter, r *http.Request) {
 	writeJsonResponse(response, w)
 	
 	log.Printf("/changeUserData has been excuted sucessfully!")
+}
+
+
+func delUser(w http.ResponseWriter, r *http.Request) {
+	var queryString string = "DELETE FROM User WHERE userID = ?"
+
+	//Reading json from request
+	params := requestDecode(r)
+	
+	var response string
+
+	result, err := db.Exec(queryString, params["userID"])
+	checkErr("Query Execute: ",err)
+		
+	// lastId, err := result.LastInsertId()
+	// checkErr("Getting LastInserted: ",err)
+	// log.Println(lastId)
+	
+	rowCnt, err := result.RowsAffected()
+	checkErr("Getting RowsAffected: ",err)
+	
+	if rowCnt == 1{
+		//correctly changed the user
+		response = jsonDeleted("User", params["userID"].(float64))
+	}else if rowCnt < 1{
+		//no change
+		response = jsonFail()
+	}else {
+		//more than one row changed
+		//SHOULDN'T HAPPEN BUT ...
+		//ROLLBACK!!!!!
+	}
+		
+	writeJsonResponse(response, w)
+	
+	log.Printf("/delAnonUser has been excuted sucessfully!")
 }

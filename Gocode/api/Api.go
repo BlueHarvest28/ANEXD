@@ -15,6 +15,7 @@ package main
 // FOREIGN KEY (game) REFERENCES Game(gameID) 
 //------------------------------------------------------------------------------//
 
+//Salting and hashing info https://crackstation.net/hashing-security.htm#salt
 
 //HTTP ERROR CODES
 //http://www.andrewhavens.com/posts/20/beginners-guide-to-creating-a-rest-api/
@@ -31,7 +32,6 @@ package main
 //.------:ToDo:------.
 // All quiers to do with backend??(James)
 //
-// + TOKEN'S need to be added to stop anyone using api
 // + ADD rollback to failed insert statments
 // + getLobby can return null if 2 fields dont match
 // + no checks if ID's from other tables exist
@@ -41,9 +41,9 @@ package main
 // + /changeXXData needs to pass all inputs used into return
 // so the json response.
 //
+// NOT SURE: 
 // + to make the insert check for username and email 
 // seperatly 2x queries will be needed
-// + make the random 6 digits password generator
 
 //.------:DONE:------.
 // - test()
@@ -52,22 +52,33 @@ package main
 // - getUser()
 // - changeEmail()
 // - changePassword()
+// - changeUserData()
+// - delUser()
+
 // - insertNewAnonUsers()
 // - getAnonUser()
+// - delAnonUser()
 
 // - newLobby()
 // - getLobby()
 // - newLobbyPassword()
 // - newLobbyTitle()
+// - delLobby()
 //
+// - newGame()
 // - changeGameData()
+// - getGame()
+// - getAllGames()
+//
+// + make the random 6 digits password generator
+// + added salt and pass hashing to backend
+// + ADDING DELETE Lobbies, Anon etc.
 //'------------------'
 
 //.------:CURRENT WORK:------.
-// Token
+// + TOKEN'S need to be added to stop anyone using api
 //
-// + MOSTLY DONE:: make json so not in string formats
-// + ADDING DELETE Lobbies, Anon etc.
+// + Might need DELETE user api
 // + Update readme.md with del functions
 //'--------------------------'
 
@@ -79,6 +90,8 @@ import (
 	"github.com/gorilla/mux"
 	//"os"
 	//"fmt"
+	"math/rand"
+	"time"
 )
 
 //For adding new apis - see main()
@@ -160,6 +173,10 @@ func requiredVariables(vars []string, params map[string]interface{}, qStr *strin
 	return args
 }
 
+func init(){
+	rand.Seed(time.Now().UnixNano())
+}
+
 func main() {
 	//Open database IMP:Doesnt open a connection
 	var err error
@@ -167,8 +184,8 @@ func main() {
 	checkErr("Database connection: ",err)
 	
 	err = db.Ping()
-	checkErr("Database connection check: ", err)
-		
+	checkErr("Database connection check: ", err)	
+	
 	apis := []Api{		
 		Api{"GET", "/test", test},
 	
@@ -178,6 +195,7 @@ func main() {
 		Api{"POST", "/changePassword", changeUserData},
 		Api{"POST", "/changeEmail", changeUserData},
 		Api{"POST", "/changeUserData", changeUserData},
+		Api{"POST", "/delUser", delUser},
 		
 		Api{"POST", "/newAnonUser", newAnonUsers},
 		Api{"POST", "/getAnonUser", getAnonUser},
@@ -233,4 +251,15 @@ func (s *MyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
     }
     // Lets Gorilla work
     s.r.ServeHTTP(rw, req)
+}
+
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+
+func RandStringRunes(n int) string {
+    b := make([]rune, n)
+    for i := range b {
+        b[i] = letterRunes[rand.Intn(len(letterRunes))]
+    }
+    return string(b)
 }

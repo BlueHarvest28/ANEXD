@@ -7,12 +7,15 @@ import (
 )
 
 func jsonDupKey(table string, message string) (string){
-	return `{`+
-				`"code" : 303, `+
-				`"status" : "fail",`+
-				`"descript" : "Fail! Duplicate Key ` + table + ` exists",`+
-				`"reason" : "` + message + `"` +
-			`}`
+	var f = map[string]interface{}{
+		"code": 303,
+		"status": "fail",
+		"descript": "Fail! Duplicate Key " + table + " exists",
+		"reason": message,
+	}
+	b, err := json.Marshal(f)
+	checkErr("Parsing data to json: ", err)
+	return string(b)
 }
 
 func jsonAdded(table string, id int64) (string){
@@ -54,19 +57,36 @@ func jsonDeleted(table string, id float64) (string){
 }
 
 func jsonFail()(string){
-	return `{`+
-			`"code" : 303, `+
-			`"status" : "fail",`+
-			`"descript" : "Fail! Information didn't match"`+
-			`}`
+	var f = map[string]interface{}{
+		"code": 303,
+		"status": "fail",
+		"descript": "Fail! Information didn't match",
+	}
+	b, err := json.Marshal(f)
+	checkErr("Parsing data to json: ", err)
+	return string(b)
 }
 
 func jsonChanged(table string)(string){
-	return `{` +
-			`"code" : 100, `+
-			`"status" : "sucess",`+
-			`"descript" : "Sucess! ` + table + ` has been changed"`+
-		`}`
+	var f = map[string]interface{}{
+		"code": 100,
+		"status": "sucess",
+		"descript": "Sucess! "+ table + " has been changed",
+	}
+	b, err := json.Marshal(f)
+	checkErr("Parsing data to json: ", err)
+	return string(b)
+}
+
+func jsonNtExist(table string) (string){
+	var f = map[string]interface{}{
+		"code": 303,
+		"status": "fail",
+		"descript": table + " doesnt exist",
+	}
+	b, err := json.Marshal(f)
+	checkErr("Parsing data to json: ", err)
+	return string(b)
 }
 
 //Setting header for response and adding data
