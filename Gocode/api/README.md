@@ -26,18 +26,31 @@ An incorrect attempt will return a fail response with reason why.
 
 ####/getUser
 
-This will be used for authorizing users that have already signed up. It can also be used for other means
+This can be used to search for users
 
 Payload for sign in should be as follows.
+```javascript
+{
+  "email" : "xx"
+}
+```
+or instead of email field username or userID may be used.
+
+For retreving a user can use any one or combination of the fields.
+
+####/login
+This will be used for authorizing users that have already signed up. 
+
+INPROGRESS: adding a session variable in the return.
+This would then be used as auth with other api 
+
+Payload for login should be as follows.
 ```javascript
 {
   "password": "xx",
   "email" : "xx"
 }
 ```
-or instead of email field username may be used.
-
-For retreving a user can use any one or combination of the fields.
 
 ####/changePassword
 
@@ -78,6 +91,16 @@ Payload "userID" and "password" are required
 ```
 Note: you can also have one or the other like /changeEmail or /changePassword
 
+####/delUser
+This will remove the user from the database
+
+Payload 
+```javascript
+{
+  "userID": "xx"
+}
+```
+
 ## Anon User queries
 
 ####/newAnonUser
@@ -103,6 +126,16 @@ Payload
 Can use "username", "userID" and "lobbyID"
 
 Note: using lobbyID will return all Anon users in that lobby.
+
+####/delAnonUser
+This will remove the anon user from the database
+
+Payload 
+```javascript
+{
+  "userID": "xx"
+}
+```
 
 ## Lobby table queries
 
@@ -154,6 +187,16 @@ Payload
 }
 ```
 
+####/delLobby
+This will remove the lobby from the database
+
+Payload 
+```javascript
+{
+  "lobbyID"
+}
+```
+
 ## Game table queries
 
 ####/newGame
@@ -194,7 +237,8 @@ Standard sucess message
   "descript": "Sucess! Lobby Data was changed has been changed"
 }
 ```
-may vary have id if used with create REST API
+may vary have id if used with create REST API if using a get query then
+will package in a data section.
 
 Fail message
 ```javascript
