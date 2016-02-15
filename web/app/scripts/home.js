@@ -21,12 +21,12 @@ angular.module('ANEXD')
 		});
 	
         var host = 'http://api-anexd.rhcloud.com/';
-        //Flag stops lobby deletion 
         $scope.lobbyDelFlag = false;
         $scope.lobbyQR = '';
         $scope.lobbyId = '000000';
         $scope.type = '';
         
+        //Called when the user closes a lobby
         function deleteLobby(){
             //Lobby Deletion Post
                 var payload = {
@@ -64,7 +64,6 @@ angular.module('ANEXD')
         $http(req).then(function(response)  {
             console.log(response);
             $scope.apps = response.data;
- 
             for(var i = 0; i < $scope.apps.length; i++) {
                 var obj = $scope.apps[i];
                 $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
@@ -159,15 +158,12 @@ angular.module('ANEXD')
         //Called on lobby creation submit
     	$scope.launchApp = function(){
     		$scope.lobbyDelFlag = true;
-
-            //Tempory
-            var temp1 = Math.floor(Math.random() * 90 + 10);
-            var temp2 = Math.floor(Math.random() * 90 + 10);
             
             //Lobby Post
+            //!!!TEMP NEEDS CHANGING WHEN USER CAN LOG IN!!!
             var payload = {
-                'creator': temp1.toString(),
-                'game': temp2.toString(),
+                'creator': '2',
+                'game': $scope.app.gameID,
                 'size': $scope.lobby.max,
             };
 
@@ -188,7 +184,7 @@ angular.module('ANEXD')
                     $scope.showLobby = true;
                     $scope.isDisabled = false;
                     //Get the lobbyCode
-                    $scope.lobbyId = response.data.id;
+                    $scope.lobbyId = response.data.pass;
                     //Lobby QR and password creation.
                     $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyId;
                 }    
