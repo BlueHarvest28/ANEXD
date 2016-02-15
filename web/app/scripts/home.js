@@ -23,6 +23,7 @@ angular.module('ANEXD')
         var host = 'http://api-anexd.rhcloud.com/';
         $scope.lobbyDelFlag = false;
         $scope.lobbyQR = '';
+        $scope.lobbyPass = '';
         $scope.lobbyId = '000000';
         $scope.type = '';
         
@@ -184,9 +185,10 @@ angular.module('ANEXD')
                     $scope.showLobby = true;
                     $scope.isDisabled = false;
                     //Get the lobbyCode
-                    $scope.lobbyId = response.data.pass;
+                    $scope.lobbyId = response.data.data.id;
+                    $scope.lobbyPass = response.data.data.pass;
                     //Lobby QR and password creation.
-                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyId;
+                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPass;
                 }    
             }, function errorCallback(response) {
                 //show error and send again
