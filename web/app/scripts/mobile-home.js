@@ -61,10 +61,18 @@ angular.module('ANEXD')
                 data: $scope.anonUser,
             };
             $http(req).then(function successCallback(response) {
-				console.log(response);
-                $scope.anonUserID.userID = response.data.id;
-                $scope.showLobby = true;
-                $scope.submitIsDisabled = false;
+                if(response.data.status === 'Fail') {
+                    console.log('Fail'); 
+                    console.log(response);
+                    //Will add function for deleting the lobby
+                }
+                else {
+                    console.log('Success'); 
+                    console.log(response);
+                    $scope.anonUserID.userID = response.data.id;
+                    $scope.showLobby = true;
+                    $scope.submitIsDisabled = false;
+                }
             }, function errorCallback(response) {
                 $scope.inputError = true;
 				console.log(response);

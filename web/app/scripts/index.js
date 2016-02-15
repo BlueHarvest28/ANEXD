@@ -68,6 +68,24 @@ angular.module('ANEXD')
             
             if(data.user !== '') {
                 console.log('Username Changed');
+               /* 
+                var payload = {
+                    "userID": "",
+                    "password": "",
+                    "newpass": ""
+                };
+                var req = {
+                    method: 'POST',
+                    url: host + 'changePassword',
+                    headers: {'Content-Type': 'application/json'},
+                    data: payload,
+                };
+                $http(req).then(function(response) {
+                    console.log(response);
+                }, function errorCallback(response) {
+                    console.log(response);
+                });
+                */
             }
         };
 
