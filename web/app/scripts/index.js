@@ -16,15 +16,20 @@ angular.module('ANEXD')
     	if($scope.loggedIn){
     		$scope.user = LoginService.getUser();
     	}
-        
-    	$scope.login = function(email, password){
-    		//Wait for the modal to animate out
-    		$timeout( function(){
-	            $scope.loggedIn = LoginService.login(email, password);
-	    		if($scope.loggedIn){
-	    			$scope.user = LoginService.getUser();
-	    		}
-	        }, 150);
+
+    	$scope.login = function(form){
+			if(form.$invalid){
+				$scope.shouldHide = false;	
+			} else {
+				$scope.shouldHide = true;
+				//Wait for the modal to animate out
+				$timeout( function(){
+					$scope.loggedIn = LoginService.login(form.email.$modelValue, form.password.$modelValue);
+					if($scope.loggedIn){
+						$scope.user = LoginService.getUser();
+					}
+				}, 150);	
+			}
     	};
         
         //Settings FRED WIP
@@ -66,7 +71,10 @@ angular.module('ANEXD')
             }
         };
 
+		$scope.shouldHide = true;
+		
     	$scope.logout = function(){
+			$scope.shouldHide = false;
     		//Wait for the modal to animate out
     		$timeout( function(){
 	            $scope.loggedIn = LoginService.logout();
@@ -80,19 +88,18 @@ angular.module('ANEXD')
 .directive('hideOnSubmit', function(){
 	return{
 		restrict: 'A',
-		link: function(scope, elm, attrs) {
-			console.log(attrs.shouldHide);
-			var shouldHide = attrs.shouldHide;
-			if(shouldHide){
-				console.log('panic');
-				return;
-			} else {
-				//in js, set variable for whether the form was successful or not 
-				//Put that variable into an html attribute, might have to wrap in {{variable name}}
-				$(elm).find('.login-submit').on('click', function() {
+		scope: {
+			shouldHide: '@'	
+		},
+		link: function(scope, elm) {
+			$(elm).find('.login-submit').on('click', function() {
+				if(scope.shouldHide === 'true'){
 					elm.modal('hide');
-				});
-			}
+				} else {
+					console.log('not hiding');
+					return;
+				}
+			});
 		}
 	};
 });

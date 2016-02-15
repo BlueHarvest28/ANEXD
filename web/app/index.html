@@ -41,7 +41,7 @@
       </div>
     </nav>
     <!-- Use to write error modal, function in index.js to call it afer any error and display erorr. -->
-    <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="shouldHide">
+    <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="{{shouldHide}}">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">       
@@ -64,7 +64,7 @@
                   <p ng-show="userForm.password.$error.minlength" class="help-block">Password is too short</p>
               </div>
                 <!-- Submit -->
-                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)">
+                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(userForm)">
                 <small><a href="">Forgotten your password?</a></small>
             </form>
             <div class="account-info" ng-show="loggedIn">
@@ -126,6 +126,7 @@
     <script src="scripts/app.js"></script>
     <script src="scripts/home.js"></script>
 	<script src="scripts/mobile-home.js"></script>
+	<script src="scripts/mobile-quiz.js"></script>
     <script src="scripts/index.js"></script>
     <!-- endbuild -->
 
