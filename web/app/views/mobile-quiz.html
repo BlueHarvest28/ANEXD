@@ -1,9 +1,9 @@
 <div class="quiz">
-	<h1>In which book is Satan first mentioned?</h1>
+	<h1>{{question.question}}</h1>
 	<div class="buttons">
-		<button>The Old Testament</button>
-		<button>The Old Testament V2</button>
-		<button>The Other Testament</button>
-		<button>War and Peace</button>
+		<button ng-repeat="answer in question.answers" 
+				ng-click="setAnswer(answer.id)" 
+				ng-disabled="selectedAnswer" 
+				ng-class="{disabled : selectedAnswer && selectedAnswer != answer.id}" >{{answer.text}}</button>
 	</div>
 </div>

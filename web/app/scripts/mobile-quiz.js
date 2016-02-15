@@ -5,8 +5,33 @@ angular.module('ANEXD')
 	'$scope',
     function ($scope) 
     {			
-		$scope.test = true;
-		console.log('mobile quiz test', $scope.test);
+		$scope.selectedAnswer = false;
+		
+		$scope.question = {
+			'question' : 'In which book is Satan first mentioned?',
+			'answers' : [
+				{
+					'id': 'a',
+					'text': 'The Old Testament',
+				},
+				{
+					'id': 'b',
+					'text': 'The Old Testament V2',
+				},
+				{
+					'id': 'c',
+					'text': 'The Other Testament',
+				},
+				{
+					'id': 'd',
+					'text': 'War and Peace',
+				}
+			]
+		};
+		
+		$scope.setAnswer = function(answer){
+			$scope.selectedAnswer = answer;	
+		};
     }
 ]);
 }());

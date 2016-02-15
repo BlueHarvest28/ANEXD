@@ -39,13 +39,13 @@ angular
 					templateUrl: (isMobile) ? '/views/mobile-home.html' : './views/home.html',
 					controller: (isMobile) ? 'MobileHomeController' : 'HomeController'
 				})
-				.when('/:lobbyId', {
-					templateUrl: '/views/mobile-home.html',
-					controller: 'MobileHomeController'
-				})
 				.when('/quiz', {
 					templateUrl: (isMobile) ? '/views/mobile-quiz.html' : './views/quiz.html',
 					controller: (isMobile) ? 'MobileQuizController' : 'QuizController'
+				})
+				.when('/:lobbyId', {
+					templateUrl: '/views/mobile-home.html',
+					controller: 'MobileHomeController'
 				})
 		.otherwise({
 			redirectTo: '/'
