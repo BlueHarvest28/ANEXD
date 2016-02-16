@@ -18,6 +18,7 @@ angular.module('ANEXD')
     	}
 
     	$scope.login = function(form){
+    		console.log(form.$invalid);
 			if(form.$invalid){
 				$scope.shouldHide = false;	
 			} else {
@@ -31,7 +32,22 @@ angular.module('ANEXD')
 				}, 150);	
 			}
     	}; 
-        
+
+        $scope.newEmail = false;
+        $scope.checkEmail = function(email){
+        	if(!email){
+        		return;
+        	}
+        	if(email === 'hj80@kent.ac.uk'){
+        		$scope.newEmail = false;
+        		console.log("I went to Lidls");
+        	} else{
+        		$scope.newEmail = true;
+        	}
+        	console.log(email);
+        };
+
+
         //Settings FRED WIP
         $scope.update = function(data){
             console.log(data);
