@@ -79,67 +79,62 @@ angular
 	var host = 'http://api-anexd.rhcloud.com/';
 	var user;
 	var loggedIn = false;
-	return {
-		login: function (email, password) {
-            // Creating password hashing using md5 
-			var passwordHash = md5.createHash(password);
 
-            var payload = {
-              'password': passwordHash,
-              'email' : email
-            };
-			var req = {
-				method: 'POST',
-				url: host + 'login',
-				headers: {'Content-Type': 'application/json'},
-				data: payload,
-			};
-			$http(req).then(function(response) {
-				if(response.data.status === 'Success'){
+	var login = function(email, password){
+		// Creating password hashing using md5 
+		var passwordHash = md5.createHash(password);
 
-				} 
-				else if(response.data.status === 'Fail'){
-
-				}
-				console.log(response);
-			}, function errorCallback(response) {
-				console.log(response);
-			});
-
-//			if (email === 'hj80@kent.ac.uk' && password === 'test') {
-//				user = 'Harry Jones';
-//				loggedIn = true;
-//				$cookies.put('userCookie', user);
-//			} else {
-//				loggedIn = false;
-//			}
-//			return loggedIn;
-		},
-		
-//		Mo@kent.com
-//		password: moa
-//		userID: 6
-//		encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
-
-		 logout: function () {
-			loggedIn = false;
-			user = undefined;
-			$cookies.remove('userCookie');
-			return loggedIn;
-		 },
-		isLoggedIn: function () {
-			var cookie = $cookies.get('userCookie');
-			if (cookie) {
-				user = cookie;
-				//console.log(user);
+		var payload = {
+		  'password': passwordHash,
+		  'email' : email
+		};
+		var req = {
+			method: 'POST',
+			url: host + 'login',
+			headers: {'Content-Type': 'application/json'},
+			data: payload,
+		};
+		return $http(req).then(function(response) {
+			if(response.data.status === 'Success'){
 				loggedIn = true;
-				//console.log(loggedIn);
+				$cookies.put('userCookie', email);
+				user = email;
+				return true;
+			} 
+			else if(response.data.status === 'Fail'){
+				return false;
 			}
-			return loggedIn;
-		},
-		getUser: function () {
-			return user;
+			console.log(response);
+		}, function errorCallback(response) {
+			console.log(response);
+		});
+	};
+	
+	var logout = function(){
+		loggedIn = false;
+		user = undefined;
+		$cookies.remove('userCookie');
+		return loggedIn;
+	};
+	
+	var isLoggedIn = function(){
+		var cookie = $cookies.get('userCookie');
+		if (cookie) {
+			user = cookie;
+			loggedIn = true;
 		}
+		return loggedIn;
+	};
+	
+	var getUser = function(){
+		return user;
+	};
+	
+	return { 
+		login: login,
+		logout: logout,
+		isLoggedIn: isLoggedIn,
+		getUser: getUser
 	};
 }])
 

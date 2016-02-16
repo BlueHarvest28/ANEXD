@@ -18,15 +18,17 @@ angular.module('ANEXD')
     	}
 
     	$scope.login = function(form){
-			console.log(form.$invalid);
-			$scope.shouldHide = false;
 			//Wait for the modal to animate out
-			$timeout( function(){
-				$scope.loggedIn = LoginService.login(form.email.$modelValue, form.password.$modelValue);
-				if($scope.loggedIn){
-					$scope.user = LoginService.getUser();
+			var loggedIn = LoginService.login(form.email.$modelValue, form.password.$modelValue);
+			loggedIn.then(function(result) {
+				if(result){
+					$scope.shouldHide = true;
+					$timeout( function(){
+						$scope.loggedIn = true;
+					}, 150);
+					$scope.user = LoginService.getUser();	
 				}
-			}, 150);	
+			});
     	}; 
 		
 		$scope.newEmail = false;
@@ -132,14 +134,19 @@ angular.module('ANEXD')
 			shouldHide: '@'	
 		},
 		link: function(scope, elm) {
-			$(elm).find('.login-submit').on('click', function() {
-				if(scope.shouldHide === 'true'){
+			scope.$watch('shouldHide', function(value){
+				if(value){
 					elm.modal('hide');
-				} else {
-					console.log('not hiding');
-					return;
 				}
 			});
+//			$(elm).find('.login-submit').on('click', function() {
+//				if(scope.shouldHide === 'true'){
+//					elm.modal('hide');
+//				} else {
+//					console.log('not hiding');
+//					return;
+//				}
+//			});
 		}
 	};
 })
