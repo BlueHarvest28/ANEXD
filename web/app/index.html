@@ -49,7 +49,7 @@
             <form name="userForm" ng-show="!loggedIn">
 
               <!-- Email/Username -->   
-              <div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
+              <div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }" >
                 <img class="email-icon" src="../images/icon-account-small.png"/>
                 <input placeholder="email" type="email" class="login-input" name="email" ng-model="email" ng-change="checkEmail(email)" ng-model-options="{debounce: 500}" required>      
                   <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Valid Email is required.</p>           
@@ -59,14 +59,14 @@
               <!-- Password -->
               <div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="password" type="password" class="login-input" name="password" ng-model="userForm.password" ng-minlength="3" required>
+                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" required>
                   <p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">Password is too short</p>
               </div>
 
               <!-- Repeat Password -->
               <div class="login-input-back password" ng-class="{ 'has-error' : userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine }" ng-show="newEmail">
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="Confirm password" type="password" class="login-input" name="repeatPassword" ng-model="user.repeatPassword" ng-minlength="3" ng-required="newEmail">
+                <input placeholder="confirm password" type="password" class="login-input" name="repeatPassword" ng-model="repeatPassword" ng-minlength="3" ng-required="newEmail" compare-to="password" should-validate="newEmail">
                   <p ng-show="userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine" class="help-block">Passwords don't match</p>
               </div>
 

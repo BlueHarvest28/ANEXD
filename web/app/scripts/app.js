@@ -80,6 +80,7 @@ angular
 		return {
 
 			login: function (email, password) {
+<<<<<<< HEAD
         if (email === 'hj80@kent.ac.uk' && password === 'test') {
           user = 'Harry Jones';
           loggedIn = true;
@@ -90,6 +91,18 @@ angular
         return loggedIn;
       },
 
+=======
+				if (email === 'hj80@kent.ac.uk' && password === 'test') {
+			 		user = 'Harry Jones';
+			 		loggedIn = true;
+			 		$cookies.put('userCookie', user);
+			 	} else {
+			 		loggedIn = false;
+			 	}
+			 	return loggedIn;
+			 },
+			
+>>>>>>> origin/master
     //Mo@kent.com
     //password: moa
     //userID: 6
@@ -112,37 +125,36 @@ angular
     // api resp
 
     // No Log-in
-    // if(request.status == "Fail"){
-    //   user = undefined;
-    //   console.log("yoututue");
-    //   loggedIn = false;
-    //   console.log("Get out!");
-    // }
-    // // Login 
-    // else if(request.status = "Success"){
-    //   loggedIn = true;
-    //   user = request.data.email;
-    //   $cookies.put('userCookie', user);
-    //   console.log(request.data.email + " : tooolllooloolol");
-    //   console.log("Come in for a cup of tea");
-    // }
-    // // Neither: No login and re login for now... Sign up will replace this
-    // else{
-    //   loggedIn = false;
-    //   user = undefined;
-    //   console.log(request.status + " : Searching for Charizard...");
-    // }
-    // return loggedIn;
-    // console.log(request.username + "ALAAALAAALAAALAAAALAAALLLAAA");
-    // },
+//    if(request.status == "Fail"){
+//      user = undefined;
+//      console.log("yoututue");
+//      loggedIn = false;
+//      console.log("Get out!");
+//    }
+//    // Login 
+//    else if(request.status = "Success"){
+//      loggedIn = true;
+//      user = request.data.email;
+//      $cookies.put('userCookie', user);
+//      console.log(request.data.email + " : tooolllooloolol");
+//      console.log("Come in for a cup of tea");
+//    }
+//    // Neither: No login and re login for now... Sign up will replace this
+//    else{
+//      loggedIn = false;
+//      user = undefined;
+//      console.log(request.status + " : Searching for Charizard...");
+//    }
+//    return loggedIn;
+//    console.log(request.username + "ALAAALAAALAAALAAAALAAALLLAAA");
+//    },
 
-				
-			logout: function () {
-				loggedIn = false;
-				user = undefined;
-				$cookies.remove('userCookie');
-				return loggedIn;
-			},
+			 logout: function () {
+			 	loggedIn = false;
+			 	user = undefined;
+			 	$cookies.remove('userCookie');
+			 	return loggedIn;
+			 },
 			isLoggedIn: function () {
 				var cookie = $cookies.get('userCookie');
 				if (cookie) {
