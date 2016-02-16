@@ -46,7 +46,7 @@
 					<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
 				 	<div class="inner" ng-class="{'show-lobby': showLobby}">
 				        <h2>{{app.name}}</h2>
-				        <form ng-class="{'show-lobby': showLobby}">
+				        <form ng-hide="showLobby" ng-class="{'show-lobby': showLobby}">
                             <div class="form-group">		
 				        		<label for="maxplayers">Max Players:&nbsp;</label>
 					          	<select class="form-control" ng-model="lobby.max" id="max-players">
@@ -58,7 +58,11 @@
 					        		<option>250</option>
 					        	</select>
 					        </div>
-				        	<input type="submit" value="Launch" class="login-submit" ng-disabled="isDisabled" ng-click="launchApp(lobby); disableButton()">
+							<i class="submit-spinner fa fa-refresh fa-spin" ng-show="isDisabled"/>
+				        	<input type="submit" ng-value="launchMessage" class="login-submit" 
+								   ng-class="{disabled: isDisabled}" 
+								   ng-disabled="isDisabled"
+								   ng-click="launchApp(lobby)">
 				    	</form>
 				    </div>
 				    <div class="qr" ng-show="showLobby">

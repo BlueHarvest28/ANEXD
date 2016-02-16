@@ -228,6 +228,20 @@ input{
     }
 }
 
+.disabled{
+	opacity: 0.5 !important;
+}
+
+.submit-spinner{
+	position: absolute;
+    color: white;
+    font-size: 22pt;
+    bottom: 10px;
+    right: 50%;
+	margin-right: -18px;
+	z-index: 2;
+}
+
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 100px #bcbdcc inset;
     color: #fff !important;

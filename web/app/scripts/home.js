@@ -8,7 +8,7 @@ angular.module('ANEXD')
     '$http',
 	'SocketService',
     function ($scope, $timeout, LoginService, $http, SocketService) 
-    {			
+    {					
 		SocketService.on('message', function (message) {
         	console.log(message);
         });
@@ -153,7 +153,10 @@ angular.module('ANEXD')
     	$scope.showIcons = function(){
     		$scope.hideIcons = false;
             //Wait for the windows to disappear before triggering transitions
-            $timeout( function(){
+            $scope.isDisabled = false;
+			$scope.launchMessage = "Launch";
+			
+			$timeout( function(){
                 $scope.showLobby = false;
             }, 1000);
             
@@ -168,15 +171,13 @@ angular.module('ANEXD')
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};
-        
-        //Disable multiple lobby submits
-        $scope.isDisabled = false;
-        $scope.disableButton = function() {
-            $scope.isDisabled = true;
-        };
-        
+
         //Called on lobby creation submit
+		$scope.launchMessage = "Launch";
+		$scope.isDisabled = false;
     	$scope.launchApp = function(){
+			$scope.isDisabled = true;
+			$scope.launchMessage = "";
     		$scope.lobbyDelFlag = true;
             
             //Lobby Post
@@ -204,12 +205,13 @@ angular.module('ANEXD')
                 else {
                     console.log(response);
                     $scope.showLobby = true;
-                    $scope.isDisabled = false;
                     //Get the lobbyCode
                     $scope.lobbyId = response.data.data.id;
                     $scope.lobbyPass = response.data.data.pass;
                     //Lobby QR and password creation.
                     $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPass;
+					$scope.isDisabled = false;
+					$scope.launchMessage = "Launch";
                 }    
             }, function errorCallback(response) {
                 //show error and send again
