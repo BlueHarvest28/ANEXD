@@ -65,17 +65,20 @@ angular.module('ANEXD')
                     console.log('Fail'); 
                     console.log(response);
                     //Will add function for deleting the lobby
+                    
                 }
                 else {
-                    console.log('Success'); 
+                    console.log('Success');
                     console.log(response);
-                    $scope.anonUserID.userID = response.data.id;
+                    $scope.anonUserID.userID = response.data.pass;
                     $scope.showLobby = true;
                     $scope.submitIsDisabled = false;
                 }
             }, function errorCallback(response) {
                 $scope.inputError = true;
 				console.log(response);
+                                
+            
             });
             //End of AnonUser Submit Post
 		};

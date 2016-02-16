@@ -46,6 +46,25 @@ angular.module('ANEXD')
                 });
         }
         
+        function getLobby(){
+            //The userid is in here
+            var payload = {
+                    'creator': 2,
+                };
+                var req = {
+                    method: 'POST',
+                    url: host + 'getLobby',
+                    headers: {'Content-Type': 'application/json'},
+                    data: payload,
+                };
+                $http(req).then(function successCallback(response) {
+                    console.log(response);
+                    $scope.lobbyId = response.data[1].password.string;
+                }, function errorCallback(response) {
+                    console.log(response);
+                });
+        }
+                
         $scope.apps = [
            { 
             'name': '',
@@ -176,8 +195,10 @@ angular.module('ANEXD')
             };
 
             $http(req).then(function(response) {
-                if(response.data.status === 'fail') {
+                if(response.data.status === 'Fail') {
                     console.log(response);
+                    getLobby();
+                    //deleteLobby();
                     //Will add function for deleting the lobby
                 }
                 else {
