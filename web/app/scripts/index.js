@@ -56,7 +56,6 @@ angular.module('ANEXD')
                 console.log(response);
             });
 
-			
 			// if(email === 'hj80@kent.ac.uk'){
 			// 	console.log('sweet');
 			// 	$scope.newEmail = false;
@@ -66,6 +65,8 @@ angular.module('ANEXD')
 			// }
 			// console.log(email);	
 		};
+		
+		
         
         //Settings FRED WIP
         $scope.update = function(data){
@@ -103,24 +104,22 @@ angular.module('ANEXD')
             
             if(data.user !== '') {
                 console.log('Username Changed');
-               /* 
-                var payload = {
-                    "userID": "",
-                    "password": "",
-                    "newpass": ""
-                };
-                var req = {
-                    method: 'POST',
-                    url: host + 'changePassword',
-                    headers: {'Content-Type': 'application/json'},
-                    data: payload,
-                };
-                $http(req).then(function(response) {
-                    console.log(response);
-                }, function errorCallback(response) {
-                    console.log(response);
-                });
-                */
+//               /* 
+//                var payload = {
+//                    "email": "",
+//                };
+//                var req = {
+//                    method: 'POST',
+//                    url: host + 'changePassword',
+//                    headers: {'Content-Type': 'application/json'},
+//                    data: payload,
+//                };
+//                $http(req).then(function(response) {
+//                    console.log(response);
+//                }, function errorCallback(response) {
+//                    console.log(response);
+//                });
+//                */
             }
         };
 
