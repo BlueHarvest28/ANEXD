@@ -154,7 +154,7 @@ angular.module('ANEXD')
     		$scope.hideIcons = false;
             //Wait for the windows to disappear before triggering transitions
             $scope.isDisabled = false;
-			$scope.launchMessage = "Launch";
+			$scope.launchMessage = 'Launch';
 			
 			$timeout( function(){
                 $scope.showLobby = false;
@@ -173,11 +173,11 @@ angular.module('ANEXD')
     	};
 
         //Called on lobby creation submit
-		$scope.launchMessage = "Launch";
+		$scope.launchMessage = 'Launch';
 		$scope.isDisabled = false;
     	$scope.launchApp = function(){
 			$scope.isDisabled = true;
-			$scope.launchMessage = "";
+			$scope.launchMessage = '';
     		$scope.lobbyDelFlag = true;
             
             //Lobby Post
@@ -211,7 +211,7 @@ angular.module('ANEXD')
                     //Lobby QR and password creation.
                     $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPass;
 					$scope.isDisabled = false;
-					$scope.launchMessage = "Launch";
+					$scope.launchMessage = 'Launch';
                 }    
             }, function errorCallback(response) {
                 //show error and send again

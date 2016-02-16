@@ -19,18 +19,14 @@ angular.module('ANEXD')
 
     	$scope.login = function(form){
 			console.log(form.$invalid);
-			if(form.$invalid){
-				$scope.shouldHide = false;	
-			} else {
-				$scope.shouldHide = true;
-				//Wait for the modal to animate out
-				$timeout( function(){
-					$scope.loggedIn = LoginService.login(form.email.$modelValue, form.password.$modelValue);
-					if($scope.loggedIn){
-						$scope.user = LoginService.getUser();
-					}
-				}, 150);	
-			}
+			$scope.shouldHide = false;
+			//Wait for the modal to animate out
+			$timeout( function(){
+				$scope.loggedIn = LoginService.login(form.email.$modelValue, form.password.$modelValue);
+				if($scope.loggedIn){
+					$scope.user = LoginService.getUser();
+				}
+			}, 150);	
     	}; 
 		
 		$scope.newEmail = false;
@@ -38,16 +34,37 @@ angular.module('ANEXD')
 			if(!email){
 				return;
 			}
+
+		var payload = {
+                'email' : email,
+            };
+            var req = {
+                method: 'POST',
+                url: host + 'getUser',
+                headers: {'Content-Type': 'application/json'},
+                data: payload,
+            };
+            $http(req).then(function(response) {
+            	if(response.data.status === 'Success'){
+            		$scope.newEmail = false;
+            	} 
+	            	else if(response.data.status === 'Fail'){
+	            		$scope.newEmail = true;
+	            	}
+                console.log(response);
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+
 			
-			if(email === 'hj80@kent.ac.uk'){
-				console.log('sweet');
-				$scope.newEmail = false;
-				//$scope.repeatPassword = '';
-			} else {
-				$scope.newEmail = true;
-			}
-			
-			console.log(email);	
+			// if(email === 'hj80@kent.ac.uk'){
+			// 	console.log('sweet');
+			// 	$scope.newEmail = false;
+			// 	//$scope.repeatPassword = '';
+			// } else {
+			// 	$scope.newEmail = true;
+			// }
+			// console.log(email);	
 		};
         
         //Settings FRED WIP
@@ -141,10 +158,10 @@ angular.module('ANEXD')
 })
 .directive('compareTo', function() {
 	return {
-        require: "ngModel",
+        require: 'ngModel',
         scope: {
-            comparitor: "=compareTo",
-			shouldValidate: "="
+            comparitor: '=compareTo',
+			shouldValidate: '='
         },
         link: function(scope, element, attributes, ngModel) {
             ngModel.$validators.compareTo = function(modelValue) {
@@ -155,7 +172,7 @@ angular.module('ANEXD')
 				}
             };
  
-            scope.$watch("comparitor", function() {
+            scope.$watch('comparitor', function() {
 				ngModel.$validate();	
             });
         }

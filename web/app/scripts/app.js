@@ -93,17 +93,6 @@ angular
     //password: moa
     //userID: 6
     //encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
-
-    // var request{
-    //   method: 'POST',
-    //             url: host + '/getUser',
-    //             headers: {
-    //               'Content-Type': 'application/json'
-    //             },
-    //             data: {
-    //               'email': email;     
-    //             }
-    //   }
       
     // get user 
     // if user exists, login api
