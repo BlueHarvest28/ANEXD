@@ -81,6 +81,7 @@ angular
 	var loggedIn = false;
 	return {
 		login: function (email, password) {
+            // Creating password hashing using md5 
 			var passwordHash = md5.createHash(password);
 
             var payload = {
