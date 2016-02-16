@@ -30,7 +30,7 @@ angular.module('ANEXD')
 					}
 				}, 150);	
 			}
-    	};
+    	}; 
         
         //Settings FRED WIP
         $scope.update = function(data){

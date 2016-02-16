@@ -27,7 +27,6 @@
     <!--[if lte IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -60,9 +59,13 @@
               <!-- Password -->
               <div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }" required>
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3">
+                <input placeholder="password" type="password" class="login-input" name="password" ng-model="user.password" ng-minlength="3">
                   <p ng-show="userForm.password.$error.minlength" class="help-block">Password is too short</p>
               </div>
+
+              <!-- Sign up form -->
+             <!--  <input placeholder="Confirm password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" compare-to="user.password"> -->
+
                 <!-- Submit -->
                 <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(userForm)">
                 <small><a href="">Forgotten your password?</a></small>
@@ -70,7 +73,6 @@
             <div class="account-info" ng-show="loggedIn">
               <h2>Hi, {{user}}!</h2>
               <br/>
-                
                 <!--S Settings WIP Fred S-->
                 
                     
@@ -85,7 +87,7 @@
                     </div>
                     
                     <div ng-show="errorDisabled">
-                        Error: Please Fix Inputs
+                      Error: Please Fix Inputs
                     </div>
                     
                 </form>

@@ -76,6 +76,7 @@ angular
 	.factory('LoginService', ['$cookies', function ($cookies) {
 		var user;
 		var loggedIn = false;
+    //scope.$watch::
 		return {
 
 			login: function (email, password) {
@@ -107,21 +108,68 @@ angular
 				                again password hashed.
 
 				*/
-				if (email === 'hj80@kent.ac.uk' && password === 'test') {
-					user = 'Harry Jones';
-					loggedIn = true;
-					$cookies.put('userCookie', user);
-				} else {
-					loggedIn = false;
-				}
-				return loggedIn;
-			},
-			logout: function () {
-				loggedIn = false;
-				user = undefined;
-				$cookies.remove('userCookie');
-				return loggedIn;
-			},
+
+    //Mo@kent.com
+    //password: moa
+    //userID: 6
+    //encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
+
+    // var request{
+    //   method: 'POST',
+    //             url: host + '/getUser',
+    //             headers: {
+    //               'Content-Type': 'application/json'
+    //             },
+    //             data: {
+    //               'email': email;     
+    //             }
+    //   }
+      
+    // get user 
+    // if user exists, login api
+    //if doenst exist create
+    // api resp
+
+    // No Log-in
+    if(request.status == "Fail"){
+      user = undefined;
+      console.log("yoututue");
+      loggedIn = false;
+      console.log("Get out!");
+    }
+    // Login 
+    else if(request.status = "Success"){
+      loggedIn = true;
+      user = request.data.email;
+      $cookies.put('userCookie', user);
+      console.log(request.data.email + " : tooolllooloolol");
+      console.log("Come in for a cup of tea");
+    }
+    // Neither: No login and re login for now... Sign up will replace this
+    else{
+      loggedIn = false;
+      user = undefined;
+      console.log(request.status + " : Searching for Charizard...");
+    }
+    return loggedIn;
+    console.log(request.username + "ALAAALAAALAAALAAAALAAALLLAAA");
+    },
+
+			// 	if (email === 'hj80@kent.ac.uk' && password === 'test') {
+			// 		user = 'Harry Jones';
+			// 		loggedIn = true;
+			// 		$cookies.put('userCookie', user);
+			// 	} else {
+			// 		loggedIn = false;
+			// 	}
+			// 	return loggedIn;
+			// },
+			// logout: function () {
+			// 	loggedIn = false;
+			// 	user = undefined;
+			// 	$cookies.remove('userCookie');
+			// 	return loggedIn;
+			// },
 			isLoggedIn: function () {
 				var cookie = $cookies.get('userCookie');
 				if (cookie) {
