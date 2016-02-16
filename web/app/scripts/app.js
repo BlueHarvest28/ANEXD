@@ -16,6 +16,7 @@ angular
 	'ngRoute',
 	'ngSanitize',
 	'ngTouch',
+    'angular-md5',
 	'ja.qr',
 	'btford.socket-io'
 ])
@@ -73,17 +74,19 @@ angular
 			});
 	}
 ])
-.factory('LoginService', ['$cookies', '$http', function ($cookies, $http) {
+
+.factory('LoginService', ['$cookies', '$http', 'md5', function ($cookies, $http, md5) {
 	var host = 'http://api-anexd.rhcloud.com/';
 	var user;
 	var loggedIn = false;
 	return {
 		login: function (email, password) {
+			var passwordHash = md5.createHash(password);
 
-			var payload = {
-				'password' : password,
-				'email' : email
-			};
+            var payload = {
+              'password': passwordHash,
+              'email' : email
+            };
 			var req = {
 				method: 'POST',
 				url: host + 'login',
@@ -102,49 +105,20 @@ angular
 				console.log(response);
 			});
 
-//				if (email === 'hj80@kent.ac.uk' && password === 'test') {
-//					user = 'Harry Jones';
-//					loggedIn = true;
-//					$cookies.put('userCookie', user);
-//				} else {
-//					loggedIn = false;
-//				}
-//				return loggedIn;
+//			if (email === 'hj80@kent.ac.uk' && password === 'test') {
+//				user = 'Harry Jones';
+//				loggedIn = true;
+//				$cookies.put('userCookie', user);
+//			} else {
+//				loggedIn = false;
+//			}
+//			return loggedIn;
 		},
-//Mo@kent.com
-//password: moa
-//userID: 6
-//encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
-
-// get user 
-// if user exists, login api
-//if doenst exist create
-// api resp
-
-// No Log-in
-//    if(request.status == "Fail"){
-//      user = undefined;
-//      console.log("yoututue");
-//      loggedIn = false;
-//      console.log("Get out!");
-//    }
-//    // Login 
-//    else if(request.status = "Success"){
-//      loggedIn = true;
-//      user = request.data.email;
-//      $cookies.put('userCookie', user);
-//      console.log(request.data.email + " : tooolllooloolol");
-//      console.log("Come in for a cup of tea");
-//    }
-//    // Neither: No login and re login for now... Sign up will replace this
-//    else{
-//      loggedIn = false;
-//      user = undefined;
-//      console.log(request.status + " : Searching for Charizard...");
-//    }
-//    return loggedIn;
-//    console.log(request.username + "ALAAALAAALAAALAAAALAAALLLAAA");
-//    },
+		
+//		Mo@kent.com
+//		password: moa
+//		userID: 6
+//		encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
 
 		 logout: function () {
 			loggedIn = false;

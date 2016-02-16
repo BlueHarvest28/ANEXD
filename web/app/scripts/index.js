@@ -47,10 +47,10 @@ angular.module('ANEXD')
             $http(req).then(function(response) {
             	if(response.data.status === 'Success'){
             		$scope.newEmail = false;
-            	} 
-				else if(response.data.status === 'Fail'){
-					$scope.newEmail = true;
-				}
+            	}
+            	else if(response.data.status === 'Fail'){
+            		$scope.newEmail = true;
+            	}
             }, function errorCallback(response) {
                 console.log(response);
             });
