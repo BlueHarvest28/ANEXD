@@ -49,25 +49,29 @@
             <form name="userForm" ng-show="!loggedIn">
 
               <!-- Email/Username -->   
-              <div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }" required>
+              <div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }" >
                 <img class="email-icon" src="../images/icon-account-small.png"/>
-                <input placeholder="email" type="email" class="login-input" name="email" ng-model="email">      
+                <input placeholder="email" type="email" class="login-input" name="email" ng-model="email" ng-change="checkEmail(email)" ng-model-options="{debounce: 500}" required>      
                   <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Valid Email is required.</p>           
                   <!--  invalid: {{userForm.email.$invalid}}/ valid: {{userForm.email.$valid}}/ dirty: {{userForm.email.$dirty}}/ Pristine: {{userForm.email.$pristine}} -->
               </div>
 
               <!-- Password -->
-              <div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }" required>
+              <div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
                 <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="password" type="password" class="login-input" name="password" ng-model="user.password" ng-minlength="3">
-                  <p ng-show="userForm.password.$error.minlength" class="help-block">Password is too short</p>
+                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" required>
+                  <p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">Password is too short</p>
               </div>
 
-              <!-- Sign up form -->
-             <!--  <input placeholder="Confirm password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" compare-to="user.password"> -->
+              <!-- Repeat Password -->
+              <div class="login-input-back password" ng-class="{ 'has-error' : userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine }" ng-show="newEmail">
+                <img class="password-icon" src="../images/icon-password.png"/>
+                <input placeholder="confirm password" type="password" class="login-input" name="repeatPassword" ng-model="repeatPassword" ng-minlength="3" ng-required="newEmail" compare-to="password" should-validate="newEmail">
+                  <p ng-show="userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine" class="help-block">Passwords don't match</p>
+              </div>
 
                 <!-- Submit -->
-                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(userForm)">
+                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(userForm)" ng-disabled="userForm.$invalid">
                 <small><a href="">Forgotten your password?</a></small>
             </form>
             <div class="account-info" ng-show="loggedIn">

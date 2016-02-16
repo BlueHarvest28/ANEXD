@@ -18,6 +18,7 @@ angular.module('ANEXD')
     	}
 
     	$scope.login = function(form){
+			console.log(form.$invalid);
 			if(form.$invalid){
 				$scope.shouldHide = false;	
 			} else {
@@ -31,6 +32,22 @@ angular.module('ANEXD')
 				}, 150);	
 			}
     	}; 
+		
+		$scope.newEmail = false;
+		$scope.checkEmail = function(email){
+			if(!email){
+				return;
+			}
+			
+			if(email === 'hj80@kent.ac.uk'){
+				console.log('sweet');
+				$scope.newEmail = false;
+			} else {
+				$scope.newEmail = true;
+			}
+			
+			console.log(email);	
+		};
         
         //Settings FRED WIP
         $scope.update = function(data){
@@ -120,5 +137,26 @@ angular.module('ANEXD')
 			});
 		}
 	};
+})
+.directive('compareTo', function() {
+	return {
+        require: "ngModel",
+        scope: {
+            comparitor: "=compareTo",
+			shouldValidate: "="
+        },
+        link: function(scope, element, attributes, ngModel) {
+            ngModel.$validators.compareTo = function(modelValue) {
+                return modelValue === scope.comparitor;
+            };
+ 
+            scope.$watch("comparitor", function() {
+				console.log(scope.shouldValidate);
+				if(scope.shouldValidate){
+					ngModel.$validate();	
+				}
+            });
+        }
+    };
 });
 }());
