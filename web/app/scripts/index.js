@@ -42,6 +42,7 @@ angular.module('ANEXD')
 			if(email === 'hj80@kent.ac.uk'){
 				console.log('sweet');
 				$scope.newEmail = false;
+				//$scope.repeatPassword = '';
 			} else {
 				$scope.newEmail = true;
 			}
@@ -147,14 +148,15 @@ angular.module('ANEXD')
         },
         link: function(scope, element, attributes, ngModel) {
             ngModel.$validators.compareTo = function(modelValue) {
-                return modelValue === scope.comparitor;
+                if(scope.shouldValidate){
+					return modelValue === scope.comparitor;
+				} else {
+					return true;
+				}
             };
  
             scope.$watch("comparitor", function() {
-				console.log(scope.shouldValidate);
-				if(scope.shouldValidate){
-					ngModel.$validate();	
-				}
+				ngModel.$validate();	
             });
         }
     };
