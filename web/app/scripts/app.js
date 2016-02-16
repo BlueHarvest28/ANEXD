@@ -73,33 +73,55 @@ angular
 			});
 	}
 ])
-	.factory('LoginService', ['$cookies', function ($cookies) {
-		var user;
-		var loggedIn = false;
-    //scope.$watch::
-		return {
+.factory('LoginService', ['$cookies', '$http', function ($cookies, $http) {
+	var host = 'http://api-anexd.rhcloud.com/';
+	var user;
+	var loggedIn = false;
+	return {
+		login: function (email, password) {
 
-			login: function (email, password) {
-				if (email === 'hj80@kent.ac.uk' && password === 'test') {
-			 		user = 'Harry Jones';
-			 		loggedIn = true;
-			 		$cookies.put('userCookie', user);
-			 	} else {
-			 		loggedIn = false;
-			 	}
-			 	return loggedIn;
-			 },
-    //Mo@kent.com
-    //password: moa
-    //userID: 6
-    //encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
-      
-    // get user 
-    // if user exists, login api
-    //if doenst exist create
-    // api resp
+			var payload = {
+				'password' : password,
+				'email' : email
+			};
+			var req = {
+				method: 'POST',
+				url: host + 'login',
+				headers: {'Content-Type': 'application/json'},
+				data: payload,
+			};
+			$http(req).then(function(response) {
+				if(response.data.status === 'Success'){
 
-    // No Log-in
+				} 
+				else if(response.data.status === 'Fail'){
+
+				}
+				console.log(response);
+			}, function errorCallback(response) {
+				console.log(response);
+			});
+
+//				if (email === 'hj80@kent.ac.uk' && password === 'test') {
+//					user = 'Harry Jones';
+//					loggedIn = true;
+//					$cookies.put('userCookie', user);
+//				} else {
+//					loggedIn = false;
+//				}
+//				return loggedIn;
+		},
+//Mo@kent.com
+//password: moa
+//userID: 6
+//encrypted: "5f4dcc3b5aa765d61d8327deb882cf99"
+
+// get user 
+// if user exists, login api
+//if doenst exist create
+// api resp
+
+// No Log-in
 //    if(request.status == "Fail"){
 //      user = undefined;
 //      console.log("yoututue");
@@ -124,26 +146,26 @@ angular
 //    console.log(request.username + "ALAAALAAALAAALAAAALAAALLLAAA");
 //    },
 
-			 logout: function () {
-			 	loggedIn = false;
-			 	user = undefined;
-			 	$cookies.remove('userCookie');
-			 	return loggedIn;
-			 },
-			isLoggedIn: function () {
-				var cookie = $cookies.get('userCookie');
-				if (cookie) {
-					user = cookie;
-					//console.log(user);
-					loggedIn = true;
-					//console.log(loggedIn);
-				}
-				return loggedIn;
-			},
-			getUser: function () {
-				return user;
+		 logout: function () {
+			loggedIn = false;
+			user = undefined;
+			$cookies.remove('userCookie');
+			return loggedIn;
+		 },
+		isLoggedIn: function () {
+			var cookie = $cookies.get('userCookie');
+			if (cookie) {
+				user = cookie;
+				//console.log(user);
+				loggedIn = true;
+				//console.log(loggedIn);
 			}
-		};
+			return loggedIn;
+		},
+		getUser: function () {
+			return user;
+		}
+	};
 }])
 
 .factory('SocketService', function (socketFactory) {

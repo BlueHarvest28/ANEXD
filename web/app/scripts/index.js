@@ -35,7 +35,7 @@ angular.module('ANEXD')
 				return;
 			}
 
-		var payload = {
+			var payload = {
                 'email' : email,
             };
             var req = {
@@ -48,25 +48,13 @@ angular.module('ANEXD')
             	if(response.data.status === 'Success'){
             		$scope.newEmail = false;
             	} 
-	            	else if(response.data.status === 'Fail'){
-	            		$scope.newEmail = true;
-	            	}
-                console.log(response);
+				else if(response.data.status === 'Fail'){
+					$scope.newEmail = true;
+				}
             }, function errorCallback(response) {
                 console.log(response);
             });
-
-			// if(email === 'hj80@kent.ac.uk'){
-			// 	console.log('sweet');
-			// 	$scope.newEmail = false;
-			// 	//$scope.repeatPassword = '';
-			// } else {
-			// 	$scope.newEmail = true;
-			// }
-			// console.log(email);	
 		};
-		
-		
         
         //Settings FRED WIP
         $scope.update = function(data){
