@@ -16,6 +16,7 @@ angular
 	'ngRoute',
 	'ngSanitize',
 	'ngTouch',
+    'angular-md5',
 	'ja.qr',
 	'btford.socket-io'
 ])
@@ -73,22 +74,43 @@ angular
 			});
 	}
 ])
-	.factory('LoginService', ['$cookies', function ($cookies) {
-		var user;
-		var loggedIn = false;
-    //scope.$watch::
-		return {
+.factory('LoginService', ['$cookies', '$http', 'md5', function ($cookies, $http, md5) {
+	var user;
+	var loggedIn = false;
+    var host = 'http://api-anexd.rhcloud.com/';
+	return {
+		login: function (email, password) {
+            var passwordHash = md5.createHash(password);
 
-			login: function (email, password) {
-				if (email === 'hj80@kent.ac.uk' && password === 'test') {
-			 		user = 'Harry Jones';
-			 		loggedIn = true;
-			 		$cookies.put('userCookie', user);
-			 	} else {
-			 		loggedIn = false;
-			 	}
-			 	return loggedIn;
-			 },
+            var payload = {
+              'password': passwordHash,
+              'email' : email
+            };
+            var req = {
+                method: 'POST',
+                url: host + 'login',
+                headers: {'Content-Type': 'application/json'},
+                data: payload,
+            };
+            $http(req).then(function(response) {
+              if(response.data.status === 'Success'){
+              } 
+              else if(response.data.status === 'Fail'){
+              }
+               console.log(response);
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+    
+			 // if (email === 'hj80@kent.ac.uk' && password === 'test') {
+			 // 		user = 'Harry Jones';
+			 // 		loggedIn = true;
+			 // 		$cookies.put('userCookie', user);
+			 // 	} else {
+			 // 		loggedIn = false;
+			 // 	}
+			 // 	return loggedIn;
+		},
     //Mo@kent.com
     //password: moa
     //userID: 6
@@ -97,6 +119,8 @@ angular
     // get user 
     // if user exists, login api
     //if doenst exist create
+
+
     // api resp
 
     // No Log-in
