@@ -77,7 +77,6 @@ angular
 
 .factory('LoginService', ['$cookies', '$http', 'md5', function ($cookies, $http, md5) {
 	var host = 'http://api-anexd.rhcloud.com/';
-	var user;
 	var loggedIn = false;
 
 	var login = function(email, password){
@@ -97,8 +96,9 @@ angular
 		return $http(req).then(function(response) {
 			if(response.data.status === 'Success'){
 				loggedIn = true;
-				$cookies.put('userCookie', email);
-				user = email;
+				console.log(response.data.data);
+				$cookies.put('userEmail', response.data.data.email);
+				$cookies.put('userID', response.data.data.userID);
 				return true;
 			} 
 			else if(response.data.status === 'Fail'){
@@ -111,22 +111,20 @@ angular
 	
 	var logout = function(){
 		loggedIn = false;
-		user = undefined;
 		$cookies.remove('userCookie');
 		return loggedIn;
 	};
 	
 	var isLoggedIn = function(){
-		var cookie = $cookies.get('userCookie');
+		var cookie = $cookies.get('userEmail');
 		if (cookie) {
-			user = cookie;
 			loggedIn = true;
 		}
 		return loggedIn;
 	};
 	
 	var getUser = function(){
-		return user;
+		return $cookies.get('userEmail');
 	};
 	
 	var createUser = function(email, password){
@@ -146,8 +144,10 @@ angular
 		return $http(req).then(function(response) {
 			if(response.data.status === 'Success'){
 				loggedIn = true;
-				$cookies.put('userCookie', email);
-				user = email;
+				console.log(response.data.email);
+				$cookies.put('userEmail', response.data.email);
+				$cookies.put('userID', response.data.userID);
+				user = response.data.email;
 				return true;
 			}
 			else if(response.data.status === 'Fail'){
@@ -160,12 +160,17 @@ angular
 		});
 	};
 	
+	var getUserId = function(){
+		return $cookies.get('userID');
+	};
+	
 	return { 
 		login: login,
 		logout: logout,
 		isLoggedIn: isLoggedIn,
 		getUser: getUser,
-		createUser: createUser
+		createUser: createUser,
+		getUserId : getUserId
 	};
 }])
 

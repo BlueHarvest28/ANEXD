@@ -46,24 +46,28 @@ angular.module('ANEXD')
                 });
         }
         
-        function getLobby(){
+        $scope.getLobby = function(){
             //The userid is in here
             var payload = {
-                    'creator': 2,
-                };
-                var req = {
-                    method: 'POST',
-                    url: host + 'getLobby',
-                    headers: {'Content-Type': 'application/json'},
-                    data: payload,
-                };
-                $http(req).then(function successCallback(response) {
-                    console.log(response);
-                    $scope.lobbyId = response.data[1].password.string;
-                }, function errorCallback(response) {
-                    console.log(response);
-                });
-        }
+				'creator': LoginService.getUserId(),
+			};
+			var req = {
+				method: 'POST',
+				url: host + 'getLobby',
+				headers: {'Content-Type': 'application/json'},
+				data: payload,
+			};
+			$http(req).then(function successCallback(response) {
+				console.log(response);
+				if(response.data.status === 'Success'){
+					$scope.lobbyId = response.data[0].password.string;	
+				} else {
+					$scope.launchApp();
+				}
+			}, function errorCallback(response) {
+				console.log(response);
+			});
+        };
                 
         $scope.apps = [
            { 
@@ -183,7 +187,7 @@ angular.module('ANEXD')
             //Lobby Post
             //!!!TEMP NEEDS CHANGING WHEN USER CAN LOG IN!!!
             var payload = {
-                'creator': '2',
+                'creator': LoginService.getUserId(),
                 'game': $scope.app.gameID,
                 'size': $scope.lobby.max,
             };
@@ -198,7 +202,7 @@ angular.module('ANEXD')
             $http(req).then(function(response) {
                 if(response.data.status === 'Fail') {
                     console.log(response);
-                    getLobby();
+                    //getLobby();
                     //deleteLobby();
                     //Will add function for deleting the lobby
                 }
