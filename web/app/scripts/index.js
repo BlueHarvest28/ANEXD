@@ -11,6 +11,7 @@ angular.module('ANEXD')
     {		
     	$scope.loggedIn = LoginService.isLoggedIn();
         $scope.errorDisabled = false;
+		$scope.shouldHide = true;
         var host = 'http://api-anexd.rhcloud.com/';
         
     	if($scope.loggedIn){
@@ -18,7 +19,7 @@ angular.module('ANEXD')
     	}
 
     	$scope.login = function(email, password){
-			//Wait for the modal to animate out
+			//New user
 			if($scope.newEmail){
 				var createUser = LoginService.createUser(email, password);
 				createUser.then(function(result) {
@@ -30,6 +31,7 @@ angular.module('ANEXD')
 						$scope.user = LoginService.getUser();	
 					}
 				});	
+			//Existing user
 			} else {
 				var loggedIn = LoginService.login(email, password);
 				loggedIn.then(function(result) {
@@ -125,8 +127,6 @@ angular.module('ANEXD')
 //                */
             }
         };
-
-		$scope.shouldHide = true;
 		
     	$scope.logout = function(){
 			$scope.shouldHide = false;
@@ -152,14 +152,6 @@ angular.module('ANEXD')
 					elm.modal('hide');
 				}
 			});
-//			$(elm).find('.login-submit').on('click', function() {
-//				if(scope.shouldHide === 'true'){
-//					elm.modal('hide');
-//				} else {
-//					console.log('not hiding');
-//					return;
-//				}
-//			});
 		}
 	};
 })

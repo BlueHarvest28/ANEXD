@@ -13,7 +13,7 @@ angular.module('ANEXD')
         	console.log(message);
         });
 		        
-    	$scope.$watch(LoginService.isLoggedIn, function (isLoggedIn){
+    	$scope.$watch(function(){ return LoginService.isLoggedIn();}, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
 				$scope.showIcons();
@@ -86,7 +86,6 @@ angular.module('ANEXD')
         
         //POST REQUEST for all games
         $http(req).then(function(response)  {
-            console.log(response);
             $scope.apps = response.data;
             for(var i = 0; i < $scope.apps.length; i++) {
                 var obj = $scope.apps[i];

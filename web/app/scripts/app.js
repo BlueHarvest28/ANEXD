@@ -111,16 +111,17 @@ angular
 	
 	var logout = function(){
 		loggedIn = false;
-		$cookies.remove('userCookie');
+		$cookies.remove('userEmail');
+		$cookies.remove('userID');
 		return loggedIn;
 	};
 	
 	var isLoggedIn = function(){
-		var cookie = $cookies.get('userEmail');
-		if (cookie) {
-			loggedIn = true;
+		if($cookies.get('userEmail')){
+			return true;
+		} else {
+			return false;
 		}
-		return loggedIn;
 	};
 	
 	var getUser = function(){
