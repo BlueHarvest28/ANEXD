@@ -147,7 +147,6 @@ angular
 				console.log(response.data.email);
 				$cookies.put('userEmail', response.data.email);
 				$cookies.put('userID', response.data.userID);
-				user = response.data.email;
 				return true;
 			}
 			else if(response.data.status === 'Fail'){
