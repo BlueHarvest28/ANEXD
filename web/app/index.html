@@ -71,7 +71,7 @@
               </div>
 
                 <!-- Submit -->
-                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(userForm)" ng-disabled="userForm.$invalid">
+                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)" ng-disabled="userForm.$invalid">
                 <small><a href="">Forgotten your password?</a></small>
             </form>
             <div class="account-info" ng-show="loggedIn">

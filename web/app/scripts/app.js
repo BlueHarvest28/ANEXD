@@ -104,7 +104,6 @@ angular
 			else if(response.data.status === 'Fail'){
 				return false;
 			}
-			console.log(response);
 		}, function errorCallback(response) {
 			console.log(response);
 		});
@@ -130,11 +129,43 @@ angular
 		return user;
 	};
 	
+	var createUser = function(email, password){
+		var passwordHash = md5.createHash(password);
+		
+		var payload = {
+			'username': email,
+			'password' : passwordHash,
+			'email' : email
+		};
+		var req = {
+			method: 'POST',
+			url: host + 'newUser',
+			headers: {'Content-Type': 'application/json'},
+			data: payload,
+		};
+		return $http(req).then(function(response) {
+			if(response.data.status === 'Success'){
+				loggedIn = true;
+				$cookies.put('userCookie', email);
+				user = email;
+				return true;
+			}
+			else if(response.data.status === 'Fail'){
+				console.log(response);
+				console.log('sign up failed');
+				return false;
+			}
+		}, function errorCallback(response) {
+			console.log(response);
+		});
+	};
+	
 	return { 
 		login: login,
 		logout: logout,
 		isLoggedIn: isLoggedIn,
-		getUser: getUser
+		getUser: getUser,
+		createUser: createUser
 	};
 }])
 

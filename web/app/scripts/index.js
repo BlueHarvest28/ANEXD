@@ -17,18 +17,31 @@ angular.module('ANEXD')
     		$scope.user = LoginService.getUser();
     	}
 
-    	$scope.login = function(form){
+    	$scope.login = function(email, password){
 			//Wait for the modal to animate out
-			var loggedIn = LoginService.login(form.email.$modelValue, form.password.$modelValue);
-			loggedIn.then(function(result) {
-				if(result){
-					$scope.shouldHide = true;
-					$timeout( function(){
-						$scope.loggedIn = true;
-					}, 150);
-					$scope.user = LoginService.getUser();	
-				}
-			});
+			if($scope.newEmail){
+				var createUser = LoginService.createUser(email, password);
+				createUser.then(function(result) {
+					if(result){
+						$scope.shouldHide = true;
+						$timeout( function(){
+							$scope.loggedIn = true;
+						}, 150);
+						$scope.user = LoginService.getUser();	
+					}
+				});	
+			} else {
+				var loggedIn = LoginService.login(email, password);
+				loggedIn.then(function(result) {
+					if(result){
+						$scope.shouldHide = true;
+						$timeout( function(){
+							$scope.loggedIn = true;
+						}, 150);
+						$scope.user = LoginService.getUser();	
+					}
+				});	
+			}
     	}; 
 		
 		$scope.newEmail = false;
