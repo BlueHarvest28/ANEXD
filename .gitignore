@@ -3,3 +3,6 @@ dist
 .tmp
 .sass-cache
 bower_components
+designs/poster-v1-full-res.psd
+
+designs/poster-v2-a4.psd
