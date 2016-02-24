@@ -7,7 +7,8 @@ angular.module('ANEXD')
     '$timeout',
     'LoginService',
     '$http',
-    function ($scope, $rootScope, $timeout, LoginService, $http) 
+    'md5',
+    function ($scope, $rootScope, $timeout, LoginService, $http, md5)
     {		
     	$scope.loggedIn = LoginService.isLoggedIn();
         $scope.errorDisabled = false;
@@ -28,7 +29,7 @@ angular.module('ANEXD')
 						$timeout( function(){
 							$scope.loggedIn = true;
 						}, 150);
-						$scope.user = LoginService.getUser();	
+						$scope.user = LoginService.getUser();
 					}
 				});	
 			//Existing user
@@ -78,54 +79,31 @@ angular.module('ANEXD')
             console.log(data);
             $scope.errorDisabled = false;
             
-            if(data.pass === data.rpass){
-                console.log('Password Changed');
-                //Hash here
-                //Want Alex to REMOVE password field
-                
-            /*
-                var payload = {
-                    "userID": "",
-                    "password": "",
-                    "newpass": ""
-                };
-                var req = {
-                    method: 'POST',
-                    url: host + 'changePassword',
-                    headers: {'Content-Type': 'application/json'},
-                    data: payload,
-                };
-                $http(req).then(function(response) {
-                    console.log(response);
-                }, function errorCallback(response) {
-                    console.log(response);
-                });
-            */
-  
-            } else {
-                console.log('Passwords do not Match');
-                $scope.errorDisabled = true;
-            }
+            var passwordHash = md5.createHash(data.pass);
+            var passwordHashRepeat = md5.createHash(data.rpass);
             
-            if(data.user !== '') {
-                console.log('Username Changed');
-//               /* 
-//                var payload = {
-//                    "email": "",
-//                };
-//                var req = {
-//                    method: 'POST',
-//                    url: host + 'changePassword',
-//                    headers: {'Content-Type': 'application/json'},
-//                    data: payload,
-//                };
-//                $http(req).then(function(response) {
-//                    console.log(response);
-//                }, function errorCallback(response) {
-//                    console.log(response);
-//                });
-//                */
-            }
+            console.log(passwordHash);
+            console.log(passwordHashRepeat);
+           
+            /*
+            var payload = {
+                'userID': LoginService.getUserId(),
+                'password': ,
+                'newpass': passwordHash,
+            };
+            var req = {
+                method: 'POST',
+                url: host + 'changePassword',
+                headers: {'Content-Type': 'application/json'},
+                data: payload,
+            };
+            $http(req).then(function(response) {
+                console.log(response);
+                $scope.shouldHide = true;
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+            */
         };
 		
     	$scope.logout = function(){

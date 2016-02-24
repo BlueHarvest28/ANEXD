@@ -174,6 +174,7 @@ angular
 	};
 }])
 
+//NEED TO CHANGE THE HOST to API HOST
 .factory('SocketService', function (socketFactory) {
 	var myIoSocket = io.connect('http://localhost:3002/');
 	console.log(myIoSocket);

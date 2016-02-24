@@ -87,7 +87,7 @@
                     </div>
                     <div class="login-input-back password">
                         <img class="password-icon" src="../images/icon-password.png"/>
-                        <input name="rpass" placeholder= "Retype Password" class="login-input" type="text" ng-model="data.rpass" required />
+                        <input name="rpass" placeholder= "Retype Password" class="login-input" type="text" compare-to="pass" ng-model="data.rpass" required />
                     </div>
                     
                     <div ng-show="errorDisabled">

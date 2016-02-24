@@ -9,7 +9,7 @@ Socket ID: 	(unique socket ID variable made by the socket connection,
 			All messages from the user to the server should also be emitted on this namespace
 			
 
-AnonUsers:
+AnonUsers: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 direction: Mobile User to Golang Server
 event: "joinlobby"
@@ -20,6 +20,8 @@ server action: should trigger a response emit from the golang server to confirm 
 		by checking if the username already is in use within the lobby
 		If successful should add the socket to the lobby namespace.
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Mobile User to Golang Server
 event: "setready"
 data: {
@@ -28,12 +30,16 @@ data: {
 }
 server action: set ready bool for anonuser, and emit updatelobby to all
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Mobile User to Golang Server
 event: "leavelobby"
 data: {
 	nickname: string
 }
 server action: lookup anonuser in map and remove from session, emit updatelobby
+
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 direction: Mobile User to Golang Server
 event: "msgserver"
@@ -43,13 +49,14 @@ data: {
 }
 server action: forward onto game server for game processing
 
-HostUsers:
+HostUsers: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 direction: Desktop User to Golang Server
 event: "start"
 data: none
 server action: forward to game server, server should emit a response to all users
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 direction: Desktop User to Golang Server
 event: "kick"
@@ -58,13 +65,17 @@ data: {
 }
 server action: 	update lobby user data structure, emit updated lobby to all, 
 				emit kick message to kicked user
-		
+
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Desktop User to Golang Server
 event: "end"
 data: {
 	none
 }
 server action: forward to game server, call lobby end functions, emit response to all?
+
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 direction: Desktop User to Golang Server
 event: "msgserver"
@@ -73,8 +84,7 @@ data: {
 }
 server action: forward to game server for game processing
 
-
-Game Server:
+Game Server: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 //Check if game server accepts a new lobby connection/is up or returns a status/error
 direction: Golang Server to Desktop User
@@ -85,6 +95,8 @@ data: {
 }
 front-end action: load up lobby and join lobby namespace (lobby id) to listen for new events
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Golang Server to All Users
 event: "gamestart"
 data: {
@@ -92,6 +104,8 @@ data: {
 	feedback: error
 }
 front-end action: begin loading into game
+
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 direction: Golang Server to All Users
 event: "gameend"
@@ -101,6 +115,8 @@ data: {
 }
 front-end action: stop emitting messages to server? (leave lobby )
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Golang Server to Single (Desktop OR Mobile) User
 event: "msgplayer"
 data: {
@@ -109,6 +125,8 @@ data: {
 }
 front-end action: process game specific JSON data (msg variable)
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Golang Server to All Users
 event: "msgall"
 data: {
@@ -116,12 +134,16 @@ data: {
 }
 front-end action: process game specific JSON data (msg variable)
 
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 direction: Golang Server to All Users
 event: "updatelobby"
 data: {
 	players: interface{} //JSON Object list of players in lobby
 }
 front-end action: update the list of players in the lobby and ready status, etc
+
+-=--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 direction: Golang Server to Single (Mobile) User
 event: "kick"

@@ -46,6 +46,55 @@ angular.module('ANEXD')
                 });
         }
         
+        /*
+        //SOCKET.ON for GameServer "msgall" event.
+        SocketService.on('msgall', function (data) {
+            data will be msg: interfac{}
+        });
+        */
+        
+        /*
+        //SOCKET.ON for GameServer "gameend" event.
+        SocketService.on('gameend', function (data) {
+            data will be response bool and feedback error
+        });
+        */
+        
+        /*
+        //SOCKET.ON for GameServer "msgplayer" event.
+        SocketService.on('msgplayer', function (data) {
+            data will be response bool and feedback error
+        });
+        */
+        
+        /*
+        //SOCKET.ON for GameServer "gamestart" event.
+        SocketService.on('gamestart', function (data) {
+            data will be response bool and feedback error
+        });
+        */
+        
+        /*
+        //SOCKET.ON for AnonUsers "msgserver" event
+        SocketService.emit('msgserver', {anonUserID, msg: interface}) 
+        */
+        
+        /*
+        //SOCKET.ON for AnonUsers "end" event
+        SocketService.emit('end', {NODATA}) 
+        */   
+        
+        /*
+        //SOCKET.ON for AnonUsers "kick" event
+        SocketService.emit('kick', {username})
+        */  
+        
+        $scope.start = function(){
+            console.log('gameStart'); 
+            //SOCKET.ON for GameServer "gameStart" event?
+            //SocketService.emit('start',{});
+        };        
+        
         $scope.getLobby = function(){
             //The userid is in here
             var payload = {
@@ -103,8 +152,8 @@ angular.module('ANEXD')
                 'ready': false,             
         }];
         
-        //SOCKET.ON for lobby anonUsers.
-        SocketService.on('anonUsers', function (data) {
+        //SOCKET.ON for GameServer "updatelobby" event.
+        SocketService.on('updatelobby', function (data) {
             
             for (var i = 0; i < data.length(); i++) {       
                 var incomingId = data[i].id;
@@ -117,8 +166,8 @@ angular.module('ANEXD')
                     'ready': incomingReady});
             }
         });
-*/
-        
+        */
+
         //Will be removed when api is working
         $scope.users = [
             {
@@ -178,6 +227,7 @@ angular.module('ANEXD')
         //Called on lobby creation submit
 		$scope.launchMessage = 'Launch';
 		$scope.isDisabled = false;
+        
     	$scope.launchApp = function(){
 			$scope.isDisabled = true;
 			$scope.launchMessage = '';
@@ -201,9 +251,6 @@ angular.module('ANEXD')
             $http(req).then(function(response) {
                 if(response.data.status === 'Fail') {
                     console.log(response);
-                    //getLobby();
-                    //deleteLobby();
-                    //Will add function for deleting the lobby
                 }
                 else {
                     console.log(response);
@@ -221,7 +268,17 @@ angular.module('ANEXD')
 				console.log(response);
             });
             //End of Lobby Post
+            
+            /*
+            //SOCKET.ON for GameServer "lobbyconnect" event.
+            SocketService.emit('lobbyconnect', {lobbyinfo})
+            Read back some info
+            SocketService.on('lobbyconnect', function (data) {
+            });
+            
+            */  
     	};
+           
     }
 ])
 .directive('scrollOnClick', function() {
