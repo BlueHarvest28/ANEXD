@@ -81,13 +81,18 @@
                 <!-- Change Password -->
                 <!--S Settings WIP Fred S-->                   
                 <form class="updateInfoForm">
+                    
                     <div class="login-input-back password">
                         <img class="password-icon" src="../images/icon-password.png"/>
-                        <input name="pass" type="text" class="login-input" ng-model="data.pass" placeholder= "Change Password" ng-change="reenterDisabled = true;" required/>
+                        <input name="pass" type="password" class="login-input" ng-model="data.cpass" placeholder= "Current Password" ng- required/>
                     </div>
                     <div class="login-input-back password">
                         <img class="password-icon" src="../images/icon-password.png"/>
-                        <input name="rpass" placeholder= "Retype Password" class="login-input" type="text" compare-to="pass" ng-model="data.rpass" required />
+                        <input name="pass" type="password" class="login-input" ng-model="data.npass" placeholder= "New Password" ng-change="reenterDisabled = true;" required/>
+                    </div>
+                    <div class="login-input-back password">
+                        <img class="password-icon" src="../images/icon-password.png"/>
+                        <input name="rpass" placeholder= "Retype New Password" class="login-input" type="password" compare-to="npass" ng-model="data.rpass" required />
                     </div>
                     
                     <div ng-show="errorDisabled">

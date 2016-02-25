@@ -67,8 +67,7 @@ angular.module('ANEXD')
         SocketService.on('gamestart', function (data) {
             data will be response bool and feedback error
         });
-        */
-        
+        */        
         
         //Trigged on the back button from the lobby
         //NOT WORKING

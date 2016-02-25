@@ -79,31 +79,34 @@ angular.module('ANEXD')
             console.log(data);
             $scope.errorDisabled = false;
             
-            var passwordHash = md5.createHash(data.pass);
+            var passwordHashCurrent = md5.createHash(data.cpass); 
+            var passwordHash = md5.createHash(data.npass);
             var passwordHashRepeat = md5.createHash(data.rpass);
             
-            console.log(passwordHash);
-            console.log(passwordHashRepeat);
-           
-            /*
-            var payload = {
-                'userID': LoginService.getUserId(),
-                'password': ,
-                'newpass': passwordHash,
-            };
-            var req = {
-                method: 'POST',
-                url: host + 'changePassword',
-                headers: {'Content-Type': 'application/json'},
-                data: payload,
-            };
-            $http(req).then(function(response) {
-                console.log(response);
-                $scope.shouldHide = true;
-            }, function errorCallback(response) {
-                console.log(response);
-            });
-            */
+            if(passwordHash === passwordHashRepeat) {
+                var payload = {
+                    'userID': LoginService.getUserId(),
+                    'pass': passwordHashCurrent,
+                    'newpass': passwordHash,
+                };
+                console.log(payload);
+
+                var req = {
+                    method: 'POST',
+                    url: host + 'changePassword',
+                    headers: {'Content-Type': 'application/json'},
+                    data: payload,
+                };
+                $http(req).then(function(response) {
+                    console.log(response);
+                    $scope.shouldHide = true;
+                }, function errorCallback(response) {
+                    console.log(response);
+                });
+                $scope.shouldHide = false;                                
+            } else {
+                $scope.errorDisabled = true;
+            }
         };
 		
     	$scope.logout = function(){
