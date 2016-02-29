@@ -114,6 +114,14 @@ a{
     }
 }
 
+a.login-submit{
+	color: white !important;
+	text-decoration: none !important;
+	display: block;
+	text-align: center;
+	margin-top: 20px;
+}
+
 input{
     outline: none;
 }
@@ -226,6 +234,15 @@ input{
     &:hover{
         background-color: rgba(127, 207, 112, 1);
     }
+}
+
+.fail{
+	width: 90%;
+	max-width: 550px;
+    padding: 10px 40px 30px;
+    margin: 50px auto;
+    background-color: white;
+    box-shadow: rgba(0,0,0,0.2) 0 5px 15px;
 }
 
 .disabled{

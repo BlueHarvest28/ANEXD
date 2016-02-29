@@ -40,9 +40,8 @@ angular
 					templateUrl: (isMobile) ? '/views/mobile-home.html' : './views/home.html',
 					controller: (isMobile) ? 'MobileHomeController' : 'HomeController'
 				})
-				.when('/quiz', {
-					templateUrl: (isMobile) ? '/views/mobile-quiz.html' : './views/quiz.html',
-					controller: (isMobile) ? 'MobileQuizController' : 'QuizController'
+				.when('/play', {
+					templateUrl: '/views/fail.html'
 				})
 				.when('/:lobbyId', {
 					templateUrl: '/views/mobile-home.html',
