@@ -86,7 +86,7 @@ angular.module('ANEXD')
             if(passwordHash === passwordHashRepeat) {
                 var payload = {
                     'userID': LoginService.getUserId(),
-                    'pass': passwordHashCurrent,
+                    'password': passwordHashCurrent,
                     'newpass': passwordHash,
                 };
                 console.log(payload);

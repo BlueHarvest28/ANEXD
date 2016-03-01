@@ -149,7 +149,7 @@ angular.module('ANEXD')
 
         /*
         $scope.users = [{
-                'id': '',
+                'player': '',
                 'nickname': '',
                 'ready': false,             
         }];
