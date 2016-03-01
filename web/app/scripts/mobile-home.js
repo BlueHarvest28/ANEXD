@@ -75,54 +75,15 @@ angular.module('ANEXD')
 			$scope.showLobby = false;
 			$scope.ready = false;
             
-            //AnonUser Deletion Post
-            var req = {
-                method: 'POST',
-                url: host + 'delAnonUser',
-                headers: {'Content-Type': 'application/json'},
-                data: $scope.anonUserID.userID,
-            };
-            $http(req).then(function successCallback(response) {
-				console.log(response);
-                
-            }, function errorCallback(response) {
-				console.log(response);
-            });
-            //End of AnonUser Deletion Post
-            
-            /*
-            //SOCKET.ON for AnonUsers "leavelobby" event
-            SocketService.emit('leavelobby', {$scope.anonUserID.userID}) 
-            */
+            //SHOULD SEND WEBSOCKET TO REMOVE ANON USER
             
 		};
         
         //Trigged by clicking submit
 		$scope.submitUser = function(){
             $scope.inputError = false;
-            
-            //AnonUser Submit Post
-            var req = {
-                method: 'POST',
-                url: host + 'newAnonUser',
-                headers: {'Content-Type': 'application/json'},
-                data: $scope.anonUser,
-            };
-            $http(req).then(function successCallback(response) {
-                if(response.data.status === 'Fail') {
-                    console.log('Fail'); 
-                    console.log(response);
-                } else {
-                    console.log('Success');
-                    console.log(response);
-                    $scope.anonUserID.userID = response.data.id;
-                    $scope.showLobby = true;
-                    $scope.submitIsDisabled = false;
-                }
-            }, function errorCallback(response) {
-                $scope.inputError = true;
-				console.log(response);
-            });
+            $scope.showLobby = true;
+            $scope.submitIsDisabled = false;
             //End of AnonUser Submit Post
             
             /*

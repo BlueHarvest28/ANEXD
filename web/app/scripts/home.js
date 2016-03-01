@@ -30,20 +30,21 @@ angular.module('ANEXD')
         //Called when the user closes a lobby
         function deleteLobby(){
             //Lobby Deletion Post
-                var payload = {
-                    'lobbyID': $scope.lobbyId, //The userid is in here
-                };
-                var req = {
-                    method: 'POST',
-                    url: host + 'delLobby',
-                    headers: {'Content-Type': 'application/json'},
-                    data: payload,
-                };
-                $http(req).then(function successCallback(response) {
-                    console.log(response);
-                }, function errorCallback(response) {
-                    console.log(response);
-                });
+			var payload = {
+				'lobbyID': $scope.lobbyId, //The lobbyid is in here
+			};
+			console.log(payload);
+			var req = {
+				method: 'POST',
+				url: host + 'delLobby',
+				headers: {'Content-Type': 'application/json'},
+				data: payload,
+			};
+			$http(req).then(function successCallback(response) {
+				console.log(response);
+			}, function errorCallback(response) {
+				console.log(response);
+			});
         }
         
         /*
@@ -109,10 +110,10 @@ angular.module('ANEXD')
 			$http(req).then(function successCallback(response) {
 				console.log(response);
 				if(response.data.status === 'Success'){
-					$scope.lobbyId = response.data[0].password.string;	
-				} else {
-					$scope.launchApp();
+					$scope.lobbyId = response.data.data.lobbyID;	
+					deleteLobby();
 				}
+				$scope.launchApp();
 			}, function errorCallback(response) {
 				console.log(response);
 			});

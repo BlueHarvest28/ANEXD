@@ -23,7 +23,16 @@ angular
 	.config([
 	'$locationProvider',
 	'$routeProvider',
-	function ($locationProvider, $routeProvider) {
+	'$sceDelegateProvider',
+	function ($locationProvider, $routeProvider, $sceDelegateProvider) {
+		
+		$sceDelegateProvider.resourceUrlWhitelist([
+			// Allow same origin resource loads.
+			'self',
+			// Allow loading from our assets domain.  Notice the difference between * and **.
+			//'http://srv*.assets.example.com/**'
+		]);
+		
 			$locationProvider.hashPrefix('!');
 			var isMobile = (function () {
 				var check = false;
@@ -40,12 +49,13 @@ angular
 					templateUrl: (isMobile) ? '/views/mobile-home.html' : './views/home.html',
 					controller: (isMobile) ? 'MobileHomeController' : 'HomeController'
 				})
-				.when('/play', {
-					templateUrl: '/views/fail.html'
-				})
 				.when('/:lobbyId', {
-					templateUrl: '/views/mobile-home.html',
-					controller: 'MobileHomeController'
+					templateUrl: (isMobile) ? '/views/mobile-home.html' : './views/home.html',
+					controller: (isMobile) ? 'MobileHomeController' : 'HomeController'
+				})
+				.when('/:lobbyId/:appId', {
+					templateUrl: (isMobile) ? '/views/mobile-play.html' : '/views/play.html',
+					controller: (isMobile) ?  'MobilePlayController' : 'PlayController'
 				})
 		.otherwise({
 			redirectTo: '/'
@@ -73,7 +83,6 @@ angular
 			});
 	}
 ])
-
 .factory('LoginService', ['$cookies', '$http', 'md5', function ($cookies, $http, md5) {
 	var host = 'http://api-anexd.rhcloud.com/';
 	var loggedIn = false;
@@ -172,7 +181,6 @@ angular
 		getUserId : getUserId
 	};
 }])
-
 //NEED TO CHANGE THE HOST to API HOST
 .factory('SocketService', function (socketFactory) {
 	var myIoSocket = io.connect('http://localhost:3002/');
@@ -183,4 +191,14 @@ angular
 	});
 
 	return socket;
-});
+})
+.factory('ANEXDService', ['SocketService', function (SocketService) {
+	var sendToServer = function(val){
+		console.log('sending to server');
+		SocketService.emit('toServer', val);
+	};
+	
+	return { 
+		sendToServer: sendToServer
+	};
+}]);

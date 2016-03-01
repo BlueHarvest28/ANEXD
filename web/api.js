@@ -15,10 +15,13 @@ server.listen(app.get('port') ,app.get('ip'), function () {
     console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
 });
 
-io.on('connect', function () {
+io.on('connection', function (socket) {
 	console.log('connection');
+	
+	socket.on('toServer', function (val){
+		console.log(val)
+	});
 });
-
 
 //TABLES:
 // User, Anon_User, Lobby & Game
