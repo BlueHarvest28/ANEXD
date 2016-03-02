@@ -13,7 +13,8 @@ angular.module('ANEXD')
     	$scope.allowNicknames = true;
 		$scope.showLobby = false;
         $scope.inputError = false;
-        var host = 'http://api-anexd.rhcloud.com/';
+        //UNUSED
+		//var host = 'http://api-anexd.rhcloud.com/';
         SocketService.on('message', function (message) {
         	console.log(message);
         });

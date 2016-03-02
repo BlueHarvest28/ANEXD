@@ -9,6 +9,17 @@ body{
 		background-color: #fff;
 		box-shadow: rgba(0,0,0,0.2) 0 10px 10px;
 		margin: 50px auto;
-    	padding: 20px;
+    	padding: 40px 80px;
+	}
+	
+	.quiz{
+		h3{
+			font-weight: 200;
+			color: #7e7e7e;
+		}
+		
+		.quiz-steps{
+			max-width: 100%;
+		}
 	}
 }
