@@ -5,16 +5,16 @@ angular.module('ANEXD')
 	'$scope',
 	'ANEXDService',
 	'$routeParams',
-    function ($scope, ANEXDService, $routeParams) 
+	'$rootScope',
+    function ($scope, ANEXDService, $routeParams, $rootScope) 
     {
-		$scope.fail = false;
-		window.anexd = ANEXDService;
-		if(!window.anexd){
-			$scope.fail = true;	
-		}
-		
 		var app = $routeParams.appId;
-		$scope.appLocation = "views/" + app + "-index.html";
+		
+		if($rootScope.isMobile){
+			$scope.appLocation = 'views/' + app + '-mobile-index.html';	
+		} else {
+			$scope.appLocation = 'views/' + app + '-index.html';
+		}
 	}
 ]);
 }());

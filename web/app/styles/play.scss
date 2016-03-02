@@ -2,6 +2,7 @@ body{
     background: url('../images/bg.png');
 	background-size: cover;
 	background-color: #3D5663;
+	background-repeat: no-repeat;
 }
 
 .play {
@@ -10,16 +11,128 @@ body{
 		box-shadow: rgba(0,0,0,0.2) 0 10px 10px;
 		margin: 50px auto;
     	padding: 40px 80px;
+		position: relative;
 	}
 	
 	.quiz{
+		
+		.quiz-title{
+			margin-bottom:20px;
+		}
+		
+		h1{
+			font-size: 38pt;
+		}
+		
+		h2{
+			margin: 0;
+			color: #6d6d6d;
+			font-weight: 200;
+			font-size: 30pt;
+			
+			.light{
+				color: #ccc6c6;
+			}
+		}
+		
+		.player-count h2{
+			font-size: 22pt;
+			margin-top: 5px;
+		}
+		
 		h3{
 			font-weight: 200;
 			color: #7e7e7e;
 		}
 		
+		.header{
+			overflow: hidden;
+			
+			.question-count, .player-count{
+				float: left;
+				width: 50%;
+				position: relative;
+			}
+
+			.player-count{
+				text-align: right;
+			}
+		}
+		
 		.quiz-steps{
 			max-width: 100%;
+		}
+		
+		.arrow{
+			position: absolute;
+			width: 70px;
+			height: 120px;
+			background-color: #222;
+			color: #ddd;
+			text-align: center;
+			font-size: 30pt;
+			font-weight: 500;
+			top: 50%;
+			margin-top: -60px;
+			padding: 28px 0;
+			cursor: pointer;
+			
+			&.previous{
+				left: -35px;
+			}
+			
+			&.next{
+				right: -35px;
+			}
+		}
+		
+		.answers{
+			list-style: none;
+			padding: 10px 50px 0;
+			margin: 0;
+			
+			li{
+				padding: 10px;
+				margin: 10px;
+				font-size: 25pt;
+				font-weight: 200;	
+				
+				&:nth-child(1){ 
+					.icon{
+						background-color: #bb2253;
+					}
+					color: #bb2253;
+				}
+				&:nth-child(2){ 
+					.icon{
+						background-color: #21825c;
+					}
+					color: #21825c;
+				}
+				&:nth-child(3){ 
+					.icon{
+						background-color: #2772db;
+					}
+					color: #2772db;
+				}
+				&:nth-child(4){ 
+					.icon{
+						background-color: #f5ca3e;
+					}
+					color: #f5ca3e;
+				}
+				
+				.icon{
+					display: inline-block;
+					width: 50px;
+					height: 50px;
+					border-radius: 30px;
+					margin-right: 10px;
+					text-align: center;
+					font-weight: 400;
+					color: white;
+				}
+			}
 		}
 	}
 }

@@ -47,8 +47,8 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 		controller: (isMobile) ? 'MobileHomeController' : 'HomeController'
 	})
 	.when('/:lobbyId/:appId', {
-		templateUrl: (isMobile) ? '/views/mobile-play.html' : '/views/play.html',
-		controller: (isMobile) ?  'MobilePlayController' : 'PlayController'
+		templateUrl: '/views/play.html',
+		controller: 'PlayController'
 	})
 	.otherwise({
 		redirectTo: '/'
@@ -176,7 +176,7 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 }])
 //NEED TO CHANGE THE HOST to API HOST
 .factory('SocketService', function (socketFactory) {
-	var myIoSocket = io.connect('http://localhost:3002/');
+	var myIoSocket = io.connect('http://localhost:3002/567');
 	console.log(myIoSocket);
 
 	var socket = socketFactory({
@@ -185,13 +185,58 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 
 	return socket;
 })
-.factory('ANEXDService', ['SocketService', function (SocketService) {
-	var sendToServer = function(val){
-		console.log('sending to server');
-		SocketService.emit('toServer', val);
+.factory('ANEXDService', ['SocketService', '$q', '$timeout', function (SocketService, $q, $timeout) {
+	var expected;
+	
+	var sendToServer = function(event, val){
+		var defer = $q.defer();
+		
+		SocketService.emit(event, val);
+		
+		var resolveTimout = $timeout(function() {
+			defer.reject('failed to receive response');
+		}, 3000);
+		
+		SocketService.on(event, function(val) {
+			$timeout.cancel(resolveTimout);
+			defer.resolve(val);
+    	});
+		
+		return defer.promise;
 	};
 	
+	var expect = function(event){
+		SocketService.on(event, function(val) {
+			expected = {
+				'event' : event,
+				'val' : val
+			}; 
+		});
+	};
+	
+	var getFromServer = function() {
+		return expected;
+	};
+	
+//	var event = 'nextQuestion';
+//	// Setup reactor
+//    //var callbacks = {};
+//    SocketService.on(event, function(val) {
+//		console.log(val);
+////      var data = angular.fromJson(event.data);
+////      if (angular.isDefined(callbacks[data.request_id])) {
+////        var callback = callbacks[data.request_id];
+////        delete callbacks[data.request_id];
+////        callback.resolve(data);
+////      } else {
+////        $log.error("Unhandled message: %o", data);
+////        messages.unhandled.push(data);
+////      }
+//    });
+	
 	return { 
-		sendToServer: sendToServer
+		sendToServer: sendToServer,
+		expect: expect,
+		getFromServer: getFromServer
 	};
 }]);

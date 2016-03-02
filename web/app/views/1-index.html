@@ -1,17 +1,51 @@
 <div class="quiz" ng-controller="QuizController">
-	<div class="header">
-		<div class="question-count">
-			Question: <span class="current-question">0</span><span class="light">/<span class="total-questions">20</span></span>
+	<div class="arrow previous" ng-click="previous()">
+		&lt;
+	</div>
+	<div class="arrow next" ng-click="next()">
+		&gt;
+	</div>
+	<div ng-if="showStart">
+		<div class="header">
+			<div class="question-count">
+				<h2>Question: 0<span class="light"> / {{total}}</span></h2>
+			</div>
+			<div class="player-count">
+				<h2>Players: {{players}}</h2>
+			</div>
 		</div>
-		<div class="player-count">
-			Players: <span class="current-players">5</span>
+		<div class="main">
+			<div class="quiz-title">
+				<h1>{{title}}</h1>
+				<h3>{{description}}</h3>
+			</div>
+			<img class="quiz-steps" src="images/steps.png"/>
 		</div>
 	</div>
-	<div class="main">
-		<div class="quiz-title">
-			<h1>Return of the Aliens</h1>
-			<h3>CROP CIRCLES. CROP TRIANGLES. UFOs. WHERE DOES IT END, EMMA? WHERE?</h3>
+	
+	<div ng-if="showQuestion">
+		<div class="header">
+			<div class="question-count">
+				<h2>Question: {{question.number}}<span class="light"> / {{total}}</span></h2>
+			</div>
+			<div class="player-count">
+				<h2>Answered: {{playerAnswers}} <span class="light"> / {{players}}</span></h2>
+			</div>
 		</div>
-		<img class="quiz-steps" src="images/steps.png"/>
+		
+		<div class="main">
+			<div class="quiz-title">
+				<h1>{{question.question}}</h1>
+			</div>
+			<ul class="answers">
+				<li ng-repeat="answer in question.answers">
+					<span class="icon">{{answer.id}}</span>{{answer.answer}}
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div ng-if="showEnd">
+		<h1>Oh good grief you've done it</h1>
 	</div>
 </div>
