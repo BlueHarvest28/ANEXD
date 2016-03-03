@@ -1,8 +1,8 @@
 <div class="quiz" ng-controller="QuizController">
-	<div class="arrow previous" ng-click="previous()">
+	<div class="arrow previous" ng-click="showStart||previous()" ng-disabled="showStart" ng-class="{disabled : showStart}">
 		&lt;
 	</div>
-	<div class="arrow next" ng-click="next()">
+	<div class="arrow next" ng-click="showEnd||next()" ng-disabled="showEnd" ng-class="{disabled : showEnd}">
 		&gt;
 	</div>
 	<div ng-if="showStart">
@@ -11,7 +11,7 @@
 				<h2>Question: 0<span class="light"> / {{total}}</span></h2>
 			</div>
 			<div class="player-count">
-				<h2>Players: {{players}}</h2>
+				<h2>Players: {{userCount}}</h2>
 			</div>
 		</div>
 		<div class="main">
@@ -29,7 +29,7 @@
 				<h2>Question: {{question.number}}<span class="light"> / {{total}}</span></h2>
 			</div>
 			<div class="player-count">
-				<h2>Answered: {{playerAnswers}} <span class="light"> / {{players}}</span></h2>
+				<h2>Answered: {{answers[question.number]}} <span class="light"> / {{userCount}}</span></h2>
 			</div>
 		</div>
 		
@@ -47,5 +47,10 @@
 	
 	<div ng-if="showEnd">
 		<h1>Oh good grief you've done it</h1>
+		<ul>
+			<li ng-repeat="score in scores">
+				{{score}}
+			</li>
+		</ul>
 	</div>
 </div>

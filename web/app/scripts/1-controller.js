@@ -12,11 +12,14 @@ angular.module('ANEXD')
 		$scope.showQuestion = false;
 		$scope.showEnd = false;
 		
-		$scope.players = 18;
-		$scope.playerAnswers = 8;
+		$scope.userCount = 0;
+		$scope.answers = [];
+		$scope.scores = [];
 		
 		anexd.expect('title');
 		anexd.expect('current');
+		anexd.expect('users');
+		anexd.expect('answers');
 		$scope.$watch(
 			function() {
 				return anexd.getFromServer();	
@@ -27,6 +30,7 @@ angular.module('ANEXD')
 						$scope.title = data.val.title;
 						$scope.description = data.val.description;
 						$scope.total = data.val.total;
+						initialiseAnswers();
 					}
 					else if(data.event === 'current'){
 						if(data.val.event === 'showStart'){
@@ -35,6 +39,7 @@ angular.module('ANEXD')
 							$scope.showEnd = false;
 						}
 						else if(data.val.event === 'question'){
+							$scope.scores = [];
 							$scope.showStart = false;
 							$scope.showQuestion = true;
 							$scope.showEnd = false;
@@ -44,8 +49,16 @@ angular.module('ANEXD')
 							$scope.showStart = false;
 							$scope.showQuestion = false;
 							$scope.showEnd = true;
+							splitScores(data.val.data);
 						}
 					} 
+					else if(data.event === 'users'){
+						$scope.userCount = data.val;
+						console.log($scope.userCount);
+					}
+					else if(data.event === 'answers'){
+						$scope.answers[$scope.question.number]++;
+					}
 				}
 			}
 		);
@@ -71,6 +84,19 @@ angular.module('ANEXD')
 				console.log(error);
 			});	
 		};
+		
+		var initialiseAnswers = function(){
+			for(var i = 1; i <= $scope.total; i++){
+				$scope.answers[i] = 0;
+			}
+			console.log($scope.answers);
+		};
+		
+		var splitScores = function(obj){
+			angular.forEach(obj, function(value, key){
+				this.push(key + ': ' + value);
+			},$scope.scores);
+		};
 	}
 ])
 .controller('MobileQuizController', [
@@ -85,6 +111,7 @@ angular.module('ANEXD')
 		$scope.showEnd = false;
 		
 		$scope.selectedAnswer = false;
+		$scope.score = 0;
 		
 		anexd.expect('title');
 		anexd.expect('current');
@@ -99,6 +126,7 @@ angular.module('ANEXD')
 					if(data.event === 'title'){
 						$scope.title = data.val.title;
 						$scope.description = data.val.description;
+						$scope.total = data.val.total;
 					}
 					else if(data.event === 'current'){
 						if(data.val.event === 'showStart'){
@@ -123,17 +151,16 @@ angular.module('ANEXD')
 			}
 		);
 		
-		//TODO: look at and refactor
+		$scope.answers = [];
+		
 		$scope.setAnswer = function(answer){
-			$scope.selectedAnswer = answer;	
-			anexd.sendToServer('sendAnswer', $scope.selectedAnswer)
+			anexd.sendToServer('answer', answer)
 			.then(function(data){
-				//Success callback
-				$scope.question = data;
-				$scope.showQuestion = true;
-				$scope.currentQuestion++;
+				$scope.answers[$scope.question.number] = answer;
+				if(data){
+					$scope.score++;
+				}
 			}, function(error) {
-				//Failure callback
 				console.log(error);
 			});	
 		};

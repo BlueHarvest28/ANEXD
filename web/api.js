@@ -15,15 +15,17 @@ server.listen(app.get('port') ,app.get('ip'), function () {
     console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
 });
 
+var total = questions.length;
+
 var title = {
 	'title': 'Return of the Aliens',
 	'description': 'CROP CIRCLES. CROP TRIANGLES. UFOs. WHERE DOES IT END, SHARON? WHERE?',
-	'total': 5
+	'total': total
 }
 
 var questions = [
 	{
-		'number': '1',
+		'number': 1,
 		'question' : 'When was the first recorded UFO sighting?',
 		'answers': [
 			{
@@ -45,7 +47,7 @@ var questions = [
 		]
 	},
 	{
-		'number': '2',
+		'number': 2,
 		'question' : 'What is the term for an identified UFO?',
 		'answers': [
 			{
@@ -67,7 +69,7 @@ var questions = [
 		]
 	},
 	{
-		'number': '3',
+		'number': 3,
 		'question' : 'According to a 1991 Roper poll, how many people claim to have been abducted?',
 		'answers': [
 			{
@@ -89,7 +91,7 @@ var questions = [
 		]
 	},
 	{
-		'number': '4',
+		'number': 4,
 		'question' : 'The first alien abduction claimed to have happened in 1961 when Betty and Barney Hill said they were taken from where?',
 		'answers': [
 			{
@@ -111,7 +113,7 @@ var questions = [
 		]
 	},
 	{
-		'number': '5',
+		'number': 5,
 		'question' : 'What percentage of reported UFO sightings remain unexplained?',
 		'answers': [
 			{
@@ -136,15 +138,26 @@ var questions = [
 
 var answers = ['A', 'B', 'D', 'A', 'C'];
 
+var users = {};
+var userCount = -1;
+
 var current = 0;
-var total = questions.length;
 
 lobbyio.on('connection', function (socket) {
 	console.log('connection', socket.id);
-	var userio	= io.of('/'+ socket.id);
+	
+	userCount++;
+	users[socket.id] = 0;
+	lobbyio.emit('users', userCount);
 	
 	//Title details for front-end local storage
 	socket.emit('title', title);
+	
+	socket.on('disconnect', function(){
+		userCount--;
+		lobbyio.emit('users', userCount);
+		delete users[socket.id];
+	});
 	
 	if(current === 0){
 		socket.emit('current', {'event': 'showStart'});
@@ -156,11 +169,24 @@ lobbyio.on('connection', function (socket) {
 		socket.emit('current', {'event': 'showEnd'});
 	}
 	
+	socket.on('answer', function(answer){
+		lobbyio.emit('answers');
+		if(answer === answers[current-1]){
+			users[socket.id]++;
+			console.log('correct answer, score:', users[socket.id]);
+			socket.emit('answer', true);
+		}
+		else {
+			socket.emit('answer', false);
+		}
+	});
+	
 	socket.on('next', function (){
 		if(current === total){
 			current++;
+			console.log('show end');
 			socket.emit('next', true);
-			lobbyio.emit('current', {'event': 'showEnd'});
+			lobbyio.emit('current', {'event': 'showEnd', 'data': users});
 		} 
 		else if(current < total){
 			current++;
@@ -174,6 +200,7 @@ lobbyio.on('connection', function (socket) {
 	socket.on('previous', function (){
 		if(current === 1){
 			current--;
+			console.log('show start');
 			socket.emit('previous', true);
 			lobbyio.emit('current', {'event': 'showStart'});	
 		} 

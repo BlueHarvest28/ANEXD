@@ -218,22 +218,6 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 		return expected;
 	};
 	
-//	var event = 'nextQuestion';
-//	// Setup reactor
-//    //var callbacks = {};
-//    SocketService.on(event, function(val) {
-//		console.log(val);
-////      var data = angular.fromJson(event.data);
-////      if (angular.isDefined(callbacks[data.request_id])) {
-////        var callback = callbacks[data.request_id];
-////        delete callbacks[data.request_id];
-////        callback.resolve(data);
-////      } else {
-////        $log.error("Unhandled message: %o", data);
-////        messages.unhandled.push(data);
-////      }
-//    });
-	
 	return { 
 		sendToServer: sendToServer,
 		expect: expect,
