@@ -7,30 +7,86 @@ angular.module('ANEXD')
     'SocketService',
 	'$routeParams',
 	'LobbySocket',
-    function ($scope, $http, SocketService, $routeParams, LobbySocket) 
+	'$location',
+	'$rootScope',
+    function ($scope, $http, SocketService, $routeParams, LobbySocket, $location, $rootScope) 
     {
         $scope.ready = false;
-    	$scope.allowNicknames = true;
 		$scope.showLobby = false;
         $scope.inputError = false;
-		
 		$scope.users = [];
+		
         //UNUSED
 		//var host = 'http://api-anexd.rhcloud.com/';
 		
+		//If set, get lobby id from url
 		if($routeParams.lobbyId){
-			$scope.anonUser.lobbyId = $routeParams.lobbyId;
+			$scope.lobby = $routeParams.lobbyId;
 		}
+        
+		//Instance of lobby socket
+		var lobbySocket;
 		
-        $scope.anonUserID = {
-            'userID': '',
-        };
-        $scope.anonUser = {
-			'username': '',
-            'lobby': '',
+        /************************
+		*	Lobby back button	*
+		*************************/
+		$scope.goBack = function(){
+			$scope.showLobby = false;
+			$scope.ready = false;
+            
+			//Leave lobby
+			lobbySocket.emit('leave');
+		};
+		
+		/********************
+		*	Lobby socket	*
+		*********************/
+		var lobby = function(){
+			lobbySocket.emit('join', $scope.name);
+			
+			lobbySocket.on('start', function(){
+				$location.path($location.path() + '/' + 5, true);
+			});
+			
+			lobbySocket.on('update', function(data){
+				$scope.users = [];
+				angular.forEach(data, function(value){
+					this.push(value);
+				}, $scope.users);
+			});
+			
+			lobbySocket.on('close', function(){
+				$scope.goBack();
+			});
 		};
         
-        /*
+        /****************
+		*	Join lobby	*
+		*****************/
+		$scope.join = function(){
+            $scope.inputError = false;
+            $scope.showLobby = true;
+            $scope.submitIsDisabled = false;
+			
+			//TEMPORARY
+			$rootScope.lobby = $scope.lobby;
+			$rootScope.app = 5;
+			
+			//Instantiate Socket with LobbyId as the namespace
+			lobbySocket = new LobbySocket($scope.lobby);
+			lobby();
+			$location.path('/' + $scope.lobby, false);
+		};
+		
+        /************************
+		*	Toggle ready status	*
+		*************************/
+        $scope.toggleReady = function(){
+			$scope.ready = !$scope.ready;
+			lobbySocket.emit('ready', $scope.ready);
+		};
+		
+		/*
         //SOCKET.ON for gameServer "kick" event
         SocketService.on('kick', function (data) {
             Display data(reason)
@@ -69,89 +125,7 @@ angular.module('ANEXD')
         SocketService.on('gamestart', function (data) {
             data will be response bool and feedback error
         });
-        */        
-        
-        //Trigged on the back button from the lobby
-        //NOT WORKING
-		$scope.goBack = function(){
-			$scope.showLobby = false;
-			$scope.ready = false;
-            
-            //SHOULD SEND WEBSOCKET TO REMOVE ANON USER
-            
-		};
-		
-		//Instance of lobby socket
-		var lobbySocket;
-		
-		var lobby = function(){
-			lobbySocket.emit('new', $scope.anonUser.username);
-			lobbySocket.on('update', function(data){
-				$scope.users = [];
-				angular.forEach(data, function(value){
-					this.push(value);
-				}, $scope.users);
-			});
-		};
-        
-        //Trigged by clicking submit
-		$scope.submitUser = function(){
-            $scope.inputError = false;
-            $scope.showLobby = true;
-            $scope.submitIsDisabled = false;
-			
-			//Instantiate Socket with LobbyId as the namespace
-			lobbySocket = new LobbySocket($scope.anonUser.lobby);
-			lobby();
-            
-            /*
-            //SOCKET.ON for AnonUsers "joinlobby" event
-            SocketService.emit('joinlobby', {anonUserID.userID})
-            SocketService.on('joinlobby', function (data) {
-                listen for reply
-            });
-            */  
-		};
-		
-        //Trigged by clicking the ready submit
-        $scope.toggleReady = function(){
-			$scope.ready = !$scope.ready;
-			
-			lobbySocket.emit('ready', $scope.ready);
-            
-            /*
-            //SOCKET.ON for AnonUsers "setready" event
-            SocketService.emit('setready'{anonUser.nickname, true})      
-            SocketService.on('setready', function (data) {
-                Response on success
-            });
-            */ 
-		};
-
-        /*
-        $scope.users = [{
-                'player': '',
-                'nickname': '',
-                'ready': false,             
-        }];
-
-        SocketService.on('updatelobby', function (data) {
-        
-        if($scope.showlobby == true){
-            for (var i = 0; i < data.length(); i++) {
-                var incomingId = data[i].id;
-                var incomingNickname = data[i].data.nickname;
-                var incomingReady = data[i].data.ready;
-
-                $scope.users.push({
-                    'id': incomingId,
-                    'nickname': incomingNickname,
-                    'ready': incomingReady
-                });
-            }
-            }
-        });
-*/       
+        */    
     }
 ]);
 }());

@@ -57,7 +57,8 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 .run([
 	'$rootScope',
 	'$location',
-	function ($rootScope, $location) {
+	'$route',
+	function ($rootScope, $location, $route) {
 		$rootScope.isMobile = (function () {
 			var check = false;
 			(function (a) {
@@ -67,12 +68,19 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 			})(navigator.userAgent || navigator.vendor || window.opera);
 			return check;
 		})();
-
-		// register listener to watch route changes
-		$rootScope.$on('$routeChangeStart', function (event, next) {
-			if (next.templateUrl === '/views/mobile-home.html' && !$rootScope.isMobile) {
-				$location.path('/');
+		
+		//Allow us to change URL without reloading the controller
+		var original = $location.path;
+		$location.path = function (path, reload) {
+			if (reload === false) {
+				var lastRoute = $route.current;
+				var un = $rootScope.$on('$locationChangeSuccess', function () {
+					$route.current = lastRoute;
+					un();
+				});
 			}
-		});
+			return original.apply($location, [path]);
+		};
+		
 	}
 ]);

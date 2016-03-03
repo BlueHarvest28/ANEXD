@@ -8,7 +8,9 @@ angular.module('ANEXD')
     '$http',
 	'SocketService',
 	'LobbySocket',
-    function ($scope, $timeout, LoginService, $http, SocketService, LobbySocket) 
+	'$location',
+	'$rootScope',
+    function ($scope, $timeout, LoginService, $http, SocketService, LobbySocket, $location, $rootScope) 
     {					
 		var lobbySocket;
 		
@@ -22,8 +24,6 @@ angular.module('ANEXD')
         var host = 'http://api-anexd.rhcloud.com/';
         $scope.lobbyDelFlag = false;
         $scope.lobbyQR = '';
-        $scope.lobbyPass = '';
-        $scope.lobbyId = '000000';
         $scope.type = '';
         
 		$scope.users = [];
@@ -73,7 +73,7 @@ angular.module('ANEXD')
 			$http(req).then(function successCallback(response) {
 				console.log(response);
 				if(response.data.status === 'Success'){
-					$scope.lobbyId = response.data.data.lobbyID;	
+					$scope.lobby = response.data.data.lobbyID;	
 					deleteLobby();
 				}
 				else {
@@ -89,7 +89,7 @@ angular.module('ANEXD')
         function deleteLobby(){
             //Lobby Deletion Post
 			var payload = {
-				'lobbyID': $scope.lobbyId, //The lobbyid is in here
+				'lobbyID': $scope.lobby,
 			};
 			var req = {
 				method: 'POST',
@@ -99,7 +99,13 @@ angular.module('ANEXD')
 			};
 			$http(req).then(function successCallback(response) {
 				console.log(response);
-				$scope.launchApp();
+				if(lobbySocket){
+					lobbySocket.emit('close');	
+					$scope.users = [];
+				}
+				if($scope.isDisabled){
+					$scope.launchApp();
+				}
 			}, function errorCallback(response) {
 				console.log(response);
 			});
@@ -108,11 +114,10 @@ angular.module('ANEXD')
     	$scope.launchApp = function(){
     		$scope.lobbyDelFlag = true;
             
-            //Lobby Post
             var payload = {
                 'creator': LoginService.getUserId(),
                 'game': $scope.app.gameID,
-                'size': $scope.lobby.max,
+                'size': $scope.maxPlayers,
             };
 
             var req = {
@@ -129,20 +134,19 @@ angular.module('ANEXD')
                 else {
                     console.log(response);
                     $scope.showLobby = true;
-                    //Get the lobbyCode
-                    $scope.lobbyId = response.data.data.id;
-                    $scope.lobbyPass = response.data.data.pass;
+                    $scope.lobby = response.data.data.pass;
                     //Lobby QR and password creation.
-                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPass;
+                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobby;
 					$scope.isDisabled = false;
 					$scope.launchMessage = 'Launch';
 					
 					//Instantiate Socket for lobby
-					SocketService.emit('lobby', $scope.lobbyPass);
+					SocketService.emit('lobby', $scope.lobby);
 					SocketService.on('lobby', function(data){
 						if(data){
-							lobbySocket = new LobbySocket($scope.lobbyPass);
+							lobbySocket = new LobbySocket($scope.lobby);
 							lobby();
+							$location.path('/' + $scope.lobby, false);
 						}
 					});
                 }    
@@ -163,8 +167,10 @@ angular.module('ANEXD')
     	};
 		
 		$scope.start = function(){
-            console.log('gameStart'); 
-			$scope.showLobby = false;
+			$rootScope.lobby = $scope.lobby;
+			$rootScope.app = $scope.app.gameID;
+			lobbySocket.emit('start', {'lobby': $scope.lobby, 'app': $scope.app.gameID});
+			$location.path($location.path() + '/' + $scope.app.gameID, true);
             //SOCKET.ON for GameServer "gameStart" event?
             //SocketService.emit('start',{});
         };     
@@ -197,9 +203,7 @@ angular.module('ANEXD')
     	};
         
         //Local lobby information
-        $scope.lobby = {
-            max: '5',
-        };
+        $scope.maxPlayers = '5';
 		
 		/*
         //SOCKET.ON for GameServer "msgall" event.

@@ -21,7 +21,7 @@
 			<div class="lobby-app-container" ng-show="hideIcons">
 				<div class="lobby" ng-show="showLobby" ng-class="{'show-lobby': showLobby}">
 					<div class="lobby-header">
-						<h3>Players {{users.length}}/{{lobby.max}}</h3>
+						<h3>Players {{users.length}}/{{maxPlayers}}</h3>
 					</div>
 					<div class="lobby-content">
 						<div class="lobby-players">
@@ -52,7 +52,7 @@
 				        <form ng-hide="showLobby" ng-class="{'show-lobby': showLobby}">
                             <div class="form-group">		
 				        		<label for="maxplayers">Max Players:&nbsp;</label>
-					          	<select class="form-control" ng-model="lobby.max" id="max-players">
+					          	<select class="form-control" ng-model="maxPlayers" id="max-players">
 					        		<option>5</option>
 					        		<option>10</option>
 					        		<option>20</option>
@@ -65,14 +65,14 @@
 				        	<input type="submit" ng-value="launchMessage" class="login-submit" 
 								   ng-class="{disabled: isDisabled}" 
 								   ng-disabled="isDisabled"
-								   ng-click="getLobby(lobby)">
+								   ng-click="getLobby()">
 				    	</form>
 				    </div>
 				    <div class="qr" ng-show="showLobby">
 				    	<qr text="lobbyQR" ng-show="showLobby"></qr>
 				    </div>
 				    <div class="code" ng-show="showLobby">
-				    	<h3>harrymjones.com/anxed/{{lobbyPass}}</h3>
+				    	<h3>harrymjones.com/anxed/{{lobby}}</h3>
 				    </div>
 					<div class="cover"></div>
 				</div>

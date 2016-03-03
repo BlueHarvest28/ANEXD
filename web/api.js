@@ -17,7 +17,7 @@ server.listen(app.get('port') ,app.get('ip'), function () {
 var lobbyio;
 
 //Socket for games
-var gameio = io.of('/567/1');
+var gameio;
 
 //Instantiate Socket for lobby
 io.on('connection', function(socket){
@@ -35,7 +35,13 @@ var lobby = function(){
 	lobbyio.on('connection', function(socket){
 		console.log('Lobby connection', socket.id);
 		
-		socket.on('new', function(name){
+		socket.on('start', function(data){
+			lobbyio.emit('start');
+			gameio = io.of('/' + data.lobby + '/' + data.app);
+			game();
+		});
+		
+		socket.on('join', function(name){
 			console.log('new user', name);
 			players[socket.id] = {'id': socket.id, 'name': name, 'ready': false};
 			lobbyio.emit('update', players);
@@ -45,6 +51,21 @@ var lobby = function(){
 			players[socket.id].ready = ready;
 			lobbyio.emit('update', players);
 		});
+		
+		socket.on('leave', function(){
+			console.log('disconnect', players[socket.id].name);
+			if(players[socket.id]){
+				delete players[socket.id];	
+			}
+			socket.disconnect();
+			lobbyio.emit('update', players);
+		})
+		
+		socket.on('close', function(){
+			players = {};
+			lobbyio.emit('close');
+			socket.disconnect();
+		})
 		
 		socket.on('disconnect', function(){
 			delete players[socket.id];
@@ -59,12 +80,6 @@ var lobby = function(){
 var users = {};
 var userCount = -1;
 var current = 0;
-
-var title = {
-	'title': 'Return of the Aliens',
-	'description': 'CROP CIRCLES. CROP TRIANGLES. UFOs. WHERE DOES IT END, SHARON? WHERE?',
-	'total': total
-}
 
 var questions = [
 	{
@@ -180,76 +195,84 @@ var questions = [
 ];
 
 var total = questions.length;
+
+var title = {
+	'title': 'Return of the Aliens',
+	'description': 'CROP CIRCLES. CROP TRIANGLES. UFOs. WHERE DOES IT END, SHARON? WHERE?',
+	'total': total
+}
+
 var answers = ['A', 'B', 'D', 'A', 'C'];
 
-gameio.on('connection', function (socket) {
-	console.log('Game connection', socket.id);
-	
-	userCount++;
-	users[socket.id] = 0;
-	gameio.emit('users', userCount);
-	
-	//Title details for front-end local storage
-	socket.emit('title', title);
-	
-	socket.on('disconnect', function(){
-		userCount--;
-		gameio.emit('users', userCount);
-		delete users[socket.id];
-	});
-	
-	if(current === 0){
-		socket.emit('current', {'event': 'showStart'});
-	}
-	else if(current < total ){
-		socket.emit('current', {'event': 'question', 'data': questions[current-1]});
-	}
-	else if(current > total){
-		socket.emit('current', {'event': 'showEnd'});
-	}
-	
-	socket.on('answer', function(answer){
-		gameio.emit('answers');
-		if(answer === answers[current-1]){
-			users[socket.id]++;
-			console.log('correct answer, score:', users[socket.id]);
-			socket.emit('answer', true);
-		}
-		else {
-			socket.emit('answer', false);
-		}
-	});
-	
-	socket.on('next', function (){
-		if(current === total){
-			current++;
-			console.log('show end');
-			socket.emit('next', true);
-			gameio.emit('current', {'event': 'showEnd', 'data': users});
-		} 
-		else if(current < total){
-			current++;
-			var question = questions[current-1];	
-			console.log('next question', current);
-			socket.emit('next', true);
-			gameio.emit('current', {'event': 'question', 'data': question});
-		}
-	});
-	
-	socket.on('previous', function (){
-		if(current === 1){
-			current--;
-			console.log('show start');
-			socket.emit('previous', true);
-			gameio.emit('current', {'event': 'showStart'});	
-		} 
-		else if(current > 1){
-			current--;
-			var question = questions[current-1];	
-			console.log('previous question', current);
-			socket.emit('previous', true);
-			gameio.emit('current', {'event': 'question', 'data': question});
-		}
-	});
-});
+var game = function(){
+	gameio.on('connection', function (socket) {
+		console.log('Game connection', socket.id);
 
+		userCount++;
+		users[socket.id] = 0;
+		gameio.emit('users', userCount);
+
+		//Title details for front-end local storage
+		socket.emit('title', title);
+
+		socket.on('disconnect', function(){
+			userCount--;
+			gameio.emit('users', userCount);
+			delete users[socket.id];
+		});
+
+		if(current === 0){
+			socket.emit('current', {'event': 'showStart'});
+		}
+		else if(current < total ){
+			socket.emit('current', {'event': 'question', 'data': questions[current-1]});
+		}
+		else if(current > total){
+			socket.emit('current', {'event': 'showEnd'});
+		}
+
+		socket.on('answer', function(answer){
+			gameio.emit('answers');
+			if(answer === answers[current-1]){
+				users[socket.id]++;
+				console.log('correct answer, score:', users[socket.id]);
+				socket.emit('answer', true);
+			}
+			else {
+				socket.emit('answer', false);
+			}
+		});
+
+		socket.on('next', function (){
+			if(current === total){
+				current++;
+				console.log('show end');
+				socket.emit('next', true);
+				gameio.emit('current', {'event': 'showEnd', 'data': users});
+			} 
+			else if(current < total){
+				current++;
+				var question = questions[current-1];	
+				console.log('next question', current);
+				socket.emit('next', true);
+				gameio.emit('current', {'event': 'question', 'data': question});
+			}
+		});
+
+		socket.on('previous', function (){
+			if(current === 1){
+				current--;
+				console.log('show start');
+				socket.emit('previous', true);
+				gameio.emit('current', {'event': 'showStart'});	
+			} 
+			else if(current > 1){
+				current--;
+				var question = questions[current-1];	
+				console.log('previous question', current);
+				socket.emit('previous', true);
+				gameio.emit('current', {'event': 'question', 'data': question});
+			}
+		});
+	});
+};
