@@ -25,6 +25,9 @@
 					</div>
 					<div class="lobby-content">
 						<div class="lobby-players">
+							<div class="row empty" ng-show="!users.length">
+								Waiting for players...
+							</div>
 							<div class="row" ng-repeat="user in users">
 								<div class="col-xs-9">
 									<span>{{user.name}}</span>
@@ -71,6 +74,7 @@
 				    <div class="code" ng-show="showLobby">
 				    	<h3>harrymjones.com/anxed/{{lobbyPass}}</h3>
 				    </div>
+					<div class="cover"></div>
 				</div>
 			</div>
 		</div>

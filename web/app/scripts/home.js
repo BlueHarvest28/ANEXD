@@ -25,17 +25,9 @@ angular.module('ANEXD')
         $scope.lobbyPass = '';
         $scope.lobbyId = '000000';
         $scope.type = '';
-            
-//        $scope.apps = [
-//           { 
-//            'name': '',
-//            'type': '',
-//            'description': '',
-//            'image': '',
-//            'rating': '',
-//            }
-//        ];  
         
+		$scope.users = [];
+		
         var req = {
              method: 'POST',
              url: host + 'getAllGames',
@@ -51,13 +43,23 @@ angular.module('ANEXD')
             }
         });   
 		
-		$scope.start = function(){
-            console.log('gameStart'); 
-            //SOCKET.ON for GameServer "gameStart" event?
-            //SocketService.emit('start',{});
-        };        
+		var lobby = function(){
+			lobbySocket.on('update', function(players){
+				$scope.users = [];
+				angular.forEach(players, function(value){
+					this.push(value);	
+				}, $scope.users);
+			});
+		};
+		
+		//Called on lobby creation submit
+		$scope.launchMessage = 'Launch';
+		$scope.isDisabled = false;
         
         $scope.getLobby = function(){
+			//Disable submit button
+			$scope.isDisabled = true;
+			$scope.launchMessage = '';
             //The userid is in here
             var payload = {
 				'creator': LoginService.getUserId(),
@@ -74,7 +76,10 @@ angular.module('ANEXD')
 					$scope.lobbyId = response.data.data.lobbyID;	
 					deleteLobby();
 				}
-				$scope.launchApp();
+				else {
+					$scope.launchApp();
+				}
+				
 			}, function errorCallback(response) {
 				console.log(response);
 			});
@@ -94,32 +99,16 @@ angular.module('ANEXD')
 			};
 			$http(req).then(function successCallback(response) {
 				console.log(response);
+				$scope.launchApp();
 			}, function errorCallback(response) {
 				console.log(response);
 			});
         }	
-		
-		$scope.users = [];
-		var lobby = function(){
-			lobbySocket.on('update', function(players){
-				$scope.users = [];
-				angular.forEach(players, function(value){
-					this.push(value);	
-				}, $scope.users);
-			});
-		};
-
-        //Called on lobby creation submit
-		$scope.launchMessage = 'Launch';
-		$scope.isDisabled = false;
         
     	$scope.launchApp = function(){
-			$scope.isDisabled = true;
-			$scope.launchMessage = '';
     		$scope.lobbyDelFlag = true;
             
             //Lobby Post
-            //!!!TEMP NEEDS CHANGING WHEN USER CAN LOG IN!!!
             var payload = {
                 'creator': LoginService.getUserId(),
                 'game': $scope.app.gameID,
@@ -172,6 +161,13 @@ angular.module('ANEXD')
             
             */  
     	};
+		
+		$scope.start = function(){
+            console.log('gameStart'); 
+			$scope.showLobby = false;
+            //SOCKET.ON for GameServer "gameStart" event?
+            //SocketService.emit('start',{});
+        };     
 		
 		$scope.loadApp = function(app){
     		$scope.hideIcons = true;

@@ -34,6 +34,9 @@
 						</div>
 					</div>
 					<hr/>
+					<div class="row empty" ng-show="!users.length">
+						Waiting for players...
+					</div>
 					<div class="row" ng-repeat="user in users">
 						<div class="col-xs-9">
 							<span>{{user.name}}</span>

@@ -3,6 +3,11 @@ body{
 	background-size: cover;
 	background-color: #3D5663;
 	background-repeat: no-repeat;
+	
+	.empty{
+		color: rgba(255,255,255,0.25);
+		font-style: italic;
+	}
 
 	.container-fluid.main{
 		margin-top: 80px;

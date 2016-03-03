@@ -20,6 +20,10 @@
 }
 
 /**************/
+.empty{
+	color: rgba(255,255,255,0.25);
+    font-style: italic;
+}
 
 .home{
 	.lobby-app-container{
@@ -78,11 +82,11 @@
 	    	padding: 30px;
 		    color: #222;
 		    margin-top: -250px;
-		    z-index: 2;
+		    z-index: 3;
 		    background-color: #ffffff;
 		    position: relative;
 		    box-shadow: rgba(0,0,0,0.35) 0 -15px 85px;
-			height: 280px;
+			height: 240px;
 			transition: height 0.5s 0.5s, margin-top 0.5s;
 			overflow: hidden;
 
@@ -110,12 +114,23 @@
 		    	opacity: 1;
 		    }
 	    }
+		
+		.cover{
+			width: 100%;
+			height: 240px;
+			display: block;
+			position: absolute;
+			top: 160px;
+			z-index: 1;
+			background-color: #fff;
+		}
 
 	    .qr{
 	    	transition: height 0.5s 0.5s;
 			height: 300px;
 			background-color: white;
 			position: relative;
+			z-index: 2;
 			color: #222;
 			padding: 20px;
 
