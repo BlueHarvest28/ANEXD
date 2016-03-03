@@ -30,10 +30,26 @@ io.on('connection', function(socket){
 	})
 })
 
+var players = {};
 var lobby = function(){
 	lobbyio.on('connection', function(socket){
 		console.log('Lobby connection', socket.id);
-		socket.emit('message', 'yo gangsta');
+		
+		socket.on('new', function(name){
+			console.log('new user', name);
+			players[socket.id] = {'id': socket.id, 'name': name, 'ready': false};
+			lobbyio.emit('update', players);
+		});
+		
+		socket.on('ready', function (ready){
+			players[socket.id].ready = ready;
+			lobbyio.emit('update', players);
+		});
+		
+		socket.on('disconnect', function(){
+			delete players[socket.id];
+			lobbyio.emit('update', players);
+		})
 	});
 };
 

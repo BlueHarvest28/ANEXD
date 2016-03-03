@@ -25,6 +25,31 @@ angular.module('ANEXD')
         $scope.lobbyPass = '';
         $scope.lobbyId = '000000';
         $scope.type = '';
+            
+//        $scope.apps = [
+//           { 
+//            'name': '',
+//            'type': '',
+//            'description': '',
+//            'image': '',
+//            'rating': '',
+//            }
+//        ];  
+        
+        var req = {
+             method: 'POST',
+             url: host + 'getAllGames',
+        };   
+        
+        //POST REQUEST for all games
+        $http(req).then(function(response)  {
+			console.log(response);
+            $scope.apps = response.data;
+            for(var i = 0; i < $scope.apps.length; i++) {
+                var obj = $scope.apps[i];
+                $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
+            }
+        });   
 		
 		$scope.start = function(){
             console.log('gameStart'); 
@@ -72,91 +97,15 @@ angular.module('ANEXD')
 			}, function errorCallback(response) {
 				console.log(response);
 			});
-        }
-            
-        $scope.apps = [
-           { 
-            'name': '',
-            'type': '',
-            'description': '',
-            'image': '',
-            'rating': '',
-            }
-        ];  
-        
-        var req = {
-             method: 'POST',
-             url: host + 'getAllGames',
-        };   
-        
-        //POST REQUEST for all games
-        $http(req).then(function(response)  {
-            $scope.apps = response.data;
-            for(var i = 0; i < $scope.apps.length; i++) {
-                var obj = $scope.apps[i];
-                $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
-            }
-        });   
+        }	
 		
-        //Will be removed when api is working
-        $scope.users = [
-            {
-                'name': 'Edgar Badgerdon',
-                'ready': false,
-            },
-            {
-                'name': 'Audrey Mincebucket',
-                'ready': false,
-            },
-            {
-                'name': 'Manuel Slimesta',
-                'ready': false,
-            },
-            {
-                'name': 'Ina Sprinkfitz',
-                'ready': true,
-            },
-            {
-                'name': 'Hunch McScrape',
-                'ready': false,
-            },
-        ];
-        
-        //Local lobby information
-        $scope.lobby = {
-            max: '5',
-        };
-
-    	$scope.loadApp = function(app){
-    		$scope.hideIcons = true;
-    		$scope.app = app;
-    	};
-
-    	$scope.showIcons = function(){
-    		$scope.hideIcons = false;
-            //Wait for the windows to disappear before triggering transitions
-            $scope.isDisabled = false;
-			$scope.launchMessage = 'Launch';
-			
-			$timeout( function(){
-                $scope.showLobby = false;
-            }, 1000);
-            
-            if($scope.lobbyDelFlag === true){
-                deleteLobby();
-                
-                //End of Lobby Deletion Post
-                $scope.lobbyDelFlag = false;
-            }
-    	};
-          	
-    	$scope.setFilter = function(type){
-    		$scope.type = type;
-    	};
-		
+		$scope.users = [];
 		var lobby = function(){
-			lobbySocket.on('message', function(){
-				console.log('fantabulus');		 
+			lobbySocket.on('update', function(players){
+				$scope.users = [];
+				angular.forEach(players, function(value){
+					this.push(value);	
+				}, $scope.users);
 			});
 		};
 
@@ -224,6 +173,37 @@ angular.module('ANEXD')
             */  
     	};
 		
+		$scope.loadApp = function(app){
+    		$scope.hideIcons = true;
+    		$scope.app = app;
+    	};
+
+    	$scope.showIcons = function(){
+    		$scope.hideIcons = false;
+            //Wait for the windows to disappear before triggering transitions
+            $scope.isDisabled = false;
+			$scope.launchMessage = 'Launch';
+			
+			$timeout( function(){
+                $scope.showLobby = false;
+            }, 1000);
+            
+            if($scope.lobbyDelFlag === true){
+                deleteLobby();
+                
+                //End of Lobby Deletion Post
+                $scope.lobbyDelFlag = false;
+            }
+    	};
+          	
+    	$scope.setFilter = function(type){
+    		$scope.type = type;
+    	};
+        
+        //Local lobby information
+        $scope.lobby = {
+            max: '5',
+        };
 		
 		/*
         //SOCKET.ON for GameServer "msgall" event.

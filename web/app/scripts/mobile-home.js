@@ -8,17 +8,20 @@ angular.module('ANEXD')
 	'$routeParams',
 	'LobbySocket',
     function ($scope, $http, SocketService, $routeParams, LobbySocket) 
-    {			
-		
+    {
         $scope.ready = false;
     	$scope.allowNicknames = true;
 		$scope.showLobby = false;
         $scope.inputError = false;
+		
+		$scope.users = [];
         //UNUSED
 		//var host = 'http://api-anexd.rhcloud.com/';
-        SocketService.on('message', function (message) {
-        	console.log(message);
-        });
+		
+		if($routeParams.lobbyId){
+			$scope.anonUser.lobbyId = $routeParams.lobbyId;
+		}
+		
         $scope.anonUserID = {
             'userID': '',
         };
@@ -26,9 +29,6 @@ angular.module('ANEXD')
 			'username': '',
             'lobby': '',
 		};
-		if($routeParams.lobbyId){
-			$scope.anonUser.lobbyId = $routeParams.lobbyId;
-		}
         
         /*
         //SOCKET.ON for gameServer "kick" event
@@ -80,8 +80,20 @@ angular.module('ANEXD')
             //SHOULD SEND WEBSOCKET TO REMOVE ANON USER
             
 		};
-        
+		
+		//Instance of lobby socket
 		var lobbySocket;
+		
+		var lobby = function(){
+			lobbySocket.emit('new', $scope.anonUser.username);
+			lobbySocket.on('update', function(data){
+				$scope.users = [];
+				angular.forEach(data, function(value){
+					this.push(value);
+				}, $scope.users);
+			});
+		};
+        
         //Trigged by clicking submit
 		$scope.submitUser = function(){
             $scope.inputError = false;
@@ -89,7 +101,8 @@ angular.module('ANEXD')
             $scope.submitIsDisabled = false;
 			
 			//Instantiate Socket with LobbyId as the namespace
-			lobbySocket = new LobbySocket($scope.anonUser.lobbyId);
+			lobbySocket = new LobbySocket($scope.anonUser.lobby);
+			lobby();
             
             /*
             //SOCKET.ON for AnonUsers "joinlobby" event
@@ -103,6 +116,8 @@ angular.module('ANEXD')
         //Trigged by clicking the ready submit
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
+			
+			lobbySocket.emit('ready', $scope.ready);
             
             /*
             //SOCKET.ON for AnonUsers "setready" event
@@ -137,89 +152,6 @@ angular.module('ANEXD')
             }
         });
 */       
-
-		$scope.users = [
-			{
-				'name': 'Edgar Badgerdon',
-				'ready': false,
-			},
-			{
-				'name': 'Audrey Mincebucket',
-				'ready': false,
-			},
-			{
-				'name': 'Manuel Slimesta',
-				'ready': false,
-			},
-			{
-				'name': 'Ina Sprinkfitz',
-				'ready': true,
-			},
-			{
-				'name': 'Hunch McScrape',
-				'ready': false,
-			},
-			{
-				'name': 'Edgar Badgerdon',
-				'ready': false,
-			},
-			{
-				'name': 'Audrey Mincebucket',
-				'ready': false,
-			},
-			{
-				'name': 'Manuel Slimesta',
-				'ready': false,
-			},
-			{
-				'name': 'Ina Sprinkfitz',
-				'ready': true,
-			},
-			{
-				'name': 'Hunch McScrape',
-				'ready': false,
-			},
-			{
-				'name': 'Edgar Badgerdon',
-				'ready': false,
-			},
-			{
-				'name': 'Audrey Mincebucket',
-				'ready': false,
-			},
-			{
-				'name': 'Manuel Slimesta',
-				'ready': false,
-			},
-			{
-				'name': 'Ina Sprinkfitz',
-				'ready': true,
-			},
-			{
-				'name': 'Hunch McScrape',
-				'ready': false,
-			},
-			{
-				'name': 'Edgar Badgerdon',
-				'ready': false,
-			},
-			{
-				'name': 'Audrey Mincebucket',
-				'ready': false,
-			},
-			{
-				'name': 'Manuel Slimesta',
-				'ready': false,
-			},
-			{
-				'name': 'Ina Sprinkfitz',
-				'ready': true,
-			},
-			{
-				'name': 'Hunch McScrape',
-				'ready': false,
-			},
-		];
     }
 ]);
 }());

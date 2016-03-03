@@ -59,12 +59,8 @@
 	    	width: 100%;
 		    z-index: 0;
 		    position: relative;
-		    top: -140px;
+		    top: -38px;;
 		    transition: top 0.5s;
-
-		    &.show-lobby{
-		    	top: -100px;
-		    }
 	    }
 
 	    >.fa-close{
@@ -350,6 +346,7 @@
 	.app-list{
 		position: relative;
 		background-color: #eeeeee;
+		min-height: 500px;
 
 		.app-tile{
 			background-color: #aaa;
