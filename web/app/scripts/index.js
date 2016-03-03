@@ -10,6 +10,8 @@ angular.module('ANEXD')
     'md5',
     function ($scope, $rootScope, $timeout, LoginService, $http, md5)
     {		
+		$scope.isMobile = $rootScope.isMobile;
+		
     	$scope.loggedIn = LoginService.isLoggedIn();
         $scope.errorDisabled = false;
 		$scope.shouldHide = true;

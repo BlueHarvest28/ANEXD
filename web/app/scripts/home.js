@@ -7,12 +7,11 @@ angular.module('ANEXD')
     'LoginService',
     '$http',
 	'SocketService',
-    function ($scope, $timeout, LoginService, $http, SocketService) 
+	'LobbySocket',
+    function ($scope, $timeout, LoginService, $http, SocketService, LobbySocket) 
     {					
-		SocketService.on('message', function (message) {
-        	console.log(message);
-        });
-		        
+		var lobbySocket;
+		
     	$scope.$watch(function(){ return LoginService.isLoggedIn();}, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
@@ -26,71 +25,8 @@ angular.module('ANEXD')
         $scope.lobbyPass = '';
         $scope.lobbyId = '000000';
         $scope.type = '';
-        
-        //Called when the user closes a lobby
-        function deleteLobby(){
-            //Lobby Deletion Post
-			var payload = {
-				'lobbyID': $scope.lobbyId, //The lobbyid is in here
-			};
-			console.log(payload);
-			var req = {
-				method: 'POST',
-				url: host + 'delLobby',
-				headers: {'Content-Type': 'application/json'},
-				data: payload,
-			};
-			$http(req).then(function successCallback(response) {
-				console.log(response);
-			}, function errorCallback(response) {
-				console.log(response);
-			});
-        }
-        
-        /*
-        //SOCKET.ON for GameServer "msgall" event.
-        SocketService.on('msgall', function (data) {
-            data will be msg: interfac{}
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "gameend" event.
-        SocketService.on('gameend', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "msgplayer" event.
-        SocketService.on('msgplayer', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "gamestart" event.
-        SocketService.on('gamestart', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for AnonUsers "msgserver" event
-        SocketService.emit('msgserver', {anonUserID, msg: interface}) 
-        */
-        
-        /*
-        //SOCKET.ON for AnonUsers "end" event
-        SocketService.emit('end', {NODATA}) 
-        */   
-        
-        /*
-        //SOCKET.ON for AnonUsers "kick" event
-        SocketService.emit('kick', {username})
-        */  
-        
-        $scope.start = function(){
+		
+		$scope.start = function(){
             console.log('gameStart'); 
             //SOCKET.ON for GameServer "gameStart" event?
             //SocketService.emit('start',{});
@@ -118,7 +54,26 @@ angular.module('ANEXD')
 				console.log(response);
 			});
         };
-                
+        
+        //Called when the user closes a lobby
+        function deleteLobby(){
+            //Lobby Deletion Post
+			var payload = {
+				'lobbyID': $scope.lobbyId, //The lobbyid is in here
+			};
+			var req = {
+				method: 'POST',
+				url: host + 'delLobby',
+				headers: {'Content-Type': 'application/json'},
+				data: payload,
+			};
+			$http(req).then(function successCallback(response) {
+				console.log(response);
+			}, function errorCallback(response) {
+				console.log(response);
+			});
+        }
+            
         $scope.apps = [
            { 
             'name': '',
@@ -142,33 +97,7 @@ angular.module('ANEXD')
                 $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
             }
         });   
-        
-        /*
-        Socket for the lobby
-        
-        $scope.users = [
-            {
-                'id': '',
-                'nickname': '',
-                'ready': false,             
-        }];
-        
-        //SOCKET.ON for GameServer "updatelobby" event.
-        SocketService.on('updatelobby', function (data) {
-            
-            for (var i = 0; i < data.length(); i++) {       
-                var incomingId = data[i].id;
-                var incomingNickname = data[i].data.nickname;
-                var incomingReady = data[i].data.ready;
-                
-                $scope.users.push({
-                    'id': incomingId,
-                    'nickname': incomingNickname,
-                    'ready': incomingReady});
-            }
-        });
-        */
-
+		
         //Will be removed when api is working
         $scope.users = [
             {
@@ -224,6 +153,12 @@ angular.module('ANEXD')
     	$scope.setFilter = function(type){
     		$scope.type = type;
     	};
+		
+		var lobby = function(){
+			lobbySocket.on('message', function(){
+				console.log('fantabulus');		 
+			});
+		};
 
         //Called on lobby creation submit
 		$scope.launchMessage = 'Launch';
@@ -248,7 +183,7 @@ angular.module('ANEXD')
                 headers: {'Content-Type': 'application/json'},
                 data: payload,
             };
-
+			
             $http(req).then(function(response) {
                 if(response.data.status === 'Fail') {
                     console.log(response);
@@ -263,6 +198,15 @@ angular.module('ANEXD')
                     $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobbyPass;
 					$scope.isDisabled = false;
 					$scope.launchMessage = 'Launch';
+					
+					//Instantiate Socket for lobby
+					SocketService.emit('lobby', $scope.lobbyPass);
+					SocketService.on('lobby', function(data){
+						if(data){
+							lobbySocket = new LobbySocket($scope.lobbyPass);
+							lobby();
+						}
+					});
                 }    
             }, function errorCallback(response) {
                 //show error and send again
@@ -279,51 +223,76 @@ angular.module('ANEXD')
             
             */  
     	};
-           
+		
+		
+		/*
+        //SOCKET.ON for GameServer "msgall" event.
+        SocketService.on('msgall', function (data) {
+            data will be msg: interfac{}
+        });
+        */
+        
+        /*
+        //SOCKET.ON for GameServer "gameend" event.
+        SocketService.on('gameend', function (data) {
+            data will be response bool and feedback error
+        });
+        */
+        
+        /*
+        //SOCKET.ON for GameServer "msgplayer" event.
+        SocketService.on('msgplayer', function (data) {
+            data will be response bool and feedback error
+        });
+        */
+        
+        /*
+        //SOCKET.ON for GameServer "gamestart" event.
+        SocketService.on('gamestart', function (data) {
+            data will be response bool and feedback error
+        });
+        */
+        
+        /*
+        //SOCKET.ON for AnonUsers "msgserver" event
+        SocketService.emit('msgserver', {anonUserID, msg: interface}) 
+        */
+        
+        /*
+        //SOCKET.ON for AnonUsers "end" event
+        SocketService.emit('end', {NODATA}) 
+        */   
+        
+        /*
+        //SOCKET.ON for AnonUsers "kick" event
+        SocketService.emit('kick', {username})
+        */  
+        
+        /*
+        Socket for the lobby
+        
+        $scope.users = [
+            {
+                'id': '',
+                'nickname': '',
+                'ready': false,             
+        }];
+        
+        //SOCKET.ON for GameServer "updatelobby" event.
+        SocketService.on('updatelobby', function (data) {
+            
+            for (var i = 0; i < data.length(); i++) {       
+                var incomingId = data[i].id;
+                var incomingNickname = data[i].data.nickname;
+                var incomingReady = data[i].data.ready;
+                
+                $scope.users.push({
+                    'id': incomingId,
+                    'nickname': incomingNickname,
+                    'ready': incomingReady});
+            }
+        });
+        */ 
     }
-])
-.directive('scrollOnClick', function() {
-	return {
-	    restrict: 'A',
-	    link: function(scope, elm, attrs) {
-	     	var idToScroll = attrs.href;
-	      	elm.on('click', function() {
-	        	var target;
-		        if (idToScroll) {
-		          	target = $(idToScroll);
-		        } else {
-		          	target = elm;
-		        }
-	        	$('body, html').animate({scrollTop: target.offset().top-60}, 'slow');
-	      	});
-	    }
-	};
-})
-.directive('requireLogin', function (LoginService) {
-	return{
-		restrict: 'A',
-		scope: {
-	    	callback: '&loginCallback'
-	    },
-		link: function(scope, elm) {
-	      	elm.on('click', function() {
-	        	if(!LoginService.isLoggedIn()){
-	        		var loginModal = $('.login-modal');
-	        		loginModal.modal('show');
-	        		loginModal.on('hidden.bs.modal', function() {
-	        			//Only listen to the first modal closure
-	        			loginModal.off('hidden.bs.modal');
-	        			if(LoginService.isLoggedIn()){
-	        				scope.callback();
-	        				scope.$apply();
-	        			}
-	        		});
-	        	} else {
-	        		scope.callback();
-	        		scope.$apply();
-	        	}
-	      	});
-	    }
-	};
-});
+]);
 }());

@@ -1,20 +1,20 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>ANEXD | Multiplayer gaming through your phone</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <!-- build:css(.) styles/vendor.css -->
-    <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
-    <!-- build:css(.tmp) -->
+<head>
+	<meta charset="utf-8">
+	<title>ANEXD | Multiplayer gaming through your phone</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width">
+	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<!-- build:css(.) styles/vendor.css -->
+	<!-- bower:css -->
+	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+	<!-- endbower -->
+	<!-- endbuild -->
+	<!-- build:css(.tmp) -->
 	<link rel="stylesheet" href="styles/main.css">
-    <div ng-if="!isMobile">
+	<div ng-if="!isMobile">
 		<link rel="stylesheet" href="styles/non-responsive.css">
 		<link rel="stylesheet" href="styles/home.css">
 		<link rel="stylesheet" href="styles/play.css">
@@ -23,135 +23,118 @@
 		<link rel="stylesheet" href="styles/mobile-home.css">
 		<link rel="stylesheet" href="styles/mobile-play.css">
 	</div>
-    <!-- endbuild -->
-  </head>
-  <body ng-app="ANEXD" ng-controller="IndexController" id="top">
-    <!--[if lte IE 8]>
+	<!-- endbuild -->
+</head>
+
+<body ng-app="ANEXD" ng-controller="IndexController" id="top">
+	<!--[if lte IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href=""><img src="images/logo.png" alt="ANEXD"/></a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="" data-toggle="modal" data-target=".login-modal"><span class="nav-user" ng-show="loggedIn" ng-bind="user"></span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <!-- Use to write error modal, function in index.js to call it afer any error and display erorr. -->
-    <div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="{{shouldHide}}">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-body">       
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href=""><img src="images/logo.png" alt="ANEXD" /></a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="" data-toggle="modal" data-target=".login-modal"><span class="nav-user" ng-show="loggedIn" ng-bind="user"></span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="modal fade login-modal" role="dialog" hide-on-submit should-hide="{{shouldHide}}">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form name="userForm" ng-show="!loggedIn">
+						<div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
+							<img class="email-icon" src="../images/icon-account-small.png" />
+							<input placeholder="email" type="email" class="login-input" name="email" ng-model="email" ng-change="checkEmail(email)" ng-model-options="{debounce: 500}" required>
+							<p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Valid Email is required.</p>
+						</div>
 
-            <!-- Form w-->
-            <form name="userForm" ng-show="!loggedIn">
+						<div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
+							<img class="password-icon" src="../images/icon-password.png" />
+							<input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" required>
+							<p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">Password is too short</p>
+						</div>
 
-              <!-- Email/Username -->   
-              <div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }" >
-                <img class="email-icon" src="../images/icon-account-small.png"/>
-                <input placeholder="email" type="email" class="login-input" name="email" ng-model="email" ng-change="checkEmail(email)" ng-model-options="{debounce: 500}" required>      
-                  <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Valid Email is required.</p>           
-                  <!--  invalid: {{userForm.email.$invalid}}/ valid: {{userForm.email.$valid}}/ dirty: {{userForm.email.$dirty}}/ Pristine: {{userForm.email.$pristine}} -->
-              </div>
+						<div class="login-input-back password" ng-class="{ 'has-error' : userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine }" ng-show="newEmail">
+							<img class="password-icon" src="../images/icon-password.png" />
+							<input placeholder="confirm password" type="password" class="login-input" name="repeatPassword" ng-model="repeatPassword" ng-minlength="3" ng-required="newEmail" compare-to="password" should-validate="newEmail">
+							<p ng-show="userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine" class="help-block">Passwords don't match</p>
+						</div>
 
-              <!-- Password -->
-              <div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
-                <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" required>
-                  <p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">Password is too short</p>
-              </div>
+						<input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)" ng-disabled="userForm.$invalid">
+						<small><a href="">Forgotten your password?</a></small>
+					</form>
+					<div class="account-info" ng-show="loggedIn">
+						<h2>Hi, {{user}}!</h2>
+						<br/>
+						<form class="updateInfoForm">
+							<div class="login-input-back password">
+								<img class="password-icon" src="../images/icon-password.png" />
+								<input name="pass" type="password" class="login-input" ng-model="data.cpass" placeholder="Current Password" ng- required/>
+							</div>
+							<div class="login-input-back password">
+								<img class="password-icon" src="../images/icon-password.png" />
+								<input name="pass" type="password" class="login-input" ng-model="data.npass" placeholder="New Password" ng-change="reenterDisabled = true;" required/>
+							</div>
+							<div class="login-input-back password">
+								<img class="password-icon" src="../images/icon-password.png" />
+								<input name="rpass" placeholder="Retype New Password" class="login-input" type="password" compare-to="npass" ng-model="data.rpass" required />
+							</div>
 
-              <!-- Repeat Password -->
-              <div class="login-input-back password" ng-class="{ 'has-error' : userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine }" ng-show="newEmail">
-                <img class="password-icon" src="../images/icon-password.png"/>
-                <input placeholder="confirm password" type="password" class="login-input" name="repeatPassword" ng-model="repeatPassword" ng-minlength="3" ng-required="newEmail" compare-to="password" should-validate="newEmail">
-                  <p ng-show="userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine" class="help-block">Passwords don't match</p>
-              </div>
+							<div ng-show="errorDisabled">
+								Error: Please Fix Inputs
+							</div>
+						</form>
+						<input type="submit" class="login-submit update-submit" value="Update" ng-click="update(data);">
+						<br/>
+						<input type="submit" class="login-submit" value="Logout" ng-click="logout();">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-                <!-- Submit -->
-                <input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)" ng-disabled="userForm.$invalid">
-                <small><a href="">Forgotten your password?</a></small>
-            </form>
-            <div class="account-info" ng-show="loggedIn">
-              <h2>Hi, {{user}}!</h2>
-              <br/>
+	<div class="container-fluid main">
+		<div ng-view></div>
+	</div>
 
-                <!-- Change Password -->
-                <!--S Settings WIP Fred S-->                   
-                <form class="updateInfoForm">
-                    
-                    <div class="login-input-back password">
-                        <img class="password-icon" src="../images/icon-password.png"/>
-                        <input name="pass" type="password" class="login-input" ng-model="data.cpass" placeholder= "Current Password" ng- required/>
-                    </div>
-                    <div class="login-input-back password">
-                        <img class="password-icon" src="../images/icon-password.png"/>
-                        <input name="pass" type="password" class="login-input" ng-model="data.npass" placeholder= "New Password" ng-change="reenterDisabled = true;" required/>
-                    </div>
-                    <div class="login-input-back password">
-                        <img class="password-icon" src="../images/icon-password.png"/>
-                        <input name="rpass" placeholder= "Retype New Password" class="login-input" type="password" compare-to="npass" ng-model="data.rpass" required />
-                    </div>
-                    
-                    <div ng-show="errorDisabled">
-                      Error: Please Fix Inputs
-                    </div>
-                    
-                </form>
-                 <input type="submit" class="login-submit update-submit" value="Update" ng-click="update(data);">
-                <br/>
-                      
-                    
-                <!--E Settings WIP Fred E-->
-                
-              <input type="submit" class="login-submit" value="Logout" ng-click="logout();">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container-fluid main">
-      <!-- views -->
-      <div ng-view></div>
-    </div>
-	
 	<script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
-	  
-    <!-- build:js(.) scripts/vendor.js -->
-    <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.js"></script>
-    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-    <script src="bower_components/angular-messages/angular-messages.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
-    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="bower_components/angular-touch/angular-touch.js"></script>
-    <script src="bower_components/qrcode/lib/qrcode.js"></script>
-    <script src="bower_components/angular-qr/src/angular-qr.js"></script>
-    <script src="bower_components/angular-socket-io/socket.js"></script>
-    <script src="bower_components/angular-md5/angular-md5.js"></script>
-    <!-- endbower -->
-    <!-- endbuild -->
 
-    <script type="text/javascript" src="bower_components/qrcode/lib/qrcode.min.js"></script>
-    <script type="text/javascript" src="bower_components/angular-qr/angular-qr.min.js"></script>
+	<!-- build:js(.) scripts/vendor.js -->
+	<!-- bower:js -->
+	<script src="bower_components/jquery/dist/jquery.js"></script>
+	<script src="bower_components/angular/angular.js"></script>
+	<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="bower_components/angular-animate/angular-animate.js"></script>
+	<script src="bower_components/angular-cookies/angular-cookies.js"></script>
+	<script src="bower_components/angular-messages/angular-messages.js"></script>
+	<script src="bower_components/angular-resource/angular-resource.js"></script>
+	<script src="bower_components/angular-route/angular-route.js"></script>
+	<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+	<script src="bower_components/angular-touch/angular-touch.js"></script>
+	<script src="bower_components/qrcode/lib/qrcode.js"></script>
+	<script src="bower_components/angular-qr/src/angular-qr.js"></script>
+	<script src="bower_components/angular-socket-io/socket.js"></script>
+	<script src="bower_components/angular-md5/angular-md5.js"></script>
+	<!-- endbower -->
+	<!-- endbuild -->
 
-    <!-- build:js({.tmp,app}) scripts/scripts.js -->
-    <script src="scripts/app.js"></script>
-    <script src="scripts/home.js"></script>
+	<script type="text/javascript" src="bower_components/qrcode/lib/qrcode.min.js"></script>
+	<script type="text/javascript" src="bower_components/angular-qr/angular-qr.min.js"></script>
+
+	<!-- build:js({.tmp,app}) scripts/scripts.js -->
+	<script src="scripts/app.js"></script>
+	<script src="scripts/factories.js"></script>
+	<script src="scripts/directives.js"></script>
+	<script src="scripts/index.js"></script>
+	<script src="scripts/home.js"></script>
 	<script src="scripts/mobile-home.js"></script>
-    <script src="scripts/index.js"></script>
 	<script src="scripts/play.js"></script>
 	<script src="scripts/1-controller.js"></script>
-    <!-- endbuild -->
-
+	<!-- endbuild -->
 </body>
 </html>

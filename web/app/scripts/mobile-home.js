@@ -6,7 +6,8 @@ angular.module('ANEXD')
     '$http',
     'SocketService',
 	'$routeParams',
-    function ($scope, $http, SocketService, $routeParams) 
+	'LobbySocket',
+    function ($scope, $http, SocketService, $routeParams, LobbySocket) 
     {			
 		
         $scope.ready = false;
@@ -80,12 +81,15 @@ angular.module('ANEXD')
             
 		};
         
+		var lobbySocket;
         //Trigged by clicking submit
 		$scope.submitUser = function(){
             $scope.inputError = false;
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
-            //End of AnonUser Submit Post
+			
+			//Instantiate Socket with LobbyId as the namespace
+			lobbySocket = new LobbySocket($scope.anonUser.lobbyId);
             
             /*
             //SOCKET.ON for AnonUsers "joinlobby" event
@@ -216,7 +220,6 @@ angular.module('ANEXD')
 				'ready': false,
 			},
 		];
-    
     }
 ]);
 }());

@@ -4,8 +4,6 @@ var app     = express();
 var server  = http.createServer(app);
 var io      = require('socket.io').listen(server);
 
-var lobbyio	= io.of('/567');
-
 //Openshift setup
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
 app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "localhost");
@@ -15,7 +13,36 @@ server.listen(app.get('port') ,app.get('ip'), function () {
     console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
 });
 
-var total = questions.length;
+//Socket for lobbies
+var lobbyio;
+
+//Socket for games
+var gameio = io.of('/567/1');
+
+//Instantiate Socket for lobby
+io.on('connection', function(socket){
+	console.log('IO connection', socket.id);
+	socket.on('lobby', function(id){
+		console.log('lobby request', id);
+		lobbyio	= io.of('/' + id);
+		lobby();
+		socket.emit('lobby', true);
+	})
+})
+
+var lobby = function(){
+	lobbyio.on('connection', function(socket){
+		console.log('Lobby connection', socket.id);
+		socket.emit('message', 'yo gangsta');
+	});
+};
+
+/********************
+*		QUIZ		*
+*********************/
+var users = {};
+var userCount = -1;
+var current = 0;
 
 var title = {
 	'title': 'Return of the Aliens',
@@ -136,26 +163,22 @@ var questions = [
 	},
 ];
 
+var total = questions.length;
 var answers = ['A', 'B', 'D', 'A', 'C'];
 
-var users = {};
-var userCount = -1;
-
-var current = 0;
-
-lobbyio.on('connection', function (socket) {
-	console.log('connection', socket.id);
+gameio.on('connection', function (socket) {
+	console.log('Game connection', socket.id);
 	
 	userCount++;
 	users[socket.id] = 0;
-	lobbyio.emit('users', userCount);
+	gameio.emit('users', userCount);
 	
 	//Title details for front-end local storage
 	socket.emit('title', title);
 	
 	socket.on('disconnect', function(){
 		userCount--;
-		lobbyio.emit('users', userCount);
+		gameio.emit('users', userCount);
 		delete users[socket.id];
 	});
 	
@@ -170,7 +193,7 @@ lobbyio.on('connection', function (socket) {
 	}
 	
 	socket.on('answer', function(answer){
-		lobbyio.emit('answers');
+		gameio.emit('answers');
 		if(answer === answers[current-1]){
 			users[socket.id]++;
 			console.log('correct answer, score:', users[socket.id]);
@@ -186,14 +209,14 @@ lobbyio.on('connection', function (socket) {
 			current++;
 			console.log('show end');
 			socket.emit('next', true);
-			lobbyio.emit('current', {'event': 'showEnd', 'data': users});
+			gameio.emit('current', {'event': 'showEnd', 'data': users});
 		} 
 		else if(current < total){
 			current++;
 			var question = questions[current-1];	
 			console.log('next question', current);
 			socket.emit('next', true);
-			lobbyio.emit('current', {'event': 'question', 'data': question});
+			gameio.emit('current', {'event': 'question', 'data': question});
 		}
 	});
 	
@@ -202,14 +225,14 @@ lobbyio.on('connection', function (socket) {
 			current--;
 			console.log('show start');
 			socket.emit('previous', true);
-			lobbyio.emit('current', {'event': 'showStart'});	
+			gameio.emit('current', {'event': 'showStart'});	
 		} 
 		else if(current > 1){
 			current--;
 			var question = questions[current-1];	
 			console.log('previous question', current);
 			socket.emit('previous', true);
-			lobbyio.emit('current', {'event': 'question', 'data': question});
+			gameio.emit('current', {'event': 'question', 'data': question});
 		}
 	});
 });

@@ -7,6 +7,9 @@
 	</div>
 
 	<div class="container" ng-if="!fail">
+		<a ng-if="isMobile" class="back" href="#!/">
+			<i class="fa fa-chevron-left"/>
+		</a>
 		<div ng-include src="appLocation">
 		</div>
 	</div>
