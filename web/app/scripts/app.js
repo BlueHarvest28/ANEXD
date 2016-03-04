@@ -10,7 +10,8 @@ angular
 'ngTouch',
 'angular-md5',
 'ja.qr',
-'btford.socket-io'
+'btford.socket-io',
+'ngFileUpload'
 ])
 .config([
 	'$locationProvider',

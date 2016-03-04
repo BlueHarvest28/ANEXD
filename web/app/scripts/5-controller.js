@@ -1,6 +1,106 @@
 (function () {
 'use strict';
 angular.module('ANEXD')
+.controller('AddController', [
+	'$scope',
+	'Upload',
+	function ($scope, Upload) {
+		//Initialise first question and options/answers
+		$scope.questions = [
+			{
+				'number': '2',
+				'question': '',
+				'answers': [
+					{
+						'id': 'A',
+						'answer': ''
+					},
+					{
+						'id': 'B',
+						'answer': '',
+					}
+				]
+			}
+		];
+		
+		//Correct answer id (in order of question number)
+		$scope.answers = [];
+		
+		$scope.upload = function(image) {
+			Upload.upload({
+				url: 'https://api.imgur.com/3/image',
+				type: 'POST',
+				headers: {
+					Authorization: 'Client-ID e4e0190ea81d9c7'
+				},
+				data: {
+					type: image.type,
+					image: image
+				},
+				dataType: 'json'
+			}).then(function (data) {
+				console.log(data);
+				//Store data.data.link;
+			}, function (error) {
+				console.log(error);
+			}, function (event) {
+				var progressPercentage = parseInt(100.0 * event.loaded / event.total);
+				console.log('progress: ' + progressPercentage + '% ' + event.config.data.image.name);
+			});
+		};
+		
+		$scope.resize = function(question, count){
+			var options = $scope.questions[question].answers;
+			count = parseInt(count) - options.length;
+			if(count < 0){
+				options.splice(count, Math.abs(count));
+				for(var i = 0; i < options.length; i++){
+					if(options[i].correct){
+						break;
+					}
+					if(i === options.length-1){
+						options[0].correct = true;
+					}
+				}
+			}
+			else{
+				for(var j = 0; j < count; j++){
+					options.push({
+						'id': '',
+						'answer': '',
+						'correct': false
+					});
+					//Javascript magic for incrementing a letter
+					var letter = String.fromCharCode(options[options.length-2].id.charCodeAt(0) + 1);
+					options[options.length-1].id = letter;
+				}
+			}
+		};
+		
+		$scope.setCorrect = function(question, option, id){
+			var options = $scope.questions[question].answers;
+			for(var i = 0; i < options.length; i++){
+				if(options[i].id !== id){
+					options[i].correct = false;
+				}
+			}
+			$scope.answers[question] = id;	
+		};
+		
+		$scope.addQuestion = function(){
+			console.log('trigger');
+			$scope.questions.push({
+				'question': '',
+				'number': '2',
+				'answers': $scope.answers
+			});
+		};
+		
+		$scope.submit = function(){
+				
+		};
+	}
+])
 .controller('QuizController', [
 	'$scope',
 	'ANEXDService',
@@ -84,6 +184,20 @@ angular.module('ANEXD')
 				console.log(error);
 			});	
 		};
+		
+		/*
+		//Activate next and previous via keypress; 
+		//Requires tabindex on element
+		$scope.keydown = function($event){
+			console.log('keydown', $event.keyCode);
+			if($event.keyCode === 39){
+				$scope.next();
+			}	
+			else if ($event.keyCode === 37){
+				$scope.previous();
+			}
+		};
+		*/
 		
 		var initialiseAnswers = function(){
 			for(var i = 1; i <= $scope.total; i++){
