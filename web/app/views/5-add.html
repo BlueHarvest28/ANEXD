@@ -24,7 +24,7 @@
 					<input type="text" class="form-input" ng-model="q.question" placeholder="Question" required/>
 					<br/>
 					<h4 class="inline">Number of options:</h4>
-					<select ng-model="q.number" class="number-answers" ng-change="resize($index, q.number)" required>
+					<select ng-model="q.count" class="number-answers" ng-change="resize($index, q.count)" required>
 						<option>2</option>
 						<option>3</option>
 						<option>4</option>
@@ -39,8 +39,8 @@
 					</div>
 				</div>
 			</div>
+			<hr/>
 		</div>
-		<hr/>
 		<br/>
 		<button type='button' ng-click="addQuestion()">Add another question</button>
 		<br/><br/>

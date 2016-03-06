@@ -8,7 +8,8 @@ angular.module('ANEXD')
 		//Initialise first question and options/answers
 		$scope.questions = [
 			{
-				'number': '2',
+				'number': '1',
+				'count': '2',
 				'question': '',
 				'answers': [
 					{
@@ -51,7 +52,10 @@ angular.module('ANEXD')
 		
 		$scope.resize = function(question, count){
 			var options = $scope.questions[question].answers;
+			console.log('length:', options.length);
+			console.log('count before:', count);
 			count = parseInt(count) - options.length;
+			console.log('count after:', count);
 			if(count < 0){
 				options.splice(count, Math.abs(count));
 				for(var i = 0; i < options.length; i++){
@@ -65,14 +69,13 @@ angular.module('ANEXD')
 			}
 			else{
 				for(var j = 0; j < count; j++){
-					options.push({
-						'id': '',
-						'answer': '',
-						'correct': false
-					});
+					console.log('iterate add options');
 					//Javascript magic for incrementing a letter
-					var letter = String.fromCharCode(options[options.length-2].id.charCodeAt(0) + 1);
-					options[options.length-1].id = letter;
+					var letter = String.fromCharCode(options[options.length-1].id.charCodeAt(0) + 1);
+					options.push({
+						'id': letter,
+						'answer': ''
+					});
 				}
 			}
 		};
@@ -90,9 +93,19 @@ angular.module('ANEXD')
 		$scope.addQuestion = function(){
 			console.log('trigger');
 			$scope.questions.push({
+				'number': $scope.questions.length,
+				'count': '2',
 				'question': '',
-				'number': '2',
-				'answers': $scope.answers
+				'answers': [
+					{
+						'id': 'A',
+						'answer': ''
+					},
+					{
+						'id': 'B',
+						'answer': '',
+					}
+				]
 			});
 		};
 		
