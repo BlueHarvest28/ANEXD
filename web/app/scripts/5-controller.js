@@ -4,7 +4,17 @@ angular.module('ANEXD')
 .controller('AddController', [
 	'$scope',
 	'Upload',
-	function ($scope, Upload) {
+	'ANEXDService',
+	function ($scope, Upload, ANEXDService) {
+		var anexd = ANEXDService;
+		
+		anexd.sendToServer('quizzes')
+		.then(function(data){
+			console.log(data);
+		}, function(error){
+			console.log(error);
+		});
+		
 		//Initialise first question and options/answers
 		$scope.questions = [
 			{
@@ -14,18 +24,24 @@ angular.module('ANEXD')
 				'answers': [
 					{
 						'id': 'A',
-						'answer': ''
+						'answer': '',
+						'correct': true
 					},
 					{
 						'id': 'B',
 						'answer': '',
+						'correct': false
 					}
 				]
 			}
 		];
 		
 		//Correct answer id (in order of question number)
-		$scope.answers = [];
+		$scope.answers = ['A'];
+		
+		$scope.correct = [
+			[true, false],
+		];
 		
 		$scope.upload = function(image) {
 			Upload.upload({
@@ -50,12 +66,13 @@ angular.module('ANEXD')
 			});
 		};
 		
+		$scope.removeQuestion = function(index){
+			$scope.questions.splice(index, 1);
+		};
+		
 		$scope.resize = function(question, count){
 			var options = $scope.questions[question].answers;
-			console.log('length:', options.length);
-			console.log('count before:', count);
 			count = parseInt(count) - options.length;
-			console.log('count after:', count);
 			if(count < 0){
 				options.splice(count, Math.abs(count));
 				for(var i = 0; i < options.length; i++){
@@ -69,19 +86,24 @@ angular.module('ANEXD')
 			}
 			else{
 				for(var j = 0; j < count; j++){
-					console.log('iterate add options');
 					//Javascript magic for incrementing a letter
 					var letter = String.fromCharCode(options[options.length-1].id.charCodeAt(0) + 1);
 					options.push({
 						'id': letter,
 						'answer': ''
 					});
+					$scope.correct[question].push(false);
 				}
 			}
 		};
 		
 		$scope.setCorrect = function(question, option, id){
 			var options = $scope.questions[question].answers;
+			if($scope.answers[question] === id){
+				options[option].correct = true;
+				return;
+			}
+			
 			for(var i = 0; i < options.length; i++){
 				if(options[i].id !== id){
 					options[i].correct = false;
@@ -91,7 +113,6 @@ angular.module('ANEXD')
 		};
 		
 		$scope.addQuestion = function(){
-			console.log('trigger');
 			$scope.questions.push({
 				'number': $scope.questions.length,
 				'count': '2',
@@ -99,18 +120,40 @@ angular.module('ANEXD')
 				'answers': [
 					{
 						'id': 'A',
-						'answer': ''
+						'answer': '',
+						'correct': true
 					},
 					{
 						'id': 'B',
 						'answer': '',
+						'correct': false
 					}
 				]
 			});
+			$scope.answers.push('A');
 		};
 		
 		$scope.submit = function(){
-				
+			//Get the uploaded image URL or default
+			var imageURL;
+			if(!$scope.image){
+				imageURL = 'default.png';
+			}
+			else {
+				imageURL = $scope.image.data.data.link;
+			}
+			
+			var quiz = {
+				'data': {
+					'title' : $scope.title,
+					'description': $scope.description,
+					'image': imageURL,
+					'questions': $scope.questions,
+					'answers': $scope.answers	
+				}
+			};
+			
+			anexd.sendToServer('quiz', quiz);
 		};
 	}
 ])

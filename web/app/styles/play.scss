@@ -89,6 +89,20 @@ body{
 			}
 		}
 	}
+	
+	.question-form{
+		position: relative;
+	}
+	
+	.fa-close{
+		position: absolute;
+		right: 0;
+		top: -20px;
+		font-size: 16pt;
+		color: #BB5C5C;
+		cursor: pointer;
+		padding: 5px;
+	}
 
 	.container{
 		background-color: #fff;
@@ -97,6 +111,7 @@ body{
     	padding: 40px 80px;
 		position: relative;
 		min-height: 550px;
+		width: 1000px;
 	}
 	
 	.quiz{

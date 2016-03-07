@@ -13,7 +13,7 @@ angular.module('ANEXD')
 		if($rootScope.isMobile){
 			$scope.appLocation = 'views/' + app + '-mobile-index.html';	
 		} else {
-			$scope.appLocation = 'views/' + app + '-add.html';
+			$scope.appLocation = 'applications/' + app + '/index.html';
 		}
 	}
 ]);

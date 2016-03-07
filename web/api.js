@@ -3,6 +3,7 @@ var http    = require('http');
 var app     = express();
 var server  = http.createServer(app);
 var io      = require('socket.io').listen(server);
+var mysql 	= require('mysql');
 
 //Openshift setup
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3002);
@@ -13,13 +14,21 @@ server.listen(app.get('port') ,app.get('ip'), function () {
     console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
 });
 
+//Temporarily sending to ANEXD database
+var credentials = {
+	host     : 'p3plcpnl0650.prod.phx3.secureserver.net',
+    user     : 'ANEXD_ADMIN',
+    password : 'gn9-MVn-6Bq-q6b',
+    database : 'ANEXD'
+};
+
 //Socket for lobbies
 var lobbyio;
 
 //Socket for games
 var gameio;
 
-//Instantiate Socket for lobby
+//Instantiate Socket for website
 io.on('connection', function(socket){
 	console.log('IO connection', socket.id);
 	socket.on('lobby', function(id){
@@ -27,8 +36,46 @@ io.on('connection', function(socket){
 		lobbyio	= io.of('/' + id);
 		lobby();
 		socket.emit('lobby', true);
+	});
+	
+	//Temporarily not-generic
+	socket.on('quiz', function(quiz){
+		postQuiz(quiz);
+		socket.emit('quiz', true);
+	});
+	
+	socket.on('quizzes', function(){
+		getQuizzes(function(data){
+			socket.emit('quizzes', data);
+		});
 	})
-})
+});
+
+//Send a new quiz to the database
+var postQuiz = function (quiz){
+	quiz = JSON.stringify(quiz);
+	var connection = mysql.createConnection(credentials);
+	connection.query('INSERT INTO Quiz (data) VALUES (?)', quiz, function(err, result) {
+		if(err) throw err;
+		connection.end();
+	});
+}
+
+//Get all quizes
+var getQuizzes = function (callback){
+	var connection = mysql.createConnection(credentials);
+	connection.query('SELECT * FROM Quiz', function(err, result) {
+		if(err) throw err;
+		connection.end();
+		try {
+			console.log(result[0].data);
+			
+			callback(JSON.parse(result[0].data));
+		} catch (e) {
+			return console.error(e);
+		}
+	});
+}
 
 var players = {};
 var lobby = function(){
