@@ -102,8 +102,31 @@ textarea {
 
 
 /* ==========================================================================
-   Author's custom styles
+   ANEXD custom styles
    ========================================================================== */
+
+.slide-animate.ng-enter, .slide-animate.ng-leave{
+	-webkit-transition: opacity 0.5s;
+	-moz-transition: opacity 0.5s;
+	-o-transition: opacity 0.5s;
+	transition: opacity 0.5s;
+}
+
+.slide-animate.ng-enter {
+	opacity: 0;
+}
+
+.slide-animate.ng-enter.ng-enter-active {
+	opacity: 1;
+}
+
+.slide-animate.ng-leave {
+	opacity: 1;
+}
+
+.slide-animate.ng-leave.ng-leave-active {
+	opacity: 0;
+}
 
 body {
 	background-color: #eee;

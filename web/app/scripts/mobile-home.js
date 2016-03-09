@@ -71,7 +71,7 @@ angular.module('ANEXD')
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
 			
-			//TEMPORARY
+			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = 5;
 			
