@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"net/http"
+	"bytes"
+	"net"
+	//"net/http"
 	"encoding/json"
 	"github.com/googollee/go-socket.io"
 )
@@ -72,15 +74,25 @@ type Session struct {
 	userMap map[string]*AnonUser //int map changed
 	PlayerMap []*User
 	//PlayerMap map[int]*User
+	buffer []byte
 	Send chan interface{}
 	Receive chan interface{}
 	Data chan interface{}
-	gameTCP *socketio.Socket
+	gameTCPConn *net.TCPConn
 }
 
 /*
 	Structs used in websocket message processing
 */
+
+type GameMessage struct {
+	Receipient int  `json:"player"`
+	Msg map[string]interface{} `json:"msg"`
+}
+
+type GameMessageAll struct {
+	Msg map[string]interface{}
+}
 
 type LobbyUser struct {
 	Player   int    `json:"player"`
@@ -106,10 +118,34 @@ type Command struct {
 	Data interface{}
 }
 
+func connectSession(sessId int, addr string) (*net.TCPConn, error) {
+	tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
+	if err != nil {
+		return nil, err
+	}
+	gameTCPConn, err := net.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		return nil, err
+	}
+	
+}
+
+func (s Session) closeConnection() {
+	err := s.gameTCPConn.Close()
+	if err != nil {
+		log.Panic(err)
+	}
+}
+
 /*
-	Game table in DB will need URI and Port stored
+	Game table in DB will need Host and Port stored
 */
 func newSession(g Game, sessId int, host *HostUser) (*Session, error) {
+	addr := g.host + ":" + g.port
+	tcpConn, err := connectSession(sessId, addr)
+	if err != nil {
+		return nil, err
+	}
 	//create websocket or TCP?
 	//check error
 	session := Session{
@@ -122,15 +158,16 @@ func newSession(g Game, sessId int, host *HostUser) (*Session, error) {
 		Send: make(chan interface{}),
 		Receive: make(chan interface{}),
 		Data: make(chan interface{}),
-		//gameTCP: appSock
+		gameTCPConn: tcpConn
 	}
 	host.SetSession(&session)
 	host.SetPlayer(0)
 	session.PlayerMap = append(session.PlayerMap, session.LobbyHost) //set index 0 as host
 	//session.PlayerMap[0] = session.LobbyHost
-	
-	
-	//run websocket messaging goroutine
+
+	go session.sendHandler()
+	go session.receiveHandler()
+	go session.dataHandler()
 	return &session, nil
 }
 
@@ -274,13 +311,15 @@ func (s Session) emitAnonUserData() {
 	s.LobbyHost.Send <- list
 }
 
-
 /*
 	Main goroutine for handling messages to the game server
 */
 func (s Session) sendHandler() {
 	for {
-		
+		select {
+			case data := <-s.Send:
+				s.gameTCPConn.Write(data)
+		}
 	}
 }
 
@@ -290,6 +329,23 @@ func (s Session) sendHandler() {
 func (s Session) receiveHandler() {
 	for {
 		
+		//read buffer
+		//convert to json struct
+		var gMsg GameMessage
+		gMsg.Receipient = -1 //if unchanged, message emitted to all users
+		err := json.Unmarshal(input, &gMsg)
+		if err != nil {
+			log.Panic(err)
+		}
+		//check receipient
+		if gMsg.Receipient == -1 {
+			s.LobbyHost.Send <- GameMessageAll{
+				Msg: g.Msg
+			}
+		} else {
+			user := s.PlayerMap[gMsg.Receipient]
+			user.Send <- gMsg
+		}
 	}
 }
 
@@ -352,6 +408,7 @@ func (u HostUser) Setup() {
 	Emits socket.io messages to the namespace
 */
 func (u HostUser) sendHandler() {
+	sessionNamespace := fmt.Sprintf("%d", u.Sess.SessionId())
 	for {
 		select {
 			case msg := <-u.Send:
@@ -359,9 +416,21 @@ func (u HostUser) sendHandler() {
 				case []LobbyUser:
 				msg, err := json.Marshal(data)
 				if err != nil {
+					log.Panic("send lobby user list: error")
+				}
+				u.socket.BroadcastTo(sessionNamespace, "updatelobby", msg)
+				case GameMessage:
+				msg, err := json.Marshal(data.Msg)
+				if err != nil {
+					log.Panic("unable to marshal message")
+				}
+				u.socket.Emit("msgplayer", msg)
+				case GameMessageAll:
+				msg, err := json.Marshal(data.Msg)
+				if err != nil {
 					log.Panic(send lobby user list: error)
 				}
-				u.socket.BroadcastTo(fmt.Sprintf("%d", u.Sess.SessionId()), "updatelobby", msg)
+				u.socket.BroadcastTo(sessionNamespace, "msgall", msg)
 				default:
 				log.Print("HostUser sendHandler: unknown type received")
 			}
@@ -422,7 +491,7 @@ func (u AnonUser) Setup() {
 	Main goroutine for handling messages for host user
 */
 func (u AnonUser) sendHandler() {
-	var namespace := fmt.Sprintf("/%s", u.socket.Id())
+	namespace := fmt.Sprintf("/%s", u.socket.Id())
 	for {
 		select {
 			case msg := <-u.Send:
@@ -441,6 +510,12 @@ func (u AnonUser) sendHandler() {
 					default:
 					log.Print("AnonUser sendHandler: unknown command")
 				}
+				case GameMessage:
+				msg, err := json.Marshal(data.Msg)
+				if err != nil {
+					log.Panic("unable to marshal message")
+				}
+				u.socket.Emit("msgplayer", msg)
 				default:
 					log.Print("AnonUser sendHandler: unknown type received")
 			}
@@ -453,7 +528,7 @@ func (u AnonUser) sendHandler() {
 */
 func (u AnonUser) receiveHandler() {
 	//get and format this user's personal socket namespace i.e. "/012345"
-	var namespace := fmt.Sprintf("/%s", u.socket.Id())
+	namespace := fmt.Sprintf("/%s", u.socket.Id())
 	//Toggle the ready bool in the lobby
 	u.socket.Of(namespace).On("setready", func(msg interface{}) {
 		var data SetReady

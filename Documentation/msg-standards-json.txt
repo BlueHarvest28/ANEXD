@@ -38,7 +38,7 @@ direction: Mobile User to Golang Server
 event: "msgserver"
 data: {
 	player: int //assigned anonuser player number
-	msg: interface{} //generic JSON data
+	msg: JSON{} //generic JSON data
 }
 server action: forward onto game server for game processing
 
@@ -49,7 +49,6 @@ direction: Desktop User to Golang Server
 event: "hostlobby"
 data: {
 	hostid: int //User's unique ID
-	
 }
 
 direction: Desktop User to Golang Server
@@ -62,6 +61,7 @@ direction: Desktop User to Golang Server
 event: "kick"
 data: {
 	nickname: string //username of anonuser to be kicked
+	reason: string //optional
 }
 server action: 	update lobby user data structure, emit updated lobby to all, 
 				emit kick message to kicked user
@@ -111,28 +111,49 @@ front-end action: stop emitting messages to server? (leave lobby )
 direction: Golang Server to Single (Desktop OR Mobile) User
 event: "msgplayer"
 data: {
-	player: int //player # in session to send to
-	msg: interface{} //game specific JSON data
+	msg: JSON{} //game specific JSON data
 }
 front-end action: process game specific JSON data (msg variable)
 
 direction: Golang Server to All Users
 event: "msgall"
 data: {
-	msg: interface{} //game specific JSON data
+	msg: JSON{} //game specific JSON data
 }
 front-end action: process game specific JSON data (msg variable)
 
 direction: Golang Server to All Users
 event: "updatelobby"
 data: {
-	players: interface{} //JSON Object list of players in lobby
+	players: []JSON //Array of JSON objects (users)
 }
 front-end action: update the list of players in the lobby and ready status, etc
 
 direction: Golang Server to Single (Mobile) User
 event: "kick"
 data: {
-	reason: string //optional?
+	reason: string //optional
 }
 front-end action: display kicked message to user and disconnect them from lobby?
+
+*** GAME SERVER TO GOLANG SERVER ***
+
+All messages are sent over TCP in JSON encoded bytes in the following format:
+(A JSON object containing a JSON object)
+
+TO A SINGLE USER:
+{
+	player: int
+	msg: {}(JSON Object)
+}
+
+TO ALL USERS:
+{
+	msg: {}(JSON Object)
+}
+
+RECEIVED FROM USERS:
+{
+	player: int
+	msg: {}(JSON Object)
+}
