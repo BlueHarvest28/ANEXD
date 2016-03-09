@@ -61,36 +61,25 @@ var postQuiz = function (quiz){
 	});
 }
 
-//Get all quizes
-var getQuizzes = function (callback){
-	var connection = mysql.createConnection(credentials);
-	connection.query('SELECT * FROM Quiz', function(err, result) {
-		if(err) throw err;
-		connection.end();
-		try {
-			console.log(result[0].data);
-			
-			callback(JSON.parse(result[0].data));
-		} catch (e) {
-			return console.error(e);
-		}
-	});
-}
-
 var players = {};
 var lobby = function(){
 	lobbyio.on('connection', function(socket){
 		console.log('Lobby connection', socket.id);
 		
 		socket.on('start', function(data){
+			console.log('starting');
 			lobbyio.emit('start');
 			gameio = io.of('/' + data.lobby + '/' + data.app);
-			game();
+			getQuiz();
 		});
 		
 		socket.on('join', function(name){
 			console.log('new user', name);
 			players[socket.id] = {'id': socket.id, 'name': name, 'ready': false};
+			//Place player into existing game
+			if(running){
+				socket.emit('start');
+			}
 			lobbyio.emit('update', players);
 		});
 		
@@ -101,12 +90,12 @@ var lobby = function(){
 		
 		socket.on('leave', function(){
 			console.log('disconnect', players[socket.id].name);
-			if(players[socket.id]){
-				delete players[socket.id];	
-			}
 			socket.disconnect();
-			lobbyio.emit('update', players);
 		})
+		
+		socket.on('leaveApp', function(player){
+			player.disconnect();
+		});
 		
 		socket.on('close', function(){
 			players = {};
@@ -127,131 +116,41 @@ var lobby = function(){
 var users = {};
 var userCount = -1;
 var current = 0;
+var running = false;
 
-var questions = [
-	{
-		'number': 1,
-		'question' : 'When was the first recorded UFO sighting?',
-		'answers': [
-			{
-				'id': 'A',
-				'answer': '1947'
-			},
-			{
-				'id': 'B',
-				'answer': '1912',
-			},
-			{
-				'id': 'C',
-				'answer': '1982',
-			},
-			{
-				'id': 'D',
-				'answer': '2026',
-			},
-		]
-	},
-	{
-		'number': 2,
-		'question' : 'What is the term for an identified UFO?',
-		'answers': [
-			{
-				'id': 'A',
-				'answer': 'No-FO'
-			},
-			{
-				'id': 'B',
-				'answer': 'IFO'
-			},
-			{
-				'id': 'C',
-				'answer': 'We-Know-FO',
-			},
-			{
-				'id': 'D',
-				'answer': 'CFO',
-			},
-		]
-	},
-	{
-		'number': 3,
-		'question' : 'According to a 1991 Roper poll, how many people claim to have been abducted?',
-		'answers': [
-			{
-				'id': 'A',
-				'answer': '7.5',
-			},
-			{
-				'id': 'B',
-				'answer': '1 million',
-			},
-			{
-				'id': 'C',
-				'answer': '500,000',
-			},
-			{
-				'id': 'D',
-				'answer': '4 million',
-			},
-		]
-	},
-	{
-		'number': 4,
-		'question' : 'The first alien abduction claimed to have happened in 1961 when Betty and Barney Hill said they were taken from where?',
-		'answers': [
-			{
-				'id': 'A',
-				'answer': 'A road in New Hampshire, New England',
-			},
-			{
-				'id': 'B',
-				'answer': 'General Lee\'s discount cutlery in San Jose, California',
-			},
-			{
-				'id': 'C',
-				'answer': 'A farm in Hudspeth County, Texas',
-			},
-			{
-				'id': 'D',
-				'answer': 'A forest in Douglas, Wisconsin',
-			},
-		]
-	},
-	{
-		'number': 5,
-		'question' : 'What percentage of reported UFO sightings remain unexplained?',
-		'answers': [
-			{
-				'id': 'A',
-				'answer': '0-5%',
-			},
-			{
-				'id': 'B',
-				'answer': '5-10%',
-			},
-			{
-				'id': 'C',
-				'answer': '10-15%',
-			},
-			{
-				'id': 'D',
-				'answer': '15-20%',
-			},
-		]
-	},
-];
+var data;
+var questions;
+var total;
+var title;
+var answers;
 
-var total = questions.length;
-
-var title = {
-	'title': 'Return of the Aliens',
-	'description': 'CROP CIRCLES. CROP TRIANGLES. UFOs. WHERE DOES IT END, SHARON? WHERE?',
-	'total': total
+//Get a quiz
+var getQuiz = function (callback){
+	var connection = mysql.createConnection(credentials);
+	connection.query('SELECT * FROM Quiz LIMIT 1', function(err, result) {
+		if(err) throw err;
+		connection.end();
+		try {
+			data = JSON.parse(result[0].data).data;
+		} catch (e) {
+			return console.error(e);
+		}
+		
+		questions = data.questions;
+		total = questions.length;
+		title = {
+			'title': data.title,
+			'description': data.description,
+			'total': total
+		};
+		answers = data.answers;
+		//Launch game
+		game();
+	});
 }
 
-var answers = ['A', 'B', 'D', 'A', 'C'];
-
 var game = function(){
+	running = true;
 	gameio.on('connection', function (socket) {
 		console.log('Game connection', socket.id);
 
@@ -261,6 +160,11 @@ var game = function(){
 
 		//Title details for front-end local storage
 		socket.emit('title', title);
+		
+		socket.on('leave', function(){
+			//lobbyio.emit('leaveApp', socket);
+			socket.disconnect();
+		});
 
 		socket.on('disconnect', function(){
 			userCount--;

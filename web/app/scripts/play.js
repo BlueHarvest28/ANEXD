@@ -6,15 +6,32 @@ angular.module('ANEXD')
 	'ANEXDService',
 	'$routeParams',
 	'$rootScope',
-    function ($scope, ANEXDService, $routeParams, $rootScope) 
+	'$cookies',
+	'$location',
+    function ($scope, ANEXDService, $routeParams, $rootScope, $cookies, $location) 
     {
 		var app = $routeParams.appId;
 		
+		//Store the lobby id and app id for instantiating ANEXD API
+		$rootScope.lobby = $routeParams.lobbyId;
+		$rootScope.app = $routeParams.appId;
+		
 		if($rootScope.isMobile){
-			$scope.appLocation = 'views/' + app + '-mobile-index.html';	
+			var name = $cookies.get('name');
+			if(name){
+				$scope.appLocation = 'applications/' + app + '/mobile-index.html';	
+			}
+			else {
+				$location.path('/' + $routeParams.lobbyId, true);
+			}
 		} else {
 			$scope.appLocation = 'applications/' + app + '/index.html';
 		}
+		
+		$scope.leave = function(){
+			$rootScope.$broadcast('leave');
+			$location.path('/' + $routeParams.lobbyId, true);
+		};
 	}
 ]);
 }());

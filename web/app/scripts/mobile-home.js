@@ -9,8 +9,9 @@ angular.module('ANEXD')
 	'LobbySocket',
 	'$location',
 	'$rootScope',
-    function ($scope, $http, SocketService, $routeParams, LobbySocket, $location, $rootScope) 
-    {
+	'$cookies',
+    function ($scope, $http, SocketService, $routeParams, LobbySocket, $location, $rootScope, $cookies)
+	{
         $scope.ready = false;
 		$scope.showLobby = false;
         $scope.inputError = false;
@@ -45,7 +46,9 @@ angular.module('ANEXD')
 			lobbySocket.emit('join', $scope.name);
 			
 			lobbySocket.on('start', function(){
-				$location.path($location.path() + '/' + 5, true);
+				//TODO: replace with actual app id
+				$location.path($location.path() + '/' + 2, true);
+				$cookies.put('name', $scope.name);
 			});
 			
 			lobbySocket.on('update', function(data){

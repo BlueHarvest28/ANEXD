@@ -38,7 +38,7 @@
 					<div ng-repeat="o in q.answers track by $index" class="middle-answers">
 						<span>{{o.id}}.</span>
 						<input type="text" class="form-input answer" ng-model="o.answer" placeholder="Answer {{$index+1}}" required/>
-						<input type="checkbox" class="form-input correct" ng-model="o.correct" ng-click="setCorrect($parent.$index, $index, o.id)"/>
+						<input type="checkbox" class="form-input correct" ng-model="correct[$parent.$index][$index]" ng-click="setCorrect($parent.$index, $index, o.id)"/>
 					</div>
 				</div>
 			</div>

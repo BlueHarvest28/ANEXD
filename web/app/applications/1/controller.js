@@ -6,11 +6,14 @@ angular.module('ANEXD')
 	'Upload',
 	'ANEXDService',
 	function ($scope, Upload, ANEXDService) {
-		var anexd = ANEXDService;
+		var anexd = new ANEXDService(true);
 		var imageURL;
 		
 		var initialise = function(){
 			//Initialise first question and options/answers
+			$scope.title = '';
+			$scope.description = '';
+			$scope.image = undefined;
 			$scope.questions = [
 				{
 					'number': '1',
@@ -108,6 +111,7 @@ angular.module('ANEXD')
 		};
 		
 		$scope.addQuestion = function(){
+			$scope.correct.push([]);
 			$scope.questions.push({
 				'number': $scope.questions.length,
 				'count': '2',

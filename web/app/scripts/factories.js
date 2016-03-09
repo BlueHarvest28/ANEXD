@@ -150,59 +150,75 @@ angular.module('ANEXD')
 /*
  *	Service for ANEXD app developers. Provides an interface to the game server.
  */
-.factory('ANEXDService', ['AppSocket', 'SocketService', '$q', '$timeout', '$rootScope', function (AppSocket, SocketService, $q, $timeout, $rootScope) {
-	//*Early implementation*
-	//If we're in an app AND lobby (e.g. multiplayer game)
-	var socket;
-	if($rootScope.lobby){
-		socket = new AppSocket($rootScope.lobby, $rootScope.app);
-	}
-	//Otherwise we're in an app without a lobby (e.g. creating a quiz)
-	else {
-		socket = SocketService;
-	}
-	//Holds the most recent expected event
-	var expected;
+.factory('ANEXDService', [
+	'AppSocket', 
+	'SocketService', 
+	'$q', 
+	'$timeout', 
+	'$rootScope',
+	function (AppSocket, SocketService, $q, $timeout, $rootScope) 
+	{
+		//*Early implementation*
+		//If we're in an app AND lobby (e.g. multiplayer game)
+		return function(generic){
+			var socket;
+			
+			if($rootScope.lobby && $rootScope.app && !generic){
+				socket = new AppSocket($rootScope.lobby, $rootScope.app);
+			}
+			//Otherwise we're in an app without a lobby (e.g. creating a quiz)
+			else {
+				socket = SocketService;
+			}
+			
+			//Leave game if we receieve the message from PlayController
+			$rootScope.$on('leave', function(){
+				socket.emit('leave');
+			});
+			
+			//Holds the most recent expected event
+			var expected;
 
-	//Sends a value to the server and promises a reply on the same event
-	var sendToServer = function (event, val) {
-		var defer = $q.defer();
-		socket.emit(event, val);
+			//Sends a value to the server and promises a reply on the same event
+			var sendToServer = function (event, val) {
+				var defer = $q.defer();
+				socket.emit(event, val);
 
-		//Fails if no reply is received in 3 seconds
-		//TODO: retry
-		var resolveTimout = $timeout(function () {
-			defer.reject('failed to receive response');
-		}, 6000);
+				//Fails if no reply is received in 3 seconds
+				//TODO: retry
+				var resolveTimout = $timeout(function () {
+					defer.reject('failed to receive response');
+				}, 6000);
 
-		//Return from server
-		socket.on(event, function (val) {
-			$timeout.cancel(resolveTimout);
-			defer.resolve(val);
-		});
-		return defer.promise;
-	};
-
-	//One expect function for each event that you could receive at any time
-	//Updates expected variable with recent event result
-	var expect = function (event) {
-		socket.on(event, function (val) {
-			expected = {
-				'event': event,
-				'val': val
+				//Return from server
+				socket.on(event, function (val) {
+					$timeout.cancel(resolveTimout);
+					defer.resolve(val);
+				});
+				return defer.promise;
 			};
-		});
-	};
 
-	//Scope watch getFromServer() for events defined by expect(event)
-	var getFromServer = function () {
-		return expected;
-	};
+			//One expect function for each event that you could receive at any time
+			//Updates expected variable with recent event result
+			var expect = function (event) {
+				socket.on(event, function (val) {
+					expected = {
+						'event': event,
+						'val': val
+					};
+				});
+			};
 
-	return {
-		sendToServer: sendToServer,
-		expect: expect,
-		getFromServer: getFromServer
-	};
-}]);
+			//Scope watch getFromServer() for events defined by expect(event)
+			var getFromServer = function () {
+				return expected;
+			};
+
+			return {
+				sendToServer: sendToServer,
+				expect: expect,
+				getFromServer: getFromServer
+			};	
+		};
+	}]);
 }());
