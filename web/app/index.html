@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>ANEXD | Multiplayer gaming through your phone</title>
 	<meta name="description" content="">
-	<meta name="viewport" content="width=device-width">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<!-- build:css(.) styles/vendor.css -->
@@ -30,7 +30,7 @@
 	<!--[if lte IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-	<nav class="navbar navbar-default navbar-fixed-top">
+	<nav class="navbar navbar-default navbar-fixed-top" ng-style="fixedHeight">
 		<div class="container">
 			<div class="navbar-header">
 				<a class="navbar-brand" href="#!/"><img src="images/logo.png" alt="ANEXD" /></a>
@@ -104,7 +104,7 @@
 	</div>
 	
 	<script src="bower_components/socket.io-client/socket.io.js"></script>
-
+	
 	<!-- build:js(.) scripts/vendor.js -->
 	<!-- bower:js -->
 	<script src="bower_components/jquery/dist/jquery.js"></script>
@@ -125,10 +125,10 @@
 	<script src="bower_components/ng-file-upload-shim/ng-file-upload-shim.js"></script>
 	<!-- endbower -->
 	<!-- endbuild -->
-
+	
 	<script type="text/javascript" src="bower_components/qrcode/lib/qrcode.min.js"></script>
 	<script type="text/javascript" src="bower_components/angular-qr/angular-qr.min.js"></script>
-
+	
 	<!-- build:js({.tmp,app}) scripts/scripts.js -->
 	<script src="scripts/app.js"></script>
 	<script src="scripts/factories.js"></script>
@@ -140,6 +140,7 @@
 	
 	<script src="applications/1/controller.js"></script>
 	<script src="applications/2/controller.js"></script>
+	<script src="applications/14/controller.js"></script>
 	<!-- endbuild -->
 </body>
 </html>

@@ -47,7 +47,7 @@ angular.module('ANEXD')
 			
 			lobbySocket.on('start', function(){
 				//TODO: replace with actual app id
-				$location.path($location.path() + '/' + 2, true);
+				$location.path($location.path() + '/' + 14, true);
 				$cookies.put('name', $scope.name);
 			});
 			
@@ -73,7 +73,7 @@ angular.module('ANEXD')
 			
 			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
 			$rootScope.lobby = $scope.lobby;
-			$rootScope.app = 5;
+			$rootScope.app = 14;
 			
 			//Instantiate Socket with LobbyId as the namespace
 			lobbySocket = new LobbySocket($scope.lobby);

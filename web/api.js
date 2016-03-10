@@ -43,12 +43,6 @@ io.on('connection', function(socket){
 		postQuiz(quiz);
 		socket.emit('quiz', true);
 	});
-	
-	socket.on('quizzes', function(){
-		getQuizzes(function(data){
-			socket.emit('quizzes', data);
-		});
-	})
 });
 
 //Send a new quiz to the database
@@ -70,7 +64,15 @@ var lobby = function(){
 			console.log('starting');
 			lobbyio.emit('start');
 			gameio = io.of('/' + data.lobby + '/' + data.app);
-			getQuiz();
+			//QUIZ
+			if(data.app === 2){
+				getQuiz();	
+			}
+			//IMAGE ANNOTATE
+			else if(data.app === 14){
+				console.log('image annotate');
+				imageAnnotate();	
+			}
 		});
 		
 		socket.on('join', function(name){
@@ -145,11 +147,12 @@ var getQuiz = function (callback){
 		};
 		answers = data.answers;
 		//Launch game
-		game();
+		quiz();
 	});
 }
 
-var game = function(){
+//Run the quiz game
+var quiz = function(){
 	running = true;
 	gameio.on('connection', function (socket) {
 		console.log('Game connection', socket.id);
@@ -227,3 +230,25 @@ var game = function(){
 		});
 	});
 };
+
+var imageAnnotate = function(){
+	var imageURL;
+	gameio.on('connection', function (socket) {
+		console.log('Game connection on annotate', socket.id);
+		
+		if(imageURL){
+			console.log('sending image', imageURL);
+			socket.emit('image', imageURL);
+		}
+		
+		socket.on('image', function(image){
+			imageURL = image;
+			console.log('got image', imageURL);
+			gameio.emit('image', imageURL);
+		});
+		
+		socket.on('leave', function(){
+			socket.disconnect();
+		});
+	});
+}

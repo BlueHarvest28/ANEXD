@@ -88,6 +88,7 @@
 	          	<div id="navbar" class="navbar-collapse collapse">
 	            	<ul class="nav navbar-nav navbar-right">
 	              		<li ng-class="{active: type == ''}" ng-click="setFilter('')"><span class="app-filter">All</span></li>
+						<li ng-class="{active: type == 'app'}" ng-click="setFilter('app')"><span class="app-filter">Apps</span></li>
 	              		<li ng-class="{active: type == 'quiz'}" ng-click="setFilter('quiz')"><span class="app-filter">Quizzes</span></li>
 	              		<li ng-class="{active: type == 'game'}" ng-click="setFilter('game')"><span class="app-filter">Games</span></li>
 	            	</ul>

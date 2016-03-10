@@ -7,8 +7,11 @@
 	</div>
 
 	<div class="container" ng-if="!fail">
-		<a ng-if="isMobile" class="back" ng-click="leave()">
-			<i class="fa fa-chevron-left"/>
+		<a ng-if="isMobile" class="back">
+			<i class="fa fa-chevron-left" ng-click="leave()"/>
+		</a>
+		<a ng-if="!isMobile">
+			<i class="fa fa-close" ng-click="leave()"/>
 		</a>
 		<div ng-include src="appLocation">
 		</div>

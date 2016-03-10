@@ -1,0 +1,33 @@
+.image-annotate{
+	overflow: scroll;
+	max-height: 70vh;
+}
+
+.image-annotate canvas { 
+	display:block; margin:1em auto; background:#fff; border:1px solid #ccc 
+}
+
+.image-annotate .edit{
+	text-align: center;
+    background-color: #6bbb5c;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    left: 50%;
+    margin-left: -50px;
+    bottom: 40px;
+    box-shadow: rgba(0,0,0,0.3) 0 5px 10px;
+	opacity: 0.25;
+	transition: opacity 0.25s;
+}
+
+.image-annotate .edit.editing{
+	opacity: 1;
+}
+
+.image-annotate .fa{
+	font-size: 40pt;
+    margin-top: 25px;
+    color: white;
+}

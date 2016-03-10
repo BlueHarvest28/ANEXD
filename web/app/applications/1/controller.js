@@ -1,7 +1,7 @@
 (function () {
 'use strict';
 angular.module('ANEXD')
-.controller('1Controller', [
+.controller('AddController', [
 	'$scope',
 	'Upload',
 	'ANEXDService',

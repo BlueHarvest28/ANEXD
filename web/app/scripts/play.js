@@ -11,6 +11,7 @@ angular.module('ANEXD')
     function ($scope, ANEXDService, $routeParams, $rootScope, $cookies, $location) 
     {
 		var app = $routeParams.appId;
+		$scope.isMobile = $rootScope.isMobile;
 		
 		//Store the lobby id and app id for instantiating ANEXD API
 		$rootScope.lobby = $routeParams.lobbyId;

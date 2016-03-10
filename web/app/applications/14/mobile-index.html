@@ -1,0 +1,12 @@
+<link rel="stylesheet" href="applications/14/mobile-style.css"/>
+<div class="image-annotate" ng-controller="MobileImageAnnotateController">	
+	<div ng-show="!image">
+		<h2>Please wait for the host to upload an image</h2>
+	</div>
+	<div class="edit" ng-click="toggleEdit()" ng-class="{editing: editing}">
+		<i class="fa fa-edit"/>
+	</div>
+	<div ng-show="image">
+		<canvas ng-if="image" drawing image="image" editing="editing"></canvas>
+	</div>
+</div>
