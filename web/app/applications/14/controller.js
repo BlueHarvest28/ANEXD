@@ -157,17 +157,18 @@ angular.module('ANEXD')
 			element.bind('touchstart', function (event) {
 				if(scope.editing){
 					var touchEvent = event.originalEvent.changedTouches[0];
-					lastx = touchEvent.pageX - event.target.offsetLeft;
-					lasty = touchEvent.pageY - event.target.offsetTop;
+					lastx = touchEvent.pageX - event.target.offsetLeft + canvas.parentElement.scrollLeft;
+					lasty = touchEvent.pageY - event.target.offsetTop + canvas.parentElement.scrollTop;
 				}
 			});
 
 			element.bind('touchmove', function (event) {
+				console.log(event.originalEvent);
 				if(scope.editing){
 					event.preventDefault();
 					var touchEvent = event.originalEvent.changedTouches[0];
-					x = touchEvent.pageX - event.target.offsetLeft;
-					y = touchEvent.pageY - event.target.offsetTop;
+					x = touchEvent.pageX - event.target.offsetLeft + canvas.parentElement.scrollLeft;
+					y = touchEvent.pageY - event.target.offsetTop + canvas.parentElement.scrollTop;
 					draw();
 					lastx = x;
 					lasty = y;
