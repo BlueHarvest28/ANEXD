@@ -43,6 +43,12 @@ io.on('connection', function(socket){
 		postQuiz(quiz);
 		socket.emit('quiz', true);
 	});
+	
+	socket.on('quizzes', function(){
+		getQuizzes(function(data){
+			socket.emit('quizzes', data);
+		});
+	})
 });
 
 //Send a new quiz to the database
@@ -151,7 +157,6 @@ var getQuiz = function (callback){
 	});
 }
 
-//Run the quiz game
 var quiz = function(){
 	running = true;
 	gameio.on('connection', function (socket) {
@@ -243,12 +248,16 @@ var imageAnnotate = function(){
 		
 		socket.on('image', function(image){
 			imageURL = image;
-			console.log('got image', imageURL);
 			gameio.emit('image', imageURL);
+		});
+		
+		socket.on('drawing', function(coords){
+			console.log('drawing');
+			gameio.emit('drawing', coords);
 		});
 		
 		socket.on('leave', function(){
 			socket.disconnect();
 		});
 	});
-}
+};

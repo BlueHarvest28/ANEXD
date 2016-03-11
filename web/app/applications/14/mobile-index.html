@@ -7,6 +7,6 @@
 		<i class="fa fa-edit"/>
 	</div>
 	<div ng-show="image">
-		<canvas ng-if="image" drawing image="image" editing="editing"></canvas>
+		<canvas ng-if="image" drawing image="image" editing="editing" callback="sendDrawing(coords)"></canvas>
 	</div>
 </div>
