@@ -252,7 +252,6 @@ var imageAnnotate = function(){
 		});
 		
 		socket.on('drawing', function(coords){
-			console.log('drawing');
 			gameio.emit('drawing', coords);
 		});
 		

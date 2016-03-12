@@ -1,10 +1,16 @@
+.play .container{
+	padding: 10px 10px;
+}
+
 .image-annotate .canvas-container{
+	max-height: 80vh;
 	overflow: scroll;
-	max-height: 70vh;
 }
 
 .image-annotate canvas { 
-	display:block; margin:1em auto; background:#fff; border:1px solid #ccc 
+	display:block; 
+	background:#fff; 
+	border:1px solid #ccc;
 }
 
 .image-annotate .edit{
@@ -16,18 +22,129 @@
     border-radius: 50px;
     left: 50%;
     margin-left: -50px;
-    bottom: 40px;
+    bottom: 10px;
     box-shadow: rgba(0,0,0,0.3) 0 5px 10px;
 	opacity: 0.25;
 	transition: opacity 0.25s;
+}
+
+.image-annotate .fa-edit{
+	font-size: 40pt;
+    margin-top: 25px;
+    color: white;
+}
+
+.image-annotate .control{
+	opacity: 1;
+	width: 50px;
+    height: 50px;
+	margin-left: -25px;
+	margin-top: -25px;
+	background-color: #ddd;
+	bottom: 30px;
+}
+
+.image-annotate .menu{
+	padding: 0;
+    left: 75%;
+}
+
+.image-annotate .colour{
+	width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: block;
+    background-color: blue;
+    position: absolute;
+    left: 50%;
+    margin-left: -11px;
+    top: 50%;
+    margin-top: -12px;
+}
+
+.image-annotate .undo{
+    left: 25%;
+}
+
+.image-annotate .fa-undo{
+	font-size: 15pt;
+    margin-top: 16px;
+    color: #444;
 }
 
 .image-annotate .edit.editing{
 	opacity: 1;
 }
 
-.image-annotate .fa{
-	font-size: 40pt;
-    margin-top: 25px;
-    color: white;
+.arrow-down {
+	position: absolute;
+	bottom: 58px;
+    left: 50%;
+    margin-left: -20px;
+	width: 0; 
+	height: 0; 
+	border-left: 20px solid transparent;
+	border-right: 20px solid transparent;	
+	border-top: 20px solid #ddd;
+}
+
+
+.image-annotate .colour-menu{
+	background-color: #ddd;
+	position: absolute;
+	bottom: 70px;
+	width: 100px;
+	left: 50%;
+	margin-left: -50px;
+	border-radius: 5px;
+	box-shadow: rgba(0,0,0,0.5) 0 4px 12px;
+}
+
+.image-annotate .colour-item{
+	width: 35px;
+	height: 35px;
+	background-color: white;
+	display: inline-block;
+	margin: 6px;
+	border-radius: 5px;
+}
+
+.image-annotate .white{
+	background-color: white;
+}
+
+.image-annotate .black{
+	background-color: black;
+}
+
+.image-annotate .red{
+	background-color: red;
+}
+
+.image-annotate .green{
+	background-color: green;
+}
+
+.image-annotate .blue{
+	background-color: blue;
+}
+
+.image-annotate .yellow{
+	background-color: yellow;
+}
+
+.image-annotate .orange{
+	background-color: orange;
+}
+
+.image-annotate .purple{
+	background-color: purple;
+}
+
+.image-annotate .brown{
+	background-color: brown;
+}
+
+.image-annotate .grey{
+	background-color: rgba(50,50,50,0.8);
 }

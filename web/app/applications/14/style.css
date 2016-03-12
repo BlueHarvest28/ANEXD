@@ -1,3 +1,10 @@
+.image-annotate .canvas-container{
+	width: 100%;
+    text-align: center;
+	background-color: #222;
+	overflow: auto;
+}
+
 .image-annotate img{
 	width: 100%;
 }
