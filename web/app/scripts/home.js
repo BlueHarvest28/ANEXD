@@ -1,3 +1,13 @@
+/**
+ * CO600 ANEXD Project Code
+ *
+ * Contributor(s): Frederick Harrington(FH98) and Harry Jones(HJ80)
+ * home.js is a part of the frontend web deveoplment
+ * home.js manages all mobile based frontend in partnership with home.html
+ * home.js does not contain functions for any of the navbar or signing/login functions.
+ *
+ * Copyright (C): University Of Kent 01/03/2016 
+**/
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -12,57 +22,80 @@ angular.module('ANEXD')
 	'$rootScope',
     function ($scope, $timeout, LoginService, $http, SocketService, LobbySocket, $location, $rootScope) 
     {					
-		var lobbySocket;
+		/* Local and $scope variables */
+        var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
+        $scope.lobbyDelFlag = false;                    //Flag to stop double clicking on submit
+        $scope.lobbyQR = '';                            //The lobbies QR code
+        $scope.type = '';                               //Application type, used in filtering
+        $scope.users = [];                              //Users in the lobby
+        $scope.launchMessage = 'Launch';                //
+		$scope.isDisabled = false;                      //
+        var lobbySocket;                                //
+        $scope.maxPlayers = '5';                        //
 		
+        /*
+        * HJ80
+        * Checks LoginService for a logged in user.
+        * Shows game icons if true.
+        */        
     	$scope.$watch(function(){ return LoginService.isLoggedIn();}, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn){
 				$scope.showIcons();
 			}
 		});
-	
-        var host = 'http://api-anexd.rhcloud.com/';
-        $scope.lobbyDelFlag = false;
-        $scope.lobbyQR = '';
-        $scope.type = '';
+	   
+        /*
+        * FH98
+        * HTTP Post request to recieve application information.
+        * HTTP Post request contains no data.
+        * HTTP Post request recieves JSON object.
+        * Function then sorts and displays the data held in the JSON object.
+        */
+        $scope.getGames = function(){
+            var req = {
+                 method: 'POST',
+                 url: host + 'getAllGames',
+            };
+
+            $http(req).then(function(response)  {
+                console.log(response);
+                $scope.apps = response.data;
+                for(var i = 0; i < $scope.apps.length; i++) {
+                    var obj = $scope.apps[i];
+                    $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
+                }
+            });   
+        };
         
-		$scope.users = [];
-		
-        var req = {
-             method: 'POST',
-             url: host + 'getAllGames',
-        };   
+        $scope.getGames(); //Calling getGames to display applications. 
         
-        //POST REQUEST for all games
-        $http(req).then(function(response)  {
-			console.log(response);
-            $scope.apps = response.data;
-            for(var i = 0; i < $scope.apps.length; i++) {
-                var obj = $scope.apps[i];
-                $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
-            }
-        });   
-		
-		var lobby = function(){
-			lobbySocket.on('update', function(players){
-				$scope.users = [];
-				angular.forEach(players, function(value){
-					this.push(value);	
-				}, $scope.users);
-			});
-		};
-		
-		//Called on lobby creation submit
-		$scope.launchMessage = 'Launch';
-		$scope.isDisabled = false;
+        /*
+        * HJ80
+        * Function displays lobby users on the frontend 
+        */
+        var lobby = function(){
+            lobbySocket.on('update', function(players){
+                $scope.users = [];
+                angular.forEach(players, function(value){
+                    this.push(value);	
+                }, $scope.users);
+            });
+        };
         
+        /*
+        * FH98
+        * Function is used to check if a LoginService logged in user has already created a lobby.
+        * HTTP Post request contains the users id.
+        * HTTP Post request receives boolean and the users old lobby id.
+        * If a user does have a lobby open it deletes it by called deleteLobby().
+        */
         $scope.getLobby = function(){
-			//Disable submit button
-			$scope.isDisabled = true;
+			$scope.isDisabled = true;  //Disable submit button
 			$scope.launchMessage = '';
-            //The userid is in here
+
             var payload = {
-				'creator': LoginService.getUserId(),
+				'creator': LoginService.getUserId(), //Logged in users Id.
 			};
 			var req = {
 				method: 'POST',
@@ -74,10 +107,10 @@ angular.module('ANEXD')
 				console.log(response);
 				if(response.data.status === 'Success'){
 					$scope.lobby = response.data.data.lobbyID;	
-					deleteLobby();
+					deleteLobby(); //Deletes already open lobby if there is one
 				}
 				else {
-					$scope.launchApp();
+					$scope.launchApp(); //Opens lobby
 				}
 				
 			}, function errorCallback(response) {
@@ -85,11 +118,18 @@ angular.module('ANEXD')
 			});
         };
         
-        //Called when the user closes a lobby
+        /*
+        * FH98
+        * Function is used to delete lobbies.
+        * Called when a host/user leaves their lobby.
+        * Called when the host has a lobby open when they create another.
+        * HTTP Post request contains the lobbies Id.
+        * HTTP Post request receives boolean
+        */
         function deleteLobby(){
-            //Lobby Deletion Post
+            
 			var payload = {
-				'lobbyID': $scope.lobby,
+				'lobbyID': $scope.lobby,  //lobby id to be removed from the database
 			};
 			var req = {
 				method: 'POST',
@@ -100,7 +140,7 @@ angular.module('ANEXD')
 			$http(req).then(function successCallback(response) {
 				console.log(response);
 				if(lobbySocket){
-					lobbySocket.emit('close');	
+					lobbySocket.emit('close');	//websocket emit called closed application
 					$scope.users = [];
 				}
 				if($scope.isDisabled){
@@ -111,15 +151,22 @@ angular.module('ANEXD')
 			});
         }	
         
+        /*
+        * FH98/HJ80
+        * Function called when the user starts a lobby with a selected application.
+        * HTTP Post request containing the users id, the application id and the lobby size.
+        * HTTP Post request receives lobby id.
+        * Function uses lobby id to create QR code.
+        * Function instantiate web socket connection.
+        */
     	$scope.launchApp = function(){
     		$scope.lobbyDelFlag = true;
-            
             var payload = {
                 'creator': LoginService.getUserId(),
                 'game': $scope.app.gameID,
                 'size': $scope.maxPlayers,
             };
-
+            
             var req = {
                 method: 'POST',
                 url: host + 'newLobby',
@@ -133,10 +180,9 @@ angular.module('ANEXD')
                 }
                 else {
                     console.log(response);
-                    $scope.showLobby = true;
-                    $scope.lobby = response.data.data.pass;
-                    //Lobby QR and password creation.
-                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobby;
+                    $scope.showLobby = true;                                    //Load lobby
+                    $scope.lobby = response.data.data.pass;                     //Lobby ID creation
+                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobby;   //Lobby QR creation.
 					$scope.isDisabled = false;
 					$scope.launchMessage = 'Launch';
 					
@@ -154,7 +200,6 @@ angular.module('ANEXD')
                 //show error and send again
 				console.log(response);
             });
-            //End of Lobby Post
             
             /*
             //SOCKET.ON for GameServer "lobbyconnect" event.
@@ -162,10 +207,15 @@ angular.module('ANEXD')
             Read back some info
             SocketService.on('lobbyconnect', function (data) {
             });
-            
             */  
     	};
 		
+        /*
+        * HJ80
+        * Function is called when the user starts the game.
+        * Function emits the lobby information to the websocket connection.
+        * Function sets path URL with game infomation. 
+        */
 		$scope.start = function(){
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = $scope.app.gameID;
@@ -175,11 +225,20 @@ angular.module('ANEXD')
             //SocketService.emit('start',{});
         };     
 		
+        /*
+        * HJ80
+        * Function called when a application is seleced.
+        */
 		$scope.loadApp = function(app){
     		$scope.hideIcons = true;
     		$scope.app = app;
     	};
 
+        /*
+        * FH98/HJ80
+        * Function is called to transition between lobby and homepage.
+        * Function hides lobby and displays applications.
+        */
     	$scope.showIcons = function(){
     		$scope.hideIcons = false;
             //Wait for the windows to disappear before triggering transitions
@@ -192,19 +251,22 @@ angular.module('ANEXD')
             
             if($scope.lobbyDelFlag === true){
                 deleteLobby();
-                
-                //End of Lobby Deletion Post
                 $scope.lobbyDelFlag = false;
             }
     	};
-          	
+          
+        /*
+        * HJ80
+        * Function is called when the user changes filters.
+        */
     	$scope.setFilter = function(type){
     		$scope.type = type;
-    	};
-        
-        //Local lobby information
-        $scope.maxPlayers = '5';
+    	}; 
 		
+        
+        
+        
+        
 		/*
         //SOCKET.ON for GameServer "msgall" event.
         SocketService.on('msgall', function (data) {

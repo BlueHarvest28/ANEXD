@@ -1,3 +1,12 @@
+/**
+ * CO600 ANEXD Project Code
+ *
+ * Contributor(s): Frederick Harrington(fh98) and Harry Jones(hj80)
+ * mobile-home.js is a part of the frontend web deveoplment
+ * mobile-home.js manages all mobile based frontend in partnership with mobile-home.html
+ *
+ * Copyright (C): University Of Kent 01/03/2016 
+**/
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -12,13 +21,13 @@ angular.module('ANEXD')
 	'$cookies',
     function ($scope, $http, SocketService, $routeParams, LobbySocket, $location, $rootScope, $cookies)
 	{
-        $scope.ready = false;
-		$scope.showLobby = false;
-        $scope.inputError = false;
-		$scope.users = [];
-		
+        /* Local and $scope variables */
+        $scope.ready = false;                             //
+		$scope.showLobby = false;                         //
+        $scope.inputError = false;                        //
+		$scope.users = [];                                //
         //UNUSED
-		//var host = 'http://api-anexd.rhcloud.com/';
+		//var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
 		
 		//If set, get lobby id from url
 		if($routeParams.lobbyId){
@@ -28,9 +37,10 @@ angular.module('ANEXD')
 		//Instance of lobby socket
 		var lobbySocket;
 		
-        /************************
-		*	Lobby back button	*
-		*************************/
+        /*
+        * FH98/HJ80
+        *
+        */
 		$scope.goBack = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
@@ -39,9 +49,10 @@ angular.module('ANEXD')
 			lobbySocket.emit('leave');
 		};
 		
-		/********************
-		*	Lobby socket	*
-		*********************/
+		/*
+        * HJ80
+        *
+        */
 		var lobby = function(){
 			lobbySocket.emit('join', $scope.name);
 			
@@ -63,9 +74,10 @@ angular.module('ANEXD')
 			});
 		};
         
-        /****************
-		*	Join lobby	*
-		*****************/
+        /*
+        * FH98/HJ80
+        *
+        */
 		$scope.join = function(){
             $scope.inputError = false;
             $scope.showLobby = true;
@@ -81,9 +93,10 @@ angular.module('ANEXD')
 			$location.path('/' + $scope.lobby, false);
 		};
 		
-        /************************
-		*	Toggle ready status	*
-		*************************/
+        /*
+        * FH98/HJ80
+        *
+        */
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
 			lobbySocket.emit('ready', $scope.ready);

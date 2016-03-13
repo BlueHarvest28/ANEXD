@@ -1,3 +1,11 @@
+/**
+ * CO600 ANEXD Project Code
+ *
+ * Contributor(s): Harry Jones(HJ80)
+ * app.js is a part of the frontend web deveoplment
+ *
+ * Copyright (C): University Of Kent 01/03/2016 
+**/
 'use strict';
 
 angular
