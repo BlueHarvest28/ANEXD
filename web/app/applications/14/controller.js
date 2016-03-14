@@ -208,8 +208,8 @@ angular.module('ANEXD')
 			});
 			
 			element.bind('touchstart', function (event) {
-				//TODO: SAVE STATE HERE FOR UNDO
-				undoList.push(canvas.toDataURL());
+				//TODO: SAVE STATE HERE FOR UNDO	
+				//undoList.push(canvas.toDataURL());
 				if(scope.editing){
 					var touchEvent = event.originalEvent.changedTouches[0];
 					lastx = touchEvent.pageX - event.target.offsetLeft + canvas.parentElement.scrollLeft;

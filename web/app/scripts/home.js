@@ -59,7 +59,6 @@ angular.module('ANEXD')
             };
 
             $http(req).then(function(response)  {
-                console.log(response);
                 $scope.apps = response.data;
                 for(var i = 0; i < $scope.apps.length; i++) {
                     var obj = $scope.apps[i];
