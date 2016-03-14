@@ -1,10 +1,53 @@
 <div class="quiz" ng-controller="MobileTankController">
 	<div id="p1" style="float:left;text-align:center;width:180px;">
 		<p>p1/ Gre<p>
-		<button id="up" onmousedown="move('up',1)" onmouseup="clearmove('up',1)" ontouchstart="move('up')">UP</button><br><br>
-		<button id="left" onmousedown="move('left',1)" onmouseup="clearmove('left',1)" ontouchstart="move('left')">LEFT</button>
-		<button id="right" onmousedown="move('right',1)" onmouseup="clearmove('right',1)" ontouchstart="move('right')">RIGHT</button><br><br>
-		<button id="down" onmousedown="move('down',1)" onmouseup="clearmove('down',1)" ontouchstart="move('down')">DOWN</button><br><br>
-		<button id="shoot" onmousedown="shooting(1)" ontouchstart="shooting(1)">Shoot</button>
+		<button 
+			id="up" 
+			ng-mousedown="actions('move',['up'])" 
+			ng-mouseup="actions('clearmove',['up'])"
+			my-touchstart="actions('move',['up'])" 
+			my-touchend="actions('clearmove',['up'])">
+			UP
+		</button>
+
+		<br><br>
+		
+		<button 
+			id="left" 
+			ng-mousedown="actions('move',['left'])" 
+			ng-mouseup="actions('clearmove',['left'])"
+			my-touchstart="actions('move',['left'])" 
+			my-touchend="actions('clearmove',['left'])">
+			LEFT
+		</button>
+		
+		<button 
+			id="right" 
+			ng-mousedown="actions('move',['right'])" 
+			ng-mouseup="actions('clearmove',['right'])"
+			my-touchstart="actions('move',['right'])" 
+			my-touchend="actions('clearmove',['right'])">
+			RIGHT
+		</button>
+
+		<br><br>
+		
+		<button 
+			id="down" 
+			ng-mousedown="actions('move',['down'])" 
+			ng-mouseup="actions('clearmove',['down'])"
+			my-touchstart="actions('move',['down'])" 
+			my-touchend="actions('clearmove',['down'])">
+			DOWN
+		</button>
+
+		<br><br>
+
+		<button 
+			id="shoot" 
+			ng-mousedown="actions('shooting',[])"
+			my-touchstart="actions('shooting',[])">
+			Shoot
+		</button>
 	</div>
 </div>

@@ -79,6 +79,11 @@ var lobby = function(){
 				console.log('image annotate');
 				imageAnnotate();	
 			}
+			//TANK GAME
+			else if(data.app == 15){
+				console.log('tank game')
+				tankGame();
+			}
 		});
 		
 		socket.on('join', function(name){
@@ -255,6 +260,39 @@ var imageAnnotate = function(){
 			gameio.emit('drawing', coords);
 		});
 		
+		socket.on('leave', function(){
+			socket.disconnect();
+		});
+	});
+};
+
+var tankGame = function(){
+	//connect, disconnect, message, connection
+	var players = {};
+	var playerCount = 1;
+
+	var host;
+	gameio.on('connection', function (socket) { 
+		console.log('connection!', socket.id)
+
+		socket.on('ishost', function(){
+			console.log('Host connection!', socket.id);
+			host = socket;
+		});
+
+		socket.on('player', function(){
+			console.log('player connection!', socket.id);
+			players[socket.id] = playerCount;
+			playerCount++;
+		});
+
+		socket.on('action', function(message){
+			message.player = players[socket.id];
+			console.log('action', message, socket.id);
+			host.emit('action', message);
+		});
+		
+		//not implemented
 		socket.on('leave', function(){
 			socket.disconnect();
 		});

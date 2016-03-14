@@ -6,14 +6,9 @@ angular.module('ANEXD')
 	'ANEXDService',
     function ($scope, ANEXDService) {
 		var anexd = new ANEXDService();
-
+		
+		anexd.sendToServer('ishost');
 		//tutorial from http://www.w3schools.com/games/default.asp
-
-
-		//TODO:
-		//Remove bullets when they exceed the canvas dimensions
-		//Only shoot 3/5 bullets then need a pause
-		//Delay after shooting
 
 		var players = [];
 		var bullets = [];
@@ -130,8 +125,6 @@ angular.module('ANEXD')
 		        this.x -= this.speed * Math.sin(this.angle * Math.PI / 180);
 		        this.y += this.speed * Math.cos(this.angle * Math.PI / 180);       
 		    } 
-
-
 		}
 
 		/*always render floor first last object will be ontop.*/
@@ -179,13 +172,10 @@ angular.module('ANEXD')
 		                if(p != undefined){
 		                    if((b.x + b.width/2 >= p.x && b.y + b.height/2 >= p.y) && 
 		                       (b.x + b.width/2 <= p.x + p.width && b.y + b.height/2 <= p.y + p.height)&&
-		                       j+1 != bullets[i][0]){ //hit
+		                       j+1 != bullets[i][0]){ //cant hit yourself
 		                        remBullet.push(i)
 		                        if (!players[j].removeHealth()){
 		                            delete players[j];
-		                            var nodes = document.getElementById("p"+(j+1)).getElementsByTagName('*');
-		                            for(var t = 0; t < nodes.length; t++)
-		                                 nodes[t].disabled = true;
 		                        }
 		                    }
 		                }
@@ -238,6 +228,35 @@ angular.module('ANEXD')
 		        [id, new component(100,100, imgPath + 'tankFire.png', x-25, y-24, "bullet", true, angle, -10)]
 		    );
 		}
+
+
+		anexd.expect('action');
+		$scope.$watch(
+			function() {
+				return anexd.getFromServer();	
+			}, 
+			function (data){
+				if(data){
+					if(data.event === 'action'){
+						var mes = data.val;
+						console.log(data.val)
+						switch(mes.action){
+							case 'clearmove':
+								$scope.clearmove(mes.params[0], mes.player);
+								break;
+							case 'move':
+								$scope.move(mes.params[0], mes.player);
+								break;
+							case 'shoot':
+								shoot(mes.player);
+								break;
+						}
+
+					}
+				}
+			}
+		);
+
 	}
 ])
 .controller('MobileTankController', [
@@ -246,23 +265,61 @@ angular.module('ANEXD')
     function ($scope, ANEXDService) {			
 		var anexd = new ANEXDService();
 		
+		anexd.sendToServer('player');
 		//delay to stop to many bullets
+
+		var waitTime = 500;
+		var waiter;
+
 		var shooting = function(id) {
 		    if (waiter == undefined) {
+		    	var message = {
+		    		action: 'shoot',
+		    		params: []	
+		    	};
 		        //send shoot to socket here
+		        anexd.sendToServer('action', message);
 		        waiter = setTimeout(function(){
 		            waiter = undefined;      
 		        }, waitTime);
 		    }
 		};
 
-		var action = function(act, params) {
+		$scope.actions = function(act, params) {
+			console.log('test');
 			if (act === 'shooting') {
 				shooting();
+			}else{
+				var message = {
+		    		action: act,
+		    		params: params	
+		    	};
+				//send to socket with params
+				anexd.sendToServer('action', message);
 			}
-			//send to socket with params
 		};
 
     }
-]);
+])
+.directive('myTouchstart', [function() {
+	//http://stackoverflow.com/questions/26170029/ng-touchstart-and-ng-touchend-in-angularjs
+    return function(scope, element, attr) {
+
+        element.on('touchstart', function(event) {
+            scope.$apply(function() { 
+                scope.$eval(attr.myTouchstart); 
+            });
+        });
+    };
+}])
+.directive('myTouchend', [function() {
+    return function(scope, element, attr) {
+
+        element.on('touchend', function(event) {
+            scope.$apply(function() { 
+                scope.$eval(attr.myTouchend); 
+            });
+        });
+    };
+}]);
 }());
