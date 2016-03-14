@@ -40,9 +40,9 @@ module.exports = function(config) {
       'bower_components/ng-file-upload-shim/ng-file-upload-shim.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
-	  'bower_components/qrcode/lib/qrcode.min.js',
-	  'bower_components/angular-qr/angular-qr.min.js',
-	  'bower_components/socket.io-client/socket.io.js',
+//	  'bower_components/qrcode/lib/qrcode.min.js',
+//	  'bower_components/angular-qr/angular-qr.min.js',
+//	  'bower_components/socket.io-client/socket.io.js',
       "app/scripts/**/*.js",
       "test/mock/**/*.js",
       "test/spec/**/*.js"
