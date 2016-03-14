@@ -1,11 +1,32 @@
-<div id="box">
-    <div id="choose" ng-show="!showMusic">
-        Input the URL of the song you want to listen to.
-        <br> 
-        Click Submit and let the fun begin!
-        <br>
-        <input class="input" type="text" ng-model="scUrl" placeholder="SoundCloud URL" required/>
-        <input type="submit" class="submit" value="Submit" ng-click="run();">
-    </div>
+<!doctype html>
+<head>
+  <script src="http://connect.soundcloud.com/sdk.js"></script>
+</head>
+<body>
 
+<div ng-controller="SCController">
+        <!--    HEADER    -->
+        <div class="header">
+            Input the URL of the song you want to listen to:
+            <input class="input" type="text" ng-model="url" placeholder="SoundCloud URL" required/>
+            <input type="submit" class="submit" value="Submit" ng-click="run(url);">
+        </div>
+        
+        <!--    PLAYER    -->
+    
+        <div ng-bind-html="player_html"></div>    
+
+        <!--    CONTROLS    -->
+    
+        <div class="controls">
+            <input type="submit" class="submit" ng-click="play();" value="Pause">
+        </div>
+        
+        <!--    CHAT   -->
+        
+        
+
+    </div>
 </div>
+</body>
+</html>

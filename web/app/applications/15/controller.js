@@ -298,7 +298,6 @@ angular.module('ANEXD')
 				anexd.sendToServer('action', message);
 			}
 		};
-
     }
 ])
 .directive('myTouchstart', [function() {

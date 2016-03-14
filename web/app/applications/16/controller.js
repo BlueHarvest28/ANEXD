@@ -1,26 +1,32 @@
 (function () {
 'use strict';
 angular.module('ANEXD')
-.controller('TankController', [
+.controller('SCController', [
 	'$scope',
 	'ANEXDService',
-    function ($scope, ANEXDService) {
+    '$sce',
+    function ($scope, ANEXDService, $sce) {
 		var anexd = new ANEXDService();
-        var showMusic = false;
-        var musicUrl = '';
+        $scope.url = '';
+        $scope.runFlag = '';
         
-        var run = function(data) {
-            showMusic = true;
-            musicUrl = data;
+        anexd.sendToServer('ishost');
+                
+        $scope.run = function(data) {
             
-        }
-        
-        var goback = function() {
+            $scope.url = data;
+            $scope.runFlag = true;
+            console.log($scope.url);
             
-        }
+            SC.oEmbed($scope.url, { auto_play: true }, function(oEmbed) {
+                $scope.$apply($scope.player_html = $sce.trustAsHtml(oEmbed.html));
+            });
+               
+        };
         
-     
-        
+        $scope.play = function() {  
+            SC.pause();
+        };
     }
 ])
-});
+}());
