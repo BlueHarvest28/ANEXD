@@ -4,8 +4,7 @@ angular.module('ANEXD')
 .controller('TankController', [
 	'$scope',
 	'ANEXDService',
-    function ($scope, ANEXDService) 
-    {
+    function ($scope, ANEXDService) {
 		var anexd = new ANEXDService();
 
 		//tutorial from http://www.w3schools.com/games/default.asp
@@ -20,18 +19,20 @@ angular.module('ANEXD')
 		var bullets = [];
 		var myGameFloor;
 
+		var imgPath = 'applications/15/resources/images/';
+
 		var canvasSize = [840,470];
 
 		$scope.startGame = function() {
 		    var width = canvasSize[0];
 		    var height = canvasSize[1];
 
-		    myGameFloor = new component(0, 0, 'images/ground.png', 0, 0, "background", false, 0, 0);
+		    myGameFloor = new component(0, 0, imgPath + 'ground.png', 0, 0, "background", false, 0, 0);
 
-		    players.push(new component(60, 60, 'images/tankGreen.png', 2, 2, "image", true, 135, 0));
-		    players.push(new component(60, 60, 'images/tankYellow.png', 2, height -62, "image", true, 45, 0));
-		    players.push(new component(60, 60, 'images/tankRed.png', width -62, 2, "image", true, 225, 0));
-		    players.push(new component(60, 60, 'images/tankBlue.png', width -62, height -62, "image", true, 325, 0));
+		    players.push(new component(60, 60, imgPath + 'tankGreen.png', 2, 2, "image", true, 135, 0));
+		    players.push(new component(60, 60, imgPath + 'tankYellow.png', 2, height -62, "image", true, 45, 0));
+		    players.push(new component(60, 60, imgPath + 'tankRed.png', width -62, 2, "image", true, 225, 0));
+		    players.push(new component(60, 60, imgPath + 'tankBlue.png', width -62, height -62, "image", true, 325, 0));
 		    myGameArea.start();
 		}
 
@@ -89,7 +90,7 @@ angular.module('ANEXD')
 		    this.x = x;
 		    this.y = y;   
 		    this.health = 1;
-		    this.removeHealth = function(){
+		    this.removeHealth = function() {
 		        this.health -= 1;
 		        return this.health;
 		    } 
@@ -134,11 +135,11 @@ angular.module('ANEXD')
 		}
 
 		/*always render floor first last object will be ontop.*/
-		function updateGameArea() {
+		var updateGameArea = function() {
 		    myGameArea.clear();
 		    myGameFloor.update();
-		    for(var i =0; i< players.length;i++){
-		        if(players[i] != undefined){
+		    for(var i =0; i< players.length;i++) {
+		        if(players[i] != undefined) {
 		            players[i].newPos();
 		            players[i].update();
 		        }
@@ -225,7 +226,7 @@ angular.module('ANEXD')
 		    }
 		}
 
-		function shoot(id){
+		var shoot = function(id) {
 		    var x = players[id-1].x
 		    var y = players[id-1].y
 		    var angle = players[id-1].angle;
@@ -234,7 +235,7 @@ angular.module('ANEXD')
 		    y -= 30 * Math.cos(angle * Math.PI / 180); 
 
 		    bullets.push(
-		        [id, new component(100,100, 'images/tankFire.png', x-25, y-24, "bullet", true, angle, -10)]
+		        [id, new component(100,100, imgPath + 'tankFire.png', x-25, y-24, "bullet", true, angle, -10)]
 		    );
 		}
 	}
@@ -242,68 +243,26 @@ angular.module('ANEXD')
 .controller('MobileTankController', [
 	'$scope',
 	'ANEXDService',
-    function ($scope, ANEXDService) 
-    {			
+    function ($scope, ANEXDService) {			
 		var anexd = new ANEXDService();
 		
-		$scope.showStart = true;
-		$scope.showQuestion = false;
-		$scope.showEnd = false;
-		
-		$scope.selectedAnswer = false;
-		$scope.score = 0;
-		
-		anexd.expect('title');
-		anexd.expect('current');
-		$scope.$watch(
-			function() {
-				return anexd.getFromServer();	
-			}, 
-			function (data){
-				if(data){
-					$scope.selectedAnswer = false;
-					$scope.question = undefined;
-					if(data.event === 'title'){
-						$scope.title = data.val.title;
-						$scope.description = data.val.description;
-						$scope.total = data.val.total;
-					}
-					else if(data.event === 'current'){
-						if(data.val.event === 'showStart'){
-							$scope.showStart = true;
-							$scope.showQuestion = false;
-							$scope.showEnd = false;
-						}
-						else if(data.val.event === 'question'){
-							$scope.showStart = false;
-							$scope.showQuestion = true;
-							$scope.showEnd = false;
-							$scope.question = data.val.data;
-						}
-						else if(data.val.event === 'showEnd'){
-							$scope.showStart = false;
-							$scope.showQuestion = false;
-							$scope.showEnd = true;
-						}
-						
-					}
-				}
-			}
-		);
-		
-		$scope.answers = [];
-		
-		$scope.setAnswer = function(answer){
-			anexd.sendToServer('answer', answer)
-			.then(function(data){
-				$scope.answers[$scope.question.number] = answer;
-				if(data){
-					$scope.score++;
-				}
-			}, function(error) {
-				console.log(error);
-			});	
+		//delay to stop to many bullets
+		var shooting = function(id) {
+		    if (waiter == undefined) {
+		        //send shoot to socket here
+		        waiter = setTimeout(function(){
+		            waiter = undefined;      
+		        }, waitTime);
+		    }
 		};
+
+		var action = function(act, params) {
+			if (act === 'shooting') {
+				shooting();
+			}
+			//send to socket with params
+		};
+
     }
 ]);
 }());
