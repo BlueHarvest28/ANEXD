@@ -76,7 +76,6 @@ var lobby = function(){
 			}
 			//IMAGE ANNOTATE
 			else if(data.app === 14){
-				console.log('image annotate');
 				imageAnnotate();	
 			}
 		});

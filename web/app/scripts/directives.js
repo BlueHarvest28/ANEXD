@@ -46,5 +46,42 @@ angular.module('ANEXD')
 			});
 		}
 	};
+})
+.directive('hideOnSubmit', function() {
+	return{
+		restrict: 'A',
+		scope: {
+			shouldHide: '@'	
+		},
+		link: function(scope, elm) {
+			scope.$watch('shouldHide', function(value){
+				if(value){
+					elm.modal('hide');
+				}
+			});
+		}
+	};
+})
+.directive('compareTo', function() {
+	return {
+        require: 'ngModel',
+        scope: {
+            comparitor: '=compareTo',
+			shouldValidate: '='
+        },
+        link: function(scope, element, attributes, ngModel) {
+            ngModel.$validators.compareTo = function(modelValue) {
+                if(scope.shouldValidate){
+					return modelValue === scope.comparitor;
+				} else {
+					return true;
+				}
+            };
+ 
+            scope.$watch('comparitor', function() {
+				ngModel.$validate();	
+            });
+        }
+    };
 });
 }());
