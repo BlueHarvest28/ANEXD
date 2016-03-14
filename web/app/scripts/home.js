@@ -16,11 +16,10 @@ angular.module('ANEXD')
     '$timeout',
     'LoginService',
     '$http',
-	'SocketService',
 	'LobbySocket',
 	'$location',
 	'$rootScope',
-    function ($scope, $timeout, LoginService, $http, SocketService, LobbySocket, $location, $rootScope) 
+    function ($scope, $timeout, LoginService, $http, LobbySocket, $location, $rootScope) 
     {					
 		/* Local and $scope variables */
         var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
@@ -74,12 +73,14 @@ angular.module('ANEXD')
         * Function displays lobby users on the frontend 
         */
         var lobby = function() {
-            lobbySocket.on('update', function(players) {
-                $scope.users = [];
-                angular.forEach(players, function(value) {
-                    this.push(value);	
-                }, $scope.users);
-            });
+			lobbySocket.emit('hostlobby', LoginService.getUserId());
+			
+//            lobbySocket.on('update', function(players) {
+//                $scope.users = [];
+//                angular.forEach(players, function(value) {
+//                    this.push(value);	
+//                }, $scope.users);
+//            });
         };
         
         /*
@@ -185,15 +186,17 @@ angular.module('ANEXD')
 					$scope.isDisabled = false;
 					$scope.launchMessage = 'Launch';
 					
+					lobbySocket = new LobbySocket($scope.lobby);
+					lobby();
+					$location.path('/' + $scope.lobby, false);
+					
 					//Instantiate Socket for lobby
-					SocketService.emit('lobby', $scope.lobby);
-					SocketService.on('lobby', function(data) {
-						if(data){
-							lobbySocket = new LobbySocket($scope.lobby);
-							lobby();
-							$location.path('/' + $scope.lobby, false);
-						}
-					});
+					//SocketService.emit('lobby', $scope.lobby);
+					//SocketService.on('lobby', function(data) {
+						//if(data){
+							
+						//}
+					//});
                 }    
             }, function errorCallback(response) {
                 //show error and send again

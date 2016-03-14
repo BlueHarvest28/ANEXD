@@ -103,6 +103,7 @@ angular.module('ANEXD')
 }])
 /*
  *	Generic socket interface
+ *	http://api-anexd.rhcloud.com:8080/socket.io/
  */
 .factory('SocketService', function (socketFactory) {
 	var lobbySocket = io.connect('http://localhost:3002/');

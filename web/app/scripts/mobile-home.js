@@ -83,6 +83,8 @@ angular.module('ANEXD')
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
 			
+			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': $scope.lobby});
+			
 			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = 14;
