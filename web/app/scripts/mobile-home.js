@@ -30,7 +30,7 @@ angular.module('ANEXD')
 		//var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
 		
 		//If set, get lobby id from url
-		if($routeParams.lobbyId){
+		if($routeParams.lobbyId) {
 			$scope.lobby = $routeParams.lobbyId;
 		}
         
@@ -53,7 +53,7 @@ angular.module('ANEXD')
         * HJ80
         *
         */
-		var lobby = function(){
+		var lobby = function() {
 			lobbySocket.emit('join', $scope.name);
 			
 			lobbySocket.on('start', function(){
@@ -78,7 +78,7 @@ angular.module('ANEXD')
         * FH98/HJ80
         *
         */
-		$scope.join = function(){
+		$scope.join = function() {
             $scope.inputError = false;
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
@@ -97,7 +97,7 @@ angular.module('ANEXD')
         * FH98/HJ80
         *
         */
-        $scope.toggleReady = function(){
+        $scope.toggleReady = function() {
 			$scope.ready = !$scope.ready;
 			lobbySocket.emit('ready', $scope.ready);
 		};

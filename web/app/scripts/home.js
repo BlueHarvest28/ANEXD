@@ -40,7 +40,7 @@ angular.module('ANEXD')
         */        
     	$scope.$watch(function(){ return LoginService.isLoggedIn();}, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
-			if(!$scope.isLoggedIn){
+			if(!$scope.isLoggedIn) {
 				$scope.showIcons();
 			}
 		});
@@ -52,7 +52,7 @@ angular.module('ANEXD')
         * HTTP Post request recieves JSON object.
         * Function then sorts and displays the data held in the JSON object.
         */
-        $scope.getGames = function(){
+        $scope.getGames = function() {
             var req = {
                  method: 'POST',
                  url: host + 'getAllGames',
@@ -74,10 +74,10 @@ angular.module('ANEXD')
         * HJ80
         * Function displays lobby users on the frontend 
         */
-        var lobby = function(){
-            lobbySocket.on('update', function(players){
+        var lobby = function() {
+            lobbySocket.on('update', function(players) {
                 $scope.users = [];
-                angular.forEach(players, function(value){
+                angular.forEach(players, function(value) {
                     this.push(value);	
                 }, $scope.users);
             });
@@ -90,7 +90,7 @@ angular.module('ANEXD')
         * HTTP Post request receives boolean and the users old lobby id.
         * If a user does have a lobby open it deletes it by called deleteLobby().
         */
-        $scope.getLobby = function(){
+        $scope.getLobby = function() {
 			$scope.isDisabled = true;  //Disable submit button
 			$scope.launchMessage = '';
 
@@ -105,7 +105,7 @@ angular.module('ANEXD')
 			};
 			$http(req).then(function successCallback(response) {
 				console.log(response);
-				if(response.data.status === 'Success'){
+				if(response.data.status === 'Success') {
 					$scope.lobby = response.data.data.lobbyID;	
 					deleteLobby(); //Deletes already open lobby if there is one
 				}
@@ -126,7 +126,7 @@ angular.module('ANEXD')
         * HTTP Post request contains the lobbies Id.
         * HTTP Post request receives boolean
         */
-        function deleteLobby(){
+        function deleteLobby() {
             
 			var payload = {
 				'lobbyID': $scope.lobby,  //lobby id to be removed from the database
@@ -139,11 +139,11 @@ angular.module('ANEXD')
 			};
 			$http(req).then(function successCallback(response) {
 				console.log(response);
-				if(lobbySocket){
+				if(lobbySocket) {
 					lobbySocket.emit('close');	//websocket emit called closed application
 					$scope.users = [];
 				}
-				if($scope.isDisabled){
+				if($scope.isDisabled) {
 					$scope.launchApp();
 				}
 			}, function errorCallback(response) {
@@ -159,7 +159,7 @@ angular.module('ANEXD')
         * Function uses lobby id to create QR code.
         * Function instantiate web socket connection.
         */
-    	$scope.launchApp = function(){
+    	$scope.launchApp = function() {
     		$scope.lobbyDelFlag = true;
             var payload = {
                 'creator': LoginService.getUserId(),
@@ -188,7 +188,7 @@ angular.module('ANEXD')
 					
 					//Instantiate Socket for lobby
 					SocketService.emit('lobby', $scope.lobby);
-					SocketService.on('lobby', function(data){
+					SocketService.on('lobby', function(data) {
 						if(data){
 							lobbySocket = new LobbySocket($scope.lobby);
 							lobby();
@@ -216,7 +216,7 @@ angular.module('ANEXD')
         * Function emits the lobby information to the websocket connection.
         * Function sets path URL with game infomation. 
         */
-		$scope.start = function(){
+		$scope.start = function() {
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = $scope.app.gameID;
 			lobbySocket.emit('start', {'lobby': $scope.lobby, 'app': $scope.app.gameID});
@@ -229,7 +229,7 @@ angular.module('ANEXD')
         * HJ80
         * Function called when a application is seleced.
         */
-		$scope.loadApp = function(app){
+		$scope.loadApp = function(app) {
     		$scope.hideIcons = true;
     		$scope.app = app;
     	};
@@ -239,17 +239,17 @@ angular.module('ANEXD')
         * Function is called to transition between lobby and homepage.
         * Function hides lobby and displays applications.
         */
-    	$scope.showIcons = function(){
+    	$scope.showIcons = function() {
     		$scope.hideIcons = false;
             //Wait for the windows to disappear before triggering transitions
             $scope.isDisabled = false;
 			$scope.launchMessage = 'Launch';
 			
-			$timeout( function(){
+			$timeout( function() {
                 $scope.showLobby = false;
             }, 1000);
             
-            if($scope.lobbyDelFlag === true){
+            if($scope.lobbyDelFlag === true) {
                 deleteLobby();
                 $scope.lobbyDelFlag = false;
             }
@@ -259,13 +259,11 @@ angular.module('ANEXD')
         * HJ80
         * Function is called when the user changes filters.
         */
-    	$scope.setFilter = function(type){
+    	$scope.setFilter = function(type) {
     		$scope.type = type;
     	}; 
 		
-        
-        
-        
+    
         
 		/*
         //SOCKET.ON for GameServer "msgall" event.

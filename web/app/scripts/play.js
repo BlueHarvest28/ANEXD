@@ -17,9 +17,9 @@ angular.module('ANEXD')
 		$rootScope.lobby = $routeParams.lobbyId;
 		$rootScope.app = $routeParams.appId;
 		
-		if($rootScope.isMobile){
+		if($rootScope.isMobile) {
 			var name = $cookies.get('name');
-			if(name){
+			if(name) {
 				$scope.appLocation = 'applications/' + app + '/mobile-index.html';	
 			}
 			else {
@@ -29,7 +29,7 @@ angular.module('ANEXD')
 			$scope.appLocation = 'applications/' + app + '/index.html';
 		}
 		
-		$scope.leave = function(){
+		$scope.leave = function() {
 			$rootScope.$broadcast('leave');
 			$location.path('/' + $routeParams.lobbyId, true);
 		};

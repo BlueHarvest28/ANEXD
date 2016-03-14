@@ -39,7 +39,7 @@ angular.module('ANEXD')
         * Function contains parts for a new and existing users
         * Calls LoginService with both createUser() and login() 
         */ 
-    	$scope.login = function(email, password){
+    	$scope.login = function(email, password) {
 			//New user
 			if($scope.newEmail){
 				var createUser = LoginService.createUser(email, password);
@@ -77,7 +77,7 @@ angular.module('ANEXD')
         * HTTP Post request contains submitted email
         * HTTP Post request receives boolean
         */
-		$scope.checkEmail = function(email){
+		$scope.checkEmail = function(email) {
 			if(!email){
 				return;
 			}
@@ -111,7 +111,7 @@ angular.module('ANEXD')
         * HTTP Post request contains user Id, current password and new password.
         * HTTP Post request recieves boolean.
         */ 
-        $scope.update = function(data){
+        $scope.update = function(data) {
             console.log(data);
             $scope.errorDisabled = false;
             
@@ -151,7 +151,7 @@ angular.module('ANEXD')
         * Function calles two LoginService functions, logout and getUser.
         * Function contains timeout function. 
         */ 
-    	$scope.logout = function(){
+    	$scope.logout = function() {
 			$scope.shouldHide = false;
     		//Wait for the modal to animate out
     		$timeout( function(){
@@ -164,7 +164,7 @@ angular.module('ANEXD')
 		$scope.isMobile = $rootScope.isMobile;
 	}    
 ])
-.directive('hideOnSubmit', function(){
+.directive('hideOnSubmit', function() {
 	return{
 		restrict: 'A',
 		scope: {
