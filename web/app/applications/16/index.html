@@ -3,7 +3,6 @@
   <script src="http://connect.soundcloud.com/sdk.js"></script>
 </head>
 <body>
-
 <div ng-controller="SCController">
         <!--    HEADER    -->
         <div class="header">
@@ -17,14 +16,12 @@
         <div ng-bind-html="player_html"></div>    
 
         <!--    CONTROLS    -->
-    
-        <div class="controls">
-            <input type="submit" class="submit" ng-click="play();" value="Pause">
-        </div>
         
         <!--    CHAT   -->
         
-        
+        <div id="chatbox">
+            <div ng-repeat="messages"></div>
+        </div>
 
     </div>
 </div>
