@@ -24,25 +24,19 @@ angular.module('ANEXD')
         }; 
         
         $scope.message = function(data) {
-            $scope.messages.push(data, )
+            
         }
-    }
-}
-                                 ])
-}());
-        
+    }                            
+])
 .controller('MobileSCController', [
 	'$scope',
 	'ANEXDService',
 	function ($scope, ANEXDService) {
-		var anexd = new ANEXDService();        
-        
-        
-        
-.directive('dateNow', ['$filter', function($filter) {
-  return {
-    link: function( $scope, $element, $attrs) {
-      $element.text($filter('date')(new Date(), $attrs.dateNow));
+		var anexd = new ANEXDService();      
     }
-  };
-}])
+])
+}());
+        
+
+        
+

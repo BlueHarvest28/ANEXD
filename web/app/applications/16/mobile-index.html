@@ -1,7 +1,14 @@
+<!doctype html>
 <div ng-controller="MobileSCController">
+<head>
+    <link rel="stylesheet" href="applications/16/style.css"/>
+</head>
+<body>
     <div id="play">
-        <input class="input" type="text" ng-model="chat" placeholder="SoundCloud URL" required/>
-        
+        <input class="m-input" type="text" ng-model="chat" placeholder="SoundCloud URL" required/>
+        <br>
         <input type="submit" class="submit" value="Submit" ng-click="message(chat);">
     </div>
 </div>
+</body>
+</html>
