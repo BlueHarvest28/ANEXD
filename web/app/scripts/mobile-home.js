@@ -30,7 +30,7 @@ angular.module('ANEXD')
 		//var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
 		
 		//If set, get lobby id from url
-		if($routeParams.lobbyId) {
+		if($routeParams.lobbyId){
 			$scope.lobby = $routeParams.lobbyId;
 		}
         
@@ -53,12 +53,12 @@ angular.module('ANEXD')
         * HJ80
         *
         */
-		var lobby = function() {
+		var lobby = function(){
 			lobbySocket.emit('join', $scope.name);
 			
 			lobbySocket.on('start', function(){
 				//TODO: replace with actual app id
-				$location.path($location.path() + '/' + 14, true);
+				$location.path($location.path() + '/' + 15, true);
 				$cookies.put('name', $scope.name);
 			});
 			
@@ -78,16 +78,14 @@ angular.module('ANEXD')
         * FH98/HJ80
         *
         */
-		$scope.join = function() {
+		$scope.join = function(){
             $scope.inputError = false;
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
 			
-			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': $scope.lobby});
-			
 			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
 			$rootScope.lobby = $scope.lobby;
-			$rootScope.app = 14;
+			$rootScope.app = 15;
 			
 			//Instantiate Socket with LobbyId as the namespace
 			lobbySocket = new LobbySocket($scope.lobby);
@@ -99,7 +97,7 @@ angular.module('ANEXD')
         * FH98/HJ80
         *
         */
-        $scope.toggleReady = function() {
+        $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
 			lobbySocket.emit('ready', $scope.ready);
 		};

@@ -1,54 +1,5 @@
 <div ng-controller="TankController">
-	<div ng-init="startGame()">
+	<div>
 		<canvas id="canvas"></canvas>
-
-		<h4>Local controls:</h4>
-		<div id="p1" style="float:left;text-align:center;width:180px;" ng-repeat="col in ['Gre', 'Yel', 'Red', 'Blu']">
-		<p>p1/ {{col}}<p>
-		<button 
-			id="up{{$index}}" 
-			ng-mousedown="move('up',$index +1)" 
-			ng-mouseup="clearmove('up',$index +1)" 
-			ontouchstart="move('up')">
-			U
-		</button>
-
-		<br><br>
-
-		<button 
-			id="left{{$index}}" 
-			ng-mousedown="move('left',$index +1)" 
-			ng-mouseup="clearmove('left',$index +1)" 
-			ontouchstart="move('left')">
-			L
-		</button>
-
-		<button 
-			id="right{{$index}}" 
-			ng-mousedown="move('right',$index +1)" 
-			ng-mouseup="clearmove('right',$index +1)" 
-			ontouchstart="move('right')">
-			R
-		</button>
-
-		<br><br>
-
-		<button 
-			id="down{{$index}}" 
-			ng-mousedown="move('down',$index +1)" 
-			ng-mouseup="clearmove('down',$index +1)" 
-			ontouchstart="move('down')">
-			D
-		</button>
-
-		<br><br>
-		
-		<button 
-			id="shoot{{$index}}" 
-			ng-mousedown="shooting($index +1)" 
-			ontouchstart="shooting($index +1)">
-			F
-		</button>
-		</div>
 	</div>
 </div>
