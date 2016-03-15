@@ -5,18 +5,22 @@
 </head>
 <body>
     <div id="play">
-            <h4>
-                My Sent Comments: 
-            </h4>
+            <h3>Your Comments:</h3>
         <div class="m-messages">
-            <div class="m-repeat" ng-repeat="message in messages track by $index">    
-                Me: {{message}}
+            <div class="m-repeat" ng-repeat="message in messages track by $index">
+                Me: {{message}}      
             </div>
         </div>
         <form name="chatForm" novalidate>  
-            <input class="m-input" type="text" ng-model="chat" placeholder="SoundCloud URL" required/>
+            <input class="m-input" 
+                   type="text" 
+                   ng-model="chat" 
+                   placeholder="Comment" required/>
         </form>
-        <input type="submit" class="login-submit" value="Submit" ng-click="message(chat);">
+        <input type="submit" 
+               class="login-submit" 
+               value="Submit" 
+               ng-click="message(chat);">
     </div>
 </div>
 </body>

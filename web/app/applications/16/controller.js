@@ -16,7 +16,7 @@ angular.module('ANEXD')
             $scope.runFlag = true;
             console.log($scope.url);
             
-            SC.oEmbed($scope.url, { auto_play: true }, function(oEmbed) {
+            SC.oEmbed($scope.url, {}, function(oEmbed) {
                 $scope.$apply($scope.player_html = $sce.trustAsHtml(oEmbed.html));
             });
         }; 
