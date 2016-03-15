@@ -431,11 +431,6 @@ var tankGame = function(){
 	        }
 	    }
 
-	    /*for(var i =0; i< bullets.length;i++) {
-	        if(bullets[i] != undefined) {
-	            bullets[i][1].newPos();
-	        }
-	    }*/
 	    var remBullet = [];
 	    for(var i =0; i< bullets.length;i++){
 	        if (bullets[i] != undefined) {
@@ -474,7 +469,7 @@ var tankGame = function(){
 	                        remBullet.push(i)
 	                        if (!players[j].removeHealth()){
 	                            delete players[j];
-	                            console.log('player hit ', players[j])
+	                            console.log('player hit ', players[j], j)
 	                        }
 	                    }
 	                }
@@ -536,6 +531,7 @@ var tankGame = function(){
 				move(data.params[0], data.player);
 				break;
 			case 'shoot':
+				console.log('shooting');
 				shoot(data.player);
 				break;
 		}

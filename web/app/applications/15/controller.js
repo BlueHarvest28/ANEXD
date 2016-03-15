@@ -191,6 +191,7 @@ angular.module('ANEXD')
 		    		params: []	
 		    	};
 		        //send shoot to socket here
+				console.log('shoot');
 		        anexd.sendToServer('action', message);
 		        waiter = setTimeout(function(){
 		            waiter = undefined;      

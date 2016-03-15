@@ -1,0 +1,78 @@
+.background{
+	background-image: url("resources/images/bg-3.png");
+	background-size: 100% 100% ;
+    background-color: red;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    top: 0px;
+}
+
+body .container-fluid.main {
+    margin-top: 70px;
+}
+
+.play .container {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 70px;
+    bottom: 0;
+    width: 100%;
+}
+
+.back {
+	position: fixed;
+}
+
+.controls {
+    margin: 35px;
+    width: 250px;
+    height: 220px;
+    position: absolute;
+    padding: 15px
+}
+
+.arrow{
+	width: 100px;
+	z-index: 1000px;
+}
+
+.left {
+	-ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+    transform: rotate(180deg);
+    position: absolute;
+    left: 0px;
+    top: 80px;
+}
+
+.right {
+    position: absolute;
+    right: 0px;
+    top: 80px;
+}
+
+.up {
+    position: absolute;
+    left: 75px;
+	-ms-transform: rotate(270deg); /* IE 9 */
+    -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
+    transform: rotate(270deg);
+}
+
+.down {
+    position: absolute;
+    left: 75px;
+    bottom: 0px;
+	-ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
+}
+
+.button {
+	position: absolute;
+    width: 150px;
+    right: 10%;
+    top: 25%;
+}
