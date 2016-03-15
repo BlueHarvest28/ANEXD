@@ -71,18 +71,22 @@ var lobby = function(){
 			lobbyio.emit('start');
 			gameio = io.of('/' + data.lobby + '/' + data.app);
 			//QUIZ
-			if(data.app === 2){
+			if(data.app === 2) {
 				getQuiz();	
 			}
 			//IMAGE ANNOTATE
-			else if(data.app === 14){
+			else if(data.app === 14) {
 				imageAnnotate();	
 			}
 			//TANK GAME
-			else if(data.app == 15){
-				console.log('tank game')
+			else if(data.app == 15) {
+				console.log('tank game');
 				tankGame();
 			}
+            //SCListen
+            else if(data.app == 16) {
+                scListen();
+            }
 		});
 		
 		socket.on('join', function(name){
@@ -280,7 +284,7 @@ var tankGame = function(){
 
 	var host;
 	gameio.on('connection', function (socket) { 
-		console.log('connection!', socket.id)
+		console.log('connection!', socket.id);
 
 		socket.on('ishost', function(){
 			console.log('Host connection!', socket.id);
@@ -304,4 +308,18 @@ var tankGame = function(){
 			socket.disconnect();
 		});
 	});
+};
+
+var scListen = function(){
+    var newComment;
+    
+    gameio.on('connection', function(socket) {
+        console.log('connection made', socket.id);
+        
+        socket.on('comment', function(data) {
+            console.log(data);
+            newComment = data;
+            gameio.emit('comment', newComment);
+        });
+    });
 };

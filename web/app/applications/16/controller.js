@@ -10,9 +10,7 @@ angular.module('ANEXD')
         $scope.url = '';
         $scope.runFlag = '';
         $scope.messages = [];
-        
-        anexd.sendToServer('ishost');
-                
+                        
         $scope.run = function(data) {
             $scope.url = data;
             $scope.runFlag = true;
@@ -23,16 +21,38 @@ angular.module('ANEXD')
             });
         }; 
         
-        $scope.message = function(data) {
-            
-        }
+        anexd.expect('comment');
+        $scope.$watch(
+            function() {
+                return anexd.getFromServer();
+            },
+            function(data) {
+                if(data){
+                    if(data.event === 'comment') {
+                        console.log(data.val);
+                        $scope.messages.push(data.val);
+                        console.log($scope.messages);
+                    }
+                }  
+            }
+        );
     }                            
 ])
 .controller('MobileSCController', [
 	'$scope',
 	'ANEXDService',
 	function ($scope, ANEXDService) {
-		var anexd = new ANEXDService();      
+		var anexd = new ANEXDService();
+        $scope.messages = [];
+        
+        $scope.message = function(data) {
+            if(data !== ''){
+                $scope.chat = '';
+                console.log(data);
+                $scope.messages.push(data);
+                anexd.sendToServer('comment', data);
+            }
+        };
     }
 ])
 }());

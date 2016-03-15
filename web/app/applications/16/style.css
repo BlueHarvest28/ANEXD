@@ -1,17 +1,58 @@
-.header{
-    
+/*DESKTOP*/
+
+.left {
+    float: left;
+    height: 409px;
+    width: 20%;
+    border: 2px solid black;
+    border-right-width: 0px;
 }
 
-#scEmbed{
+.right {
+    float: right; 
+    width: 80%;
+    height: 409px;
+    border: 2px solid black;
+    padding: 2px;
+}
+
+.main {
+    width: 100%;
+}
+
+#scEmbed {
     width: 500px;
     height: auto;
 }
 
-.controls{
-    
+.chatbox {
+    padding: 4px;
+    overflow-y: auto;
 }
 
-.m-input{
-    width: auto;
-    height: 200px;
+/*MOBILE*/
+
+.m-input {
+    width: 100%;
+    height: 40px;
+    border: 2px solid black;
+    padding: 5px;
+    margin-bottom: 2px;
+}
+
+.m-submit {
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+.m-messages{
+    width: 100%;
+    height: 320px;
+    margin-bottom: 2px;
+    padding-top: 5px;
+    border: 2px solid black;
+    padding: 5px;
+    overflow-y: auto;
 }

@@ -5,9 +5,18 @@
 </head>
 <body>
     <div id="play">
-        <input class="m-input" type="text" ng-model="chat" placeholder="SoundCloud URL" required/>
-        <br>
-        <input type="submit" class="submit" value="Submit" ng-click="message(chat);">
+            <h4>
+                My Sent Comments: 
+            </h4>
+        <div class="m-messages">
+            <div class="m-repeat" ng-repeat="message in messages track by $index">    
+                Me: {{message}}
+            </div>
+        </div>
+        <form name="chatForm" novalidate>  
+            <input class="m-input" type="text" ng-model="chat" placeholder="SoundCloud URL" required/>
+        </form>
+        <input type="submit" class="login-submit" value="Submit" ng-click="message(chat);">
     </div>
 </div>
 </body>
