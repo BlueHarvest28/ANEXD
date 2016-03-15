@@ -259,6 +259,14 @@ var imageAnnotate = function(){
 			gameio.emit('drawing', coords);
 		});
 		
+		socket.on('save', function(data){
+			gameio.emit('save', data);
+		});
+		
+		socket.on('undo', function(){
+			gameio.emit('undo');
+		});
+		
 		socket.on('leave', function(){
 			socket.disconnect();
 		});

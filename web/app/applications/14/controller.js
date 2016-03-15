@@ -10,9 +10,9 @@ angular.module('ANEXD')
 	function ($scope, Upload, ANEXDService, $rootScope) {
 		var anexd = new ANEXDService();
 		//Change temporarily for testing
-		$scope.done = false;
-		$scope.imageURL;
-		//anexd.sendToServer('image', $scope.imageURL);
+		$scope.done = true;
+		$scope.imageURL = 'images/bg.png';
+		anexd.sendToServer('image', $scope.imageURL);
 		
 		$scope.upload = function(image) {
 			$scope.inProgress = true;
@@ -40,16 +40,18 @@ angular.module('ANEXD')
 			});
 		};
 		
-		anexd.expect('drawing');
+		anexd.expect('image');
 		$scope.$watch(
 			function() {
 				return anexd.getFromServer();	
 			}, 
 			function (data){
 				if(data){
-					if(data.event === 'drawing'){
-						console.log(data.val);
-						$scope.$broadcast('drawLine', data.val);
+					if(data.event === 'image'){
+						$scope.done = true;
+						if(!$scope.imageURL){
+							$scope.imageURL = data.val;
+						}
 					}
 				}
 			}
@@ -85,36 +87,69 @@ angular.module('ANEXD')
 			$scope.editing = !$scope.editing;
 		};
 		
-		$scope.sendDrawing = function(coords){
-			anexd.sendToServer('drawing', coords);
-		};
-		
 		$scope.undo = function(){
 			$scope.$broadcast('undo');	
 		};
 		
 		$scope.selectColour = function(colour){
-			$scope.selectedColour = colour;
 			$scope.$broadcast('colour', $scope.selectedColour);
 		};
 	}
 ])
-.directive("posting", function () {
+.directive("posting", ['ANEXDService', function (ANEXDService) {
 	return {
 		restrict: "A",
 		scope: {
 			image : '='
 		},
 		link: function (scope, element, attrs) {
+			var anexd = new ANEXDService();
 			var canvas = element[0];
 			var ctx = canvas.getContext('2d');
+			var width;
+			var height;
+			
+			var undoList = [];
+			
+			anexd.expect('drawing');
+			anexd.expect('save');
+			anexd.expect('undo');
+			scope.$watch(
+				function() {
+					return anexd.getFromServer();	
+				}, 
+				function (data){
+					if(data){
+						if(data.event === 'save'){
+							if(undoList.length > 8){
+								undoList.shift();
+							}
+							undoList.push(data.val);
+						}
+						else if(data.event === 'undo'){
+							if(undoList.length){
+								var state = undoList.pop();
+								var stateImage = new Image()
+								stateImage.onload = function() {
+									ctx.clearRect(0, 0, width, height);
+									ctx.drawImage(stateImage, 0, 0, width, height);
+								};
+								stateImage.src = state;	
+							}
+						}
+						else if(data.event === 'drawing'){
+							drawLine(data.val);
+						}
+					}
+				}
+			);
 			
 			scope.$watch('image', function(image){
 				if(image){
 					var image = new Image();
 					image.onload = function() {
-						var width = image.naturalWidth;
-						var height = image.naturalHeight;
+						width = image.naturalWidth;
+						height = image.naturalHeight;
 						var maxWidth = 840;
 						
 						if(width > maxWidth) {
@@ -124,38 +159,38 @@ angular.module('ANEXD')
 						
 						canvas.width = width;
 						canvas.height = height;
-						ctx.drawImage(image, 0, 0, width, height);
 						ctx.lineWidth = 5;
 						ctx.lineJoin = 'round';
 						ctx.lineCap = 'round';
 						ctx.strokeStyle = 'blue';
 					};
 				
-					image.src= scope.image;	
+					image.src = scope.image;	
 				}	
 			});
 			
-			scope.$on('drawLine', function(event, coords){
+			var drawLine = function(coords){
 				ctx.strokeStyle = coords.colour;
 				ctx.beginPath();
 				ctx.moveTo(coords.lastx, coords.lasty);
 				ctx.lineTo(coords.x, coords.y);
 				ctx.closePath();
 				ctx.stroke();
-			});
+			};
 			
 		}
 	};
-})
-.directive("drawing", function () {
+}])
+.directive("drawing", ['ANEXDService', function (ANEXDService) {
 	return {
 		restrict: "A",
 		scope: {
 			image : '=',
 			editing: '=',
-			callback: '&',
 		},
 		link: function (scope, element, attrs) {
+			var anexd = new ANEXDService();
+			
 			var canvas = element[0];
 			var ctx = canvas.getContext('2d');
 			var width;
@@ -176,14 +211,14 @@ angular.module('ANEXD')
 				
 				canvas.width = width;
 				canvas.height = height;
-				ctx.drawImage(image, 0, 0, width, height);
+				ctx.clearRect(0, 0, width, height);
 				ctx.lineWidth = 5;
 				ctx.lineJoin = 'round';
 				ctx.lineCap = 'round';
 				colour = 'blue';
 			};
 			
-			image.src= scope.image;
+			image.src = scope.image;
 			
 			// the last coordinates before the current move
 			var lastx;
@@ -204,25 +239,33 @@ angular.module('ANEXD')
 						ctx.drawImage(stateImage, 0, 0, width, height);
 					};
 					stateImage.src = state;	
+					anexd.sendToServer('undo');
 				}
 			});
 			
+			element.bind('mousedown', function(event) {
+				console.log('mouse input rather than touch');
+			})
+			
 			element.bind('touchstart', function (event) {
-				//TODO: SAVE STATE HERE FOR UNDO	
-				//undoList.push(canvas.toDataURL());
+				if(undoList.length > 8){
+					undoList.shift();
+				}
+				anexd.sendToServer('save', canvas.toDataURL());
+				undoList.push(canvas.toDataURL());
 				if(scope.editing){
 					var touchEvent = event.originalEvent.changedTouches[0];
-					lastx = touchEvent.pageX - event.target.offsetLeft + canvas.parentElement.scrollLeft;
-					lasty = touchEvent.pageY - event.target.offsetTop + canvas.parentElement.scrollTop;
+					lastx = touchEvent.pageX - canvas.parentElement.offsetLeft + canvas.parentElement.scrollLeft;
+					lasty = touchEvent.pageY - canvas.parentElement.offsetTop + canvas.parentElement.scrollTop;
 				}
 			});
-
+			
 			element.bind('touchmove', function (event) {
 				if(scope.editing){
 					event.preventDefault();
 					var touchEvent = event.originalEvent.changedTouches[0];
-					x = touchEvent.pageX - event.target.offsetLeft + canvas.parentElement.scrollLeft;
-					y = touchEvent.pageY - event.target.offsetTop + canvas.parentElement.scrollTop;
+					x = touchEvent.pageX - canvas.parentElement.offsetLeft + canvas.parentElement.scrollLeft;
+					y = touchEvent.pageY - canvas.parentElement.offsetTop + canvas.parentElement.scrollTop;
 					draw();
 					lastx = x;
 					lasty = y;
@@ -231,7 +274,7 @@ angular.module('ANEXD')
 			
 			function draw(){
 				ctx.strokeStyle = colour;
-				scope.callback({coords: {'x': x, 'y': y, 'lastx': lastx, 'lasty': lasty, 'colour': colour}});
+				anexd.sendToServer('drawing', {'x': x, 'y': y, 'lastx': lastx, 'lasty': lasty, 'colour': colour});
 				ctx.beginPath();
 				ctx.moveTo(lastx, lasty);
 				ctx.lineTo(x, y);
@@ -240,5 +283,5 @@ angular.module('ANEXD')
 			};
 		}
 	};
-});
+}]);
 }());

@@ -42,6 +42,7 @@
 		</div>
 	</div>
 	<div class="canvas-container" ng-show="image">
-		<canvas ng-if="image" drawing image="image" editing="editing" callback="sendDrawing(coords)" scale="scale"></canvas>
+		<canvas ng-if="image" drawing image="image" editing="editing"></canvas>
+		<img ng-if="image" ng-src="{{image}}"></canvas>
 	</div>
 </div>

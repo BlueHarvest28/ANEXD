@@ -5,12 +5,21 @@
 .image-annotate .canvas-container{
 	max-height: 80vh;
 	overflow: scroll;
+	position: relative;
 }
 
 .image-annotate canvas { 
 	display:block; 
-	background:#fff; 
-	border:1px solid #ccc;
+	z-index: 1;
+    position: relative;
+}
+
+.image-annotate img{
+	position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+	max-width: 840px;
 }
 
 .image-annotate .edit{
@@ -26,6 +35,7 @@
     box-shadow: rgba(0,0,0,0.3) 0 5px 10px;
 	opacity: 0.25;
 	transition: opacity 0.25s;
+	z-index: 2;
 }
 
 .image-annotate .fa-edit{
@@ -42,6 +52,7 @@
 	margin-top: -25px;
 	background-color: #ddd;
 	bottom: 30px;
+	z-index: 2;
 }
 
 .image-annotate .menu{

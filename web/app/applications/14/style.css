@@ -3,6 +3,21 @@
     text-align: center;
 	background-color: #222;
 	overflow: auto;
+	position: relative;
+}
+
+.image-annotate canvas { 
+	display:block; 
+	z-index: 1;
+    position: relative;
+}
+
+.image-annotate img{
+	position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+	max-width: 840px;
 }
 
 .image-annotate img{
