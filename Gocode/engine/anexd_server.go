@@ -15,7 +15,9 @@ func main() {
 		log.Fatal(err)
 	}
 	manager := newManager()
-	server.On("connection", manager.sessionHandler(sock socketio.Socket))
-	
+	server.On("connection", manager.sessionHandler)
 	http.Handle("/socket.io/", server)
+	http.Handle("/", http.FileServer(http.Dir("./anexdtest")))
+	log.Println("Serving at localhost:5000...")
+	log.Fatal(http.ListenAndServe(":5000", nil))
 }

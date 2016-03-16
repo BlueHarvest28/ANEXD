@@ -37,7 +37,6 @@ server action: lookup anonuser in map and remove from session, emit updatelobby
 direction: Mobile User to Golang Server
 event: "msgserver"
 data: {
-	player: int //assigned anonuser player number
 	msg: JSON{} //generic JSON data
 }
 server action: forward onto game server for game processing
@@ -67,7 +66,7 @@ server action: 	update lobby user data structure, emit updated lobby to all,
 				emit kick message to kicked user
 		
 direction: Desktop User to Golang Server
-event: "end"
+event: "terminate"
 data: {
 	none
 }
@@ -136,19 +135,42 @@ data: {
 }
 front-end action: display kicked message to user and disconnect them from lobby?
 
+direction: Golang to Mobile User
+event: "joined"
+data: {
+	response: bool
+	feedback: error
+}
+
 *** GAME SERVER TO GOLANG SERVER ***
 
 All messages are sent over TCP in JSON encoded bytes in the following format:
 (A JSON object containing a JSON object)
 
+TO GOLANG SERVER:
+{
+	event: "created"
+	msg: string
+}
+
+RECEIVED FROM GOLANG:
+{
+	event: "new"
+	players: int // user count on start
+	maxplayers: int // max players for session
+
+}
+
 TO A SINGLE USER:
 {
+	event: "msgplayer"
 	player: int
 	msg: {}(JSON Object)
 }
 
 TO ALL USERS:
 {
+	event: "msgall"
 	msg: {}(JSON Object)
 }
 

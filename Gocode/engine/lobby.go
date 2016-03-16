@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"errors"
 	"sync"
-	"bytes"
+	//"bytes"
+	"time"
 	"net"
 	//"net/http"
 	"encoding/json"
@@ -18,13 +20,15 @@ const (
 	C_Leave = iota //0
 	C_Kick = iota //1
 	C_End = iota //2
+	C_Start = iota //3
+	C_Terminate = iota //4
 )
 
 type Lobby interface {
 	SessionId() int
-	AddAnonUser(id string, anon AnonUser) error
-	RemoveAnonUser(id, reason string) error
-	AnonUserById(id string) *AnonUser, bool
+	addAnonUser(id string, anon AnonUser) error
+	removeAnonUser(id, reason string) error
+	AnonUserById(id string) (*AnonUser, bool)
 	CurrentUserCount() int
 	emitAnonUserData() //return data in json format for front end
 	setAnonUserReady(id int)
@@ -35,9 +39,9 @@ type Lobby interface {
 
 type User interface {
 	SetSession(s *Session)
-	SetSocket(sock *socketio.Socket)
+	SetSocket(sock socketio.Socket)
 	Player() int
-	SetPlayer(number int)
+	SetPlayer(p int)
 	Setup()
 	sendHandler()
 	receiveHandler()
@@ -50,7 +54,7 @@ type HostUser struct {
 	player int
 	Send chan interface{}
 	Receive chan interface{}
-	socket *socketio.Socket
+	socket socketio.Socket
 	socketId string
 }
 
@@ -62,7 +66,7 @@ type AnonUser struct {
 	player int
 	Send chan interface{}
 	Receive chan interface{}
-	socket *socketio.Socket
+	socket socketio.Socket
 	socketId string
 }
 
@@ -72,12 +76,13 @@ type Session struct {
 	game Game
 	LobbyHost *HostUser
 	userMap map[string]*AnonUser //int map changed
-	PlayerMap []*User
+	PlayerMap []User
 	//PlayerMap map[int]*User
-	buffer []byte
-	Send chan interface{}
+	Send chan []byte
 	Receive chan interface{}
 	Data chan interface{}
+	Exit chan bool
+	timeout chan bool
 	gameTCPConn *net.TCPConn
 }
 
@@ -85,12 +90,27 @@ type Session struct {
 	Structs used in websocket message processing
 */
 
+/*
 type GameMessage struct {
-	Receipient int  `json:"player"`
+	Receipient int             `json:"player"`
 	Msg map[string]interface{} `json:"msg"`
 }
 
 type GameMessageAll struct {
+	Msg map[string]interface{} `json:"msg"`
+}
+*/
+
+//WHAT ABOUT INTERFACES (i.e FEEDBACK) WITH STRUCT IMPLEMENTING FOR EVENTS?
+//INTERFACE FUNCTIONS COULD BE CALLED CONCURRENTLY
+
+type GameMessage struct {
+	Event string               `json:"event"`
+	Player int                 `json:"player"`
+	Msg map[string]interface{} `json:"msg"`
+}
+
+type MsgServer struct {
 	Msg map[string]interface{}
 }
 
@@ -110,24 +130,27 @@ type RemovedUser struct {
 	Reason string
 }
 
+type Joined struct {
+	Response bool    `json:"response"`
+	Feedback string  `json:"feedback"`
+}
+
+type GameStart struct {
+	Response bool    `json:"response"`
+	Feedback string  `json:"feedback"`
+}
+
+type GameEnd struct {
+	Response bool    `json:"response"`
+	Feedback string  `json:"feedback"`
+}
+
 /*
 	Cmd = Command consts
 */
 type Command struct {
 	Cmd int
 	Data interface{}
-}
-
-func connectSession(sessId int, addr string) (*net.TCPConn, error) {
-	tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
-	if err != nil {
-		return nil, err
-	}
-	gameTCPConn, err := net.DialTCP("tcp", nil, tcpAddr)
-	if err != nil {
-		return nil, err
-	}
-	
 }
 
 func (s Session) closeConnection() {
@@ -141,32 +164,23 @@ func (s Session) closeConnection() {
 	Game table in DB will need Host and Port stored
 */
 func newSession(g Game, sessId int, host *HostUser) (*Session, error) {
-	addr := g.host + ":" + g.port
-	tcpConn, err := connectSession(sessId, addr)
-	if err != nil {
-		return nil, err
-	}
-	//create websocket or TCP?
-	//check error
 	session := Session{
-		sessionId = sessId,
+		sessionId: sessId,
 		game: g,
 		LobbyHost: host,
 		userMap: make(map[string]*AnonUser),
-		PlayerMap: make([]*User, 0, g.MaxUsers() + 1),
+		PlayerMap: make([]User, 0, g.MaxUsers() + 1),
 		//PlayerMap: make(map[int]*User, g.MaxUsers() + 1),
-		Send: make(chan interface{}),
+		Send: make(chan []byte),
 		Receive: make(chan interface{}),
 		Data: make(chan interface{}),
-		gameTCPConn: tcpConn
+		Exit: make(chan bool, 1),
 	}
 	host.SetSession(&session)
 	host.SetPlayer(0)
 	session.PlayerMap = append(session.PlayerMap, session.LobbyHost) //set index 0 as host
 	//session.PlayerMap[0] = session.LobbyHost
 
-	go session.sendHandler()
-	go session.receiveHandler()
 	go session.dataHandler()
 	return &session, nil
 }
@@ -174,26 +188,22 @@ func newSession(g Game, sessId int, host *HostUser) (*Session, error) {
 func newHostUser(uId int, user string) (*HostUser, error) {
 
 	hostUser := HostUser{
-		userId = uId,
-		username = user,
+		userId: uId,
+		username: user,
 		Send: make(chan interface{}),
-		Receive make(chan interface{})
+		Receive: make(chan interface{}),
 	}
 	return &hostUser, nil
 }
 
 func newAnonUser(nick string) *AnonUser {
 	anon := AnonUser{
-		nickname: nick,
-		ready: false,
+		Nickname: nick,
+		Ready: false,
 		Send: make(chan interface{}),
-		Receive make(chan interface{})
+		Receive: make(chan interface{}),
 	}
 	return &anon
-}
-
-func (g Game) MaxUsers() int {
-	return g.maxUsers
 }
 
 func (s Session) SessionId() int {
@@ -203,7 +213,7 @@ func (s Session) SessionId() int {
 /*
 	Adds an anon user to the session, and sets user's pointer to the session
 */
-func (s Session) AddAnonUser(id string, anon *AnonUser) error {
+func (s Session) addAnonUser(id string, anon *AnonUser) error {
 	s.Lock()
 	defer s.Unlock()
 	_, ok := s.userMap[id]
@@ -221,7 +231,7 @@ func (s Session) AddAnonUser(id string, anon *AnonUser) error {
 	return nil
 }
 
-func (s Session) RemoveAnonUser(id, reason string) error {
+func (s Session) removeAnonUser(id, reason string) error {
 	s.Lock()
 	defer s.Unlock()
 	u, ok := s.userMap[id]
@@ -243,8 +253,8 @@ func (s Session) RemoveAnonUser(id, reason string) error {
 	if reason == "" {
 		msg.Cmd = C_Leave
 	} else {
-		msg.Cmd: C_Kick
-		msg.Data: reason
+		msg.Cmd = C_Kick
+		msg.Data = reason
 	}
 	u.Send <- msg
 	s.emitAnonUserData()
@@ -259,15 +269,74 @@ func (s Session) RemoveAnonUser(id, reason string) error {
 							 Overwrite with nil: [0][1][3][4][nil]
 */
 func (s Session) removePlayer(index int) {
-	s.PlayerMap, s.PlayerMap[len(s.PlayerMap)-1] = append(s.PlayerMap[:index], s.PlayerMap[index+1:]), nil
+	s.PlayerMap, s.PlayerMap[len(s.PlayerMap)-1] = append(s.PlayerMap[:index], s.PlayerMap[index+1:]...), nil
 	//Update all player numbers greater than deleted index
 	for i := index; i < len(s.PlayerMap); i++ {
-		user := s.PlayerMap[i]
-		user.SetPlayer(i)
+		s.PlayerMap[i].SetPlayer(i)
 	}
 }
 
-func (s Session) AnonUserById(id string) *AnonUser, bool {
+func (s Session) connectSession(addr string) error {
+	tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
+	if err != nil {
+		return err
+	}
+	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		return err
+	}
+	s.gameTCPConn = conn
+	go s.receiveHandler()
+	go s.sendHandler()
+	return nil
+}
+
+func (s Session) requestSession() {
+	addr := s.game.host + ":" + s.game.port
+	err := s.connectSession(addr)
+	if err != nil {
+		//return nil, err
+		log.Print(err)
+	}
+	request := make(map[string]interface{})
+	request["event"] = "new"
+	request["players"] = s.CurrentUserCount()
+	request["maxplayers"] = s.game.MaxUsers()
+	jsonMsg, err := json.Marshal(request)
+	if err != nil {
+		log.Print(err)
+	}
+	s.Send <- jsonMsg //MAKE A TIMEOUT
+	go s.requestTimeout()
+	go s.sendTimeout()	
+}
+
+func (s Session) sendTimeout() {
+	time.Sleep(10 * time.Second)
+	s.timeout <- true
+}
+
+func (s Session) requestTimeout() {
+	s.timeout = make(chan bool, 1)
+	var gs GameStart
+	select {
+		case t := <- s.timeout: 
+		if t { //server timed out
+			gs = GameStart{
+				Response: false,
+				Feedback: "Server was unable to host.",
+			}
+		} else { //game created
+			gs = GameStart{
+				Response: true,
+				Feedback: "Application started succesfully.",	
+			}
+		}
+	}
+	s.LobbyHost.Send <- gs
+}
+
+func (s Session) AnonUserById(id string) (*AnonUser, bool) {
 	a, ok := s.userMap[id]
 	return a, ok
 }
@@ -300,11 +369,12 @@ func (s Session) emitAnonUserData() {
 		list = append(list, user)
 	}
 	*/
-	for _, p := range players {
+	for i, p := range players {
+		p := p.(AnonUser)
 		user := LobbyUser{
 			Player: i,
 			Nickname: p.Nickname,
-			Ready: p.Ready
+			Ready: p.Ready,
 		}
 		list = append(list, user)
 	}
@@ -318,7 +388,9 @@ func (s Session) sendHandler() {
 	for {
 		select {
 			case data := <-s.Send:
-				s.gameTCPConn.Write(data)
+			s.gameTCPConn.Write(data)
+			case <- s.Exit:
+			return
 		}
 	}
 }
@@ -327,24 +399,31 @@ func (s Session) sendHandler() {
 	Main goroutine for handling messages from the game server
 */
 func (s Session) receiveHandler() {
+	decoder := json.NewDecoder(s.gameTCPConn)
 	for {
-		
-		//read buffer
-		//convert to json struct
 		var gMsg GameMessage
-		gMsg.Receipient = -1 //if unchanged, message emitted to all users
-		err := json.Unmarshal(input, &gMsg)
+		err := decoder.Decode(&gMsg)
 		if err != nil {
-			log.Panic(err)
+			log.Print(err)
 		}
-		//check receipient
-		if gMsg.Receipient == -1 {
-			s.LobbyHost.Send <- GameMessageAll{
-				Msg: g.Msg
+		//check event
+		switch gMsg.Event {
+			case "created":
+			s.Data <- gMsg
+			case "gamestart":
+			s.LobbyHost.Send <- gMsg
+			case "gameterminate":
+			s.Data <- gMsg
+			case "msgplayer":
+			if gMsg.Player == 0 {
+				user := s.PlayerMap[gMsg.Player].(HostUser)
+				user.Send <- gMsg
+			} else {
+				user := s.PlayerMap[gMsg.Player].(AnonUser)
+				user.Send <- gMsg
 			}
-		} else {
-			user := s.PlayerMap[gMsg.Receipient]
-			user.Send <- gMsg
+			case "msgall":
+			s.LobbyHost.Send <- gMsg
 		}
 	}
 }
@@ -358,15 +437,23 @@ func (s Session) dataHandler() {
 			case data := <-s.Data:
 			switch jsonType := data.(type) {
 				case SetReady:
-				s.setAnonUserReady(data.Nickname, data.Ready)
+				s.setAnonUserReady(jsonType.Nickname, jsonType.Ready)
 				case RemovedUser:
-				err = s.RemoveAnonUser(data.Nickname, data.Reason)
+				err := s.removeAnonUser(jsonType.Nickname, jsonType.Reason)
 				if err != nil {
 					log.Panic(err)
 				}
+				case GameMessage:
+					switch jsonType.Event {
+						case "created":
+						s.timeout <- false
+						log.Printf("Game successfully created: %s", jsonType.Msg)
+					}
 				default:
 				log.Print("Session dataHandler: unknown type received")
 			}
+			case <- s.Exit:
+			return
 		}
 	}
 }
@@ -379,7 +466,7 @@ func (u HostUser) SetSession(s *Session) {
 	u.Sess = s
 }
 
-func (u HostUser) SetSocket(sock *socketio.Socket) {
+func (u HostUser) SetSocket(sock socketio.Socket) {
 	u.socket = sock
 }
 
@@ -411,26 +498,37 @@ func (u HostUser) sendHandler() {
 	sessionNamespace := fmt.Sprintf("%d", u.Sess.SessionId())
 	for {
 		select {
-			case msg := <-u.Send:
+			case data := <-u.Send:
 			switch dataType := data.(type) {
 				case []LobbyUser:
-				msg, err := json.Marshal(data)
+				/*msg, err := json.Marshal(dataType)
 				if err != nil {
 					log.Panic("send lobby user list: error")
 				}
-				u.socket.BroadcastTo(sessionNamespace, "updatelobby", msg)
-				case GameMessage:
-				msg, err := json.Marshal(data.Msg)
+				*/
+				u.socket.BroadcastTo(sessionNamespace, "updatelobby", dataType)
+				u.socket.Emit("updatelobby", dataType)
+				case GameStart:
+				/*msg, err := json.Marshal(dataType)
 				if err != nil {
 					log.Panic("unable to marshal message")
 				}
-				u.socket.Emit("msgplayer", msg)
-				case GameMessageAll:
-				msg, err := json.Marshal(data.Msg)
+				*/
+				u.socket.BroadcastTo(sessionNamespace, "gamestart", dataType)
+				u.socket.Emit("gamestart", dataType)
+				case GameMessage:
+				/*msg, err := json.Marshal(dataType.Msg)
 				if err != nil {
-					log.Panic(send lobby user list: error)
+					log.Panic("unable to marshal message")
 				}
-				u.socket.BroadcastTo(sessionNamespace, "msgall", msg)
+				*/
+				switch dataType.Event{
+					case "msgplayer":
+					u.socket.Emit("msgplayer", dataType.Msg)
+					case "msgall":
+					u.socket.BroadcastTo(sessionNamespace, "msgall", dataType.Msg)
+					u.socket.Emit("msgall", dataType.Msg)
+				}
 				default:
 				log.Print("HostUser sendHandler: unknown type received")
 			}
@@ -444,13 +542,51 @@ func (u HostUser) sendHandler() {
 func (u HostUser) receiveHandler() {
 	//Tell server the applet has loaded and ready to communicate
 	//Used to initially ping server and pass any preliminary host information
-	u.socket.Of(fmt.Sprintf("/%s", u.socket.Id())).On("kick", func(msg interface{}) {
+	//u.socket.Of(fmt.Sprintf("/%s", u.socket.Id())).On("kick", func(msg []byte) {
+	u.socket.On("kick", func(msg map[string]interface{}) {
 		var data RemovedUser
-		err := json.Unmarshal(msg, &data)
+		/*err := json.Unmarshal(msg, &data)
 		if err != nil {
 			log.Panic(err)
 		}
-		u.Sess.Data <- ru
+		*/
+		data = RemovedUser{
+			Nickname: msg["nickname"].(string),
+			Reason: msg["reason"].(string),
+		}
+		u.Sess.Data <- data
+	})
+	//launch the game with the current users in lobby, server should respond if successful
+	u.socket.On("start", func() {
+		start := Command{
+			Cmd: C_Start,
+		}
+		jsonMsg, err := json.Marshal(start)
+		if err != nil {
+			log.Print(err)
+		}
+		u.Sess.Send <- jsonMsg
+	})
+	//send to game server, server should give response to be emitted
+	u.socket.On("terminate", func() {
+		terminate := Command{
+			Cmd: C_Terminate,
+		}
+		jsonMsg, err := json.Marshal(terminate)
+		if err != nil {
+			log.Print(err)
+		}
+		u.Sess.Send <- jsonMsg
+	})
+	u.socket.On("msgserver", func(msg map[string]interface{}) {
+		data := make(map[string]interface{}, 2)
+		data["player"] = u.Player()
+		data["msg"] = msg
+		json, err := json.Marshal(data)
+		if err != nil {
+			log.Print(err)
+		}
+		u.Sess.Send <- json
 	})
 	//Starts the session with all users set ready assigned as players
 	//u.socket.Of(fmt.Sprintf("/%s", u.socket.Id())).On("start", func(msg interface{}) {
@@ -466,7 +602,7 @@ func (u AnonUser) SetSession(s *Session) {
 	u.Sess = s
 }
 
-func (u AnonUser) SetSocket(sock *socketio.Socket) {
+func (u AnonUser) SetSocket(sock socketio.Socket) {
 	u.socket = sock
 }
 
@@ -477,32 +613,43 @@ func (u AnonUser) Player() int {
 /*
 	Only to be called while Session is locked
 */
-func (u AnonUser) SetPlayer(number int) {
-	u.player = number
+func (u AnonUser) SetPlayer(p int) {
+	u.player = p
 }
 
 func (u AnonUser) Setup() {
 	u.socket.Join(fmt.Sprintf("%d", u.Sess.SessionId()))
 	go u.sendHandler()
 	u.receiveHandler()
+	u.Send <- Joined{
+		Response: true,
+		Feedback: "Used added to Lobby",
+	}
 }
 
 /*
 	Main goroutine for handling messages for host user
 */
 func (u AnonUser) sendHandler() {
-	namespace := fmt.Sprintf("/%s", u.socket.Id())
+	//namespace := fmt.Sprintf("/%s", u.socket.Id())
 	for {
 		select {
-			case msg := <-u.Send:
+			case data := <-u.Send:
 			switch dataType := data.(type) {
+				case Joined:
+				/*msg, err := json.Marshal(dataType)
+				if err != nil {
+					log.Panic("unable to marshal message")
+				}
+				*/
+				u.socket.Emit("joined", dataType)
 				case Command:
-				switch data.Cmd {
+				switch dataType.Cmd {
 					case C_Leave:
 					u.socket.Emit("disconnect")
 					return
 					case C_Kick:
-					u.socket.Emit("kick", data.Data)
+					u.socket.Emit("kick", dataType.Data.(string))
 					u.socket.Emit("disconnect")
 					return
 					case C_End:
@@ -511,11 +658,12 @@ func (u AnonUser) sendHandler() {
 					log.Print("AnonUser sendHandler: unknown command")
 				}
 				case GameMessage:
-				msg, err := json.Marshal(data.Msg)
+				/*msg, err := json.Marshal(dataType.Msg)
 				if err != nil {
 					log.Panic("unable to marshal message")
 				}
-				u.socket.Emit("msgplayer", msg)
+				*/
+				u.socket.Emit("msgplayer", dataType.Msg)
 				default:
 					log.Print("AnonUser sendHandler: unknown type received")
 			}
@@ -528,23 +676,41 @@ func (u AnonUser) sendHandler() {
 */
 func (u AnonUser) receiveHandler() {
 	//get and format this user's personal socket namespace i.e. "/012345"
-	namespace := fmt.Sprintf("/%s", u.socket.Id())
+	//namespace := fmt.Sprintf("/%s", u.socket.Id())
 	//Toggle the ready bool in the lobby
-	u.socket.Of(namespace).On("setready", func(msg interface{}) {
+	//u.socket.Of(namespace).On("setready", func(msg interface{}) {
+	u.socket.On("setready", func(msg map[string]interface{}) {
 		var data SetReady
-		err := json.Unmarshal(msg, &data)
-		if err != nil {
-			log.Panic(err)
+		data = SetReady{
+			Nickname: msg["nickname"].(string),
+			Ready: msg["ready"].(bool),
 		}
+		//err := json.Unmarshal(msg, &data)
+		//if err != nil {
+		//	log.Panic(err)
+		//}
+		
 		u.Sess.Data <- data
 	})
 	//Leave the session (manual leave)
-	u.socket.Of(namespace).On("leavelobby", func() {
+	//u.socket.Of(namespace).On("leavelobby", func() {
+	u.socket.On("leavelobby", func() {
 		ru := RemovedUser{
-			Nickname: u.Nickname
+			Nickname: u.Nickname,
 		}
 		u.Sess.Data <- ru
 	})
+	u.socket.On("msgserver", func(msg map[string]interface{}) {
+		data := make(map[string]interface{}, 2)
+		data["player"] = u.Player()
+		data["msg"] = msg
+		jsonMsg, err := json.Marshal(data)
+		if err != nil {
+			log.Panic(err)
+		}
+		u.Sess.Send <- jsonMsg
+	})
+	
 	/*Tell server the applet has loaded and ready to communicate
 	u.socket.Of(namespace).On("loaded", func(msg interface{}) {
 		u.Sess.Send <- msg

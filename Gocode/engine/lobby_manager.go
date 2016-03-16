@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
+	"errors"
 	"sync"
-	"net/http"
-	"encoding/json"
+	//"encoding/json"
 	"github.com/googollee/go-socket.io"
 )
 
@@ -16,7 +16,7 @@ type Manager struct {
 }
 
 type Game struct {
-	uri, port string
+	host, port string
 	maxUsers int
 }
 
@@ -29,40 +29,51 @@ type JoinLobby struct {
 	Lobbyid    int       `json:"lobbyid"`
 }
 
+func (g Game) MaxUsers() int {
+	return g.maxUsers
+}
+
 func newManager() *Manager {
 	m := Manager{
 		sessions: make(map[int]*Session),
-		hosts: make(map[int]*HostUser)
+		hosts: make(map[int]*HostUser),
 	}
 	return &m
 }
 
 func (m Manager) createSession(hostId int, hostname string, game Game, sessionId int) error {
-	host, err := newHostUser(hostId int, hostname string)
+	host, err := newHostUser(hostId, hostname)
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
+		return err
 	}
 	session, err := newSession(game, sessionId, host)
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
+		return err
 	}
 	m.Lock()
 	defer m.Unlock()
-	err := m.addHost(hostId, host)
+	err = m.addHost(hostId, host)
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
+		return err
 	}
-	err:= m.addSession(sessionId, session)
+	err = m.addSession(sessionId, session)
 	if err != nil {
-		log.Panic(err)
+		log.Print(err)
+		return err
 	}
+	return nil
 }
 
+//ADD ERROR CHECKS LATER
 func (m Manager) destroySession(hostId int, sessionId int) error {
 	m.Lock()
 	defer m.Unlock()
 	m.removeHost(hostId)
 	m.removeSession(sessionId)
+	return nil
 }
 
 func (m Manager) addSession(sId int, sess *Session) error {
@@ -108,39 +119,79 @@ func (m Manager) removeHost(hId int) error {
 	Socket handler function for associating connections with lobbies
 */
 func (m Manager) sessionHandler(socket socketio.Socket) {
-	var namespace := fmt.Sprintf("/%s", u.socket.Id())
+	//namespace := fmt.Sprintf("/%s", socket.Id())
 	//Associates Desktop Socket with HostUser instance
-	socket.Of(namespace).On("hostlobby", func(hostid int) {
+	log.Print("user connected MingLee")
+	err := socket.Join("bulbasroom")
+	if err != nil {
+		log.Print(err)
+	}
+	socket.On("hostlobby", func(hostid int) {
+		log.Printf("hostlobby attempted, data in: %v", hostid)
+		/*jsonTings := make([]LobbyUser, 0, 5)
+		p1 := LobbyUser{
+			Player: 1,
+			Nickname: "james",
+			Ready: true,
+		}
+		p2 := LobbyUser{
+			Player: 2,
+			Nickname: "jimmy",
+			Ready: true,
+		}
+		p3 := LobbyUser{
+			Player: 3,
+			Nickname: "bobo",
+			Ready: false,
+		}
+		jsonTings = append(jsonTings, p1, p2, p3)
+		*/
+		/*px := LobbyUser{
+			Player: 6,
+			Nickname: "DansGame",
+			Ready: true,		
+		}
+		jsonData, err := json.Marshal(px)
+		if err != nil {
+			log.Print("yolo swaggerino")
+		}
+		socket.Emit("hoobahooba", jsonData)
+		socket.Emit("hoobahooba", socket.Rooms())
+		socket.BroadcastTo("bulbasroom", "gamestart", "sup bruh")
+		*/
 		h, ok := m.hosts[hostid]
 		if !ok {
 			socket.Emit("disconnect")
-			log.Panic("manager: could not find HostUser")
+			log.Print("manager: could not find HostUser")
+			return
 		}
-		h.SetSocket(&socket)
+		h.SetSocket(socket)
 		h.Setup()
 	})
 	//Creates and adds an AnonUser to the respective Lobbyid
-	socket.Of(namespace).On("joinlobby"), func(msg interface{}) {
-		var data JoinLobby
-		err := json.Unmarshal(msg, &data)
-		if err != nil {
-			socket.Emit("disconnect")
-			log.Panic(err)
-		}
+	socket.On("joinlobby", func(msg map[string]interface{}) {
+		//var data JoinLobby
+		//err := json.Unmarshal(msg, &data)
+		//if err != nil {
+		//	socket.Emit("disconnect")
+		//	log.Print(err)
+		//	return
+		//}
 		//check if session exists
-		s, ok := m.sessions[data.Lobbyid]
+		s, ok := m.sessions[msg["lobbyid"].(int)]
 		if !ok {
 			socket.Emit("disconnect")
-			log.Panic("manager: lobby does not exist")
+			log.Print("manager: lobby does not exist")
+			return
 		}
 		//create AnonUser instance
-		a := newAnonUser(data.Nickname)
-		err := s.addAnonUser
+		a := newAnonUser(msg["nickname"].(string))
+		err = s.addAnonUser(msg["nickname"].(string), a)
 		if err != nil {
 			socket.Emit("disconnect")
 			log.Panic(err)
 		}
-		a.SetSocket(&socket)
+		a.SetSocket(socket)
 		a.Setup()
 	})
 }
