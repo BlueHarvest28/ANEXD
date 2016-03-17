@@ -33,6 +33,11 @@ angular.module('ANEXD')
 		if($routeParams.lobbyId){
 			$scope.lobby = $routeParams.lobbyId;
 		}
+		
+		SocketService.on('updatelobby', function(users){
+			console.log('new users:', users);
+			$scope.users = users;
+		});
         
 		//Instance of lobby socket
 		var lobbySocket;
@@ -87,9 +92,10 @@ angular.module('ANEXD')
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = 15;
 			
+			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
 			//Instantiate Socket with LobbyId as the namespace
-			lobbySocket = new LobbySocket($scope.lobby);
-			lobby();
+//			lobbySocket = new LobbySocket($scope.lobby);
+//			lobby();
 			$location.path('/' + $scope.lobby, false);
 		};
 		
@@ -99,7 +105,7 @@ angular.module('ANEXD')
         */
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
-			lobbySocket.emit('ready', $scope.ready);
+			SocketService.emit('setready', {'nickname': $scope.name, 'ready': $scope.ready});
 		};
 		
 		/*

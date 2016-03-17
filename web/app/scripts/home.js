@@ -16,11 +16,11 @@ angular.module('ANEXD')
     '$timeout',
     'LoginService',
     '$http',
-	'LobbySocket',
 	'SocketService',
 	'$location',
 	'$rootScope',
-    function ($scope, $timeout, LoginService, $http, LobbySocket, SocketService, $location, $rootScope) 
+	'$routeParams',
+    function ($scope, $timeout, LoginService, $http, SocketService, $location, $rootScope, $routeParams) 
     {					
 		/* Local and $scope variables */
         var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
@@ -30,8 +30,34 @@ angular.module('ANEXD')
         $scope.users = [];                              //Users in the lobby
         $scope.launchMessage = 'Launch';                //
 		$scope.isDisabled = false;                      //
-        var lobbySocket;                                //
-        $scope.maxPlayers = '5';                        //
+//        var lobbySocket;                                //
+        $scope.maxPlayers = '5';      
+		$scope.app = {};
+		
+		SocketService.on('updatelobby', function(users){
+			console.log('new users:', users);
+			$scope.users = users;
+		});
+		
+		if($routeParams.lobbyId){
+			console.log('lobby id:', $routeParams.lobbyId);
+//			SocketService.emit('getappid', parseInt($routeParams.lobbyId));
+//			
+//			SocketService.on('sendappid', function(id){
+//				$scope.game.gameid	
+//			});
+			
+			//TEMPORARY; ALEX NEEDS TO SEND JAMES THE APP ID
+			$scope.app.gameID = 2;
+			$scope.app.name = 'Return of the Aliens';
+			$scope.app.image = 'images/return-of-the-aliens-tile.png';
+			$scope.hideIcons = true;
+			$scope.lobby = $routeParams.lobbyId;
+			$scope.showLobby = true;                                    //Load lobby
+			$scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobby;   //Lobby QR creation.
+			$scope.isDisabled = false;
+			$scope.launchMessage = 'Launch';
+		}
 		
         /*
         * HJ80
@@ -73,16 +99,16 @@ angular.module('ANEXD')
         * HJ80
         * Function displays lobby users on the frontend 
         */
-        var lobby = function() {
-			lobbySocket.emit('hostlobby', LoginService.getUserId());
-			
+//        var lobby = function() {
+//			lobbySocket.emit('hostlobby', LoginService.getUserId());
+//			
 //            lobbySocket.on('update', function(players) {
 //                $scope.users = [];
 //                angular.forEach(players, function(value) {
 //                    this.push(value);	
 //                }, $scope.users);
 //            });
-        };
+//        };
         
         /*
         * FH98
@@ -140,10 +166,10 @@ angular.module('ANEXD')
 			};
 			$http(req).then(function successCallback(response) {
 				console.log(response);
-				if(lobbySocket) {
-					lobbySocket.emit('close');	//websocket emit called closed application
-					$scope.users = [];
-				}
+//				if(lobbySocket) {
+//					lobbySocket.emit('close');	//websocket emit called closed application
+//					$scope.users = [];
+//				}
 				if($scope.isDisabled) {
 					$scope.launchApp();
 				}
@@ -188,14 +214,15 @@ angular.module('ANEXD')
 					$scope.launchMessage = 'Launch';
 					
 					//Instantiate Socket for lobby
-					SocketService.emit('lobby', $scope.lobby);
-					SocketService.on('lobby', function(data) {
-						if(data){
-							lobbySocket = new LobbySocket($scope.lobby);
-							lobby();
-							$location.path('/' + $scope.lobby, false);
-						}
-					});
+					$location.path('/' + $scope.lobby, false);
+					SocketService.emit('hostlobby', parseInt(LoginService.getUserId()));
+//					SocketService.on('lobby', function(data) {
+//						if(data){
+//							lobbySocket = new LobbySocket($scope.lobby);
+//							lobby();
+//							$location.path('/' + $scope.lobby, false);
+//						}
+//					});
                 }    
             }, function errorCallback(response) {
                 //show error and send again
@@ -220,7 +247,7 @@ angular.module('ANEXD')
 		$scope.start = function() {
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = $scope.app.gameID;
-			lobbySocket.emit('start', {'lobby': $scope.lobby, 'app': $scope.app.gameID});
+//			lobbySocket.emit('start', {'lobby': $scope.lobby, 'app': $scope.app.gameID});
 			$location.path($location.path() + '/' + $scope.app.gameID, true);
             //SOCKET.ON for GameServer "gameStart" event?
             //SocketService.emit('start',{});
