@@ -14,7 +14,7 @@ angular.module('ANEXD')
         $scope.run = function(data) {
             $scope.url = data;
             $scope.runFlag = true;
-            console.log($scope.url);
+            //console.log($scope.url);
             
             SC.oEmbed($scope.url, {}, function(oEmbed) {
                 $scope.$apply($scope.player_html = $sce.trustAsHtml(oEmbed.html));
@@ -29,9 +29,9 @@ angular.module('ANEXD')
             function(data) {
                 if(data){
                     if(data.event === 'comment') {
-                        console.log(data.val);
-                        $scope.messages.push(data.val);
-                        console.log($scope.messages);
+                        //console.log(data.val);
+                        $scope.messages.push(data.val.data);
+                        //console.log($scope.messages);
                     }
                 }  
             }

@@ -3,25 +3,27 @@ var net = require('net');
 var client = new net.Socket();
 client.connect(1337, 'localhost', function() {
 	console.log('Connected Fam');
-	client.write('Connected to Server');
+    client.write(new Buffer(JSON.stringify({'event': 'server'})));
 });
 
-client.on('data', function(data) {  
-    if(data.msg.event === 'comment') { //Check the event
-        var newComment = '';
-        console.log('Received: ' + data);
-        newComment = data;
+
+client.on('data', function(data) {
+	var data = JSON.parse(data).msg;
+	console.log('Received: ' + data);
+
+	if(data.event === 'comment'){
+		console.log('comment');
         
         //JSON Creation
         var msg = {
-        'event': 'comment',
-        'data': newComment};
+            'event': 'comment',
+            'data': data
+        };
         
-        //Sent to Host (player 0) via GoLang Server
-        client.write({event: 'msgplayer', player: 0, msg: {package}); 
-    }
+        client.write(new Buffer(JSON.stringify({'event': 'msgplayer', 'player': 0, 'msg': msg})));
+	}
 });
-
+    
 client.on('close', function() {
 	console.log('Connection closed');
     client.destroy();
