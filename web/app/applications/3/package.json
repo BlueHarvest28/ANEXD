@@ -1,0 +1,14 @@
+{
+  "name": "vidnote",
+  "version": "1.0.0",
+  "description": "Write notes on youTube videos on specified time (Proof of Concept application)",
+  "main": "index.js",
+  "engines": {
+    "node": "5.7.0"
+  }
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Waqas_Aslam",
+  "license": "ISC"
+}
