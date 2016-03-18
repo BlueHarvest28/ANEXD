@@ -34,7 +34,7 @@ angular.module('ANEXD')
         $scope.maxPlayers = '5';      
 		$scope.app = {};
 		
-		SocketService.on('updatelobby', function(users){
+		SocketService.on('update', function(users){
 			console.log('new users:', users);
 			$scope.users = users;
 		});
@@ -247,7 +247,7 @@ angular.module('ANEXD')
 		$scope.start = function() {
 			$rootScope.lobby = $scope.lobby;
 			$rootScope.app = $scope.app.gameID;
-//			lobbySocket.emit('start', {'lobby': $scope.lobby, 'app': $scope.app.gameID});
+			SocketService.emit('start', {'lobby': $scope.lobby, 'app': $scope.app.gameID});
 			$location.path($location.path() + '/' + $scope.app.gameID, true);
             //SOCKET.ON for GameServer "gameStart" event?
             //SocketService.emit('start',{});

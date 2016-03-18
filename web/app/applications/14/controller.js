@@ -46,6 +46,7 @@ angular.module('ANEXD')
 				return anexd.getFromServer();	
 			}, 
 			function (data){
+				console.log('received', data);
 				if(data){
 					if(data.event === 'image'){
 						$scope.done = true;

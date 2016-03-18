@@ -51,7 +51,7 @@ angular.module('ANEXD')
 			$scope.ready = false;
             
 			//Leave lobby
-			lobbySocket.emit('leave');
+			SocketService.emit('leave');
 		};
 		
 		/*
@@ -59,22 +59,23 @@ angular.module('ANEXD')
         *
         */
 		var lobby = function(){
-			lobbySocket.emit('join', $scope.name);
+			SocketService.emit('join', $scope.name);
 			
-			lobbySocket.on('start', function(){
+			SocketService.on('start', function(){
+				console.log('starting');
 				//TODO: replace with actual app id
-				$location.path($location.path() + '/' + 15, true);
+				$location.path($location.path() + '/' + 14, true);
 				$cookies.put('name', $scope.name);
 			});
 			
-			lobbySocket.on('update', function(data){
+			SocketService.on('update', function(data){
 				$scope.users = [];
 				angular.forEach(data, function(value){
 					this.push(value);
 				}, $scope.users);
 			});
 			
-			lobbySocket.on('close', function(){
+			SocketService.on('close', function(){
 				$scope.goBack();
 			});
 		};
@@ -90,12 +91,12 @@ angular.module('ANEXD')
 			
 			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
 			$rootScope.lobby = $scope.lobby;
-			$rootScope.app = 15;
+			$rootScope.app = 14;
 			
 			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
 			//Instantiate Socket with LobbyId as the namespace
 //			lobbySocket = new LobbySocket($scope.lobby);
-//			lobby();
+			lobby();
 			$location.path('/' + $scope.lobby, false);
 		};
 		

@@ -66,6 +66,10 @@ var lobby = function(){
 	lobbyio.on('connection', function(socket){
 		console.log('Lobby connection', socket.id);
 		
+		socket.on('msgserver', function(data){
+			server.write(data);
+		});
+		
 		socket.on('start', function(data){
 			console.log('starting');
 			lobbyio.emit('start');

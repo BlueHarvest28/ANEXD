@@ -104,9 +104,10 @@ angular.module('ANEXD')
 /*
  *	Generic socket interface
  *	http://api-anexd.rhcloud.com:8080/socket.io/
+ *	http://api-anexd.rhcloud.com/socket.io/:8080
  */
 .factory('SocketService', function (socketFactory) {
-	var lobbySocket = io.connect('http://api-anexd.rhcloud.com/socket.io/:8080');
+	var lobbySocket = io.connect('http://localhost:3002/');
 	var socket = socketFactory({
 		ioSocket: lobbySocket
 	});
@@ -164,13 +165,13 @@ angular.module('ANEXD')
 		return function(generic){
 			var socket;
 			
-			if($rootScope.lobby && $rootScope.app && !generic){
-				socket = new AppSocket($rootScope.lobby, $rootScope.app);
-			}
-			//Otherwise we're in an app without a lobby (e.g. creating a quiz)
-			else {
+//			if($rootScope.lobby && $rootScope.app && !generic){
+//				socket = new AppSocket($rootScope.lobby, $rootScope.app);
+//			}
+//			//Otherwise we're in an app without a lobby (e.g. creating a quiz)
+//			else {
 				socket = SocketService;
-			}
+//			}
 			
 			//Leave game if we receieve the message from PlayController
 			$rootScope.$on('leave', function(){
@@ -183,7 +184,7 @@ angular.module('ANEXD')
 			//Sends a value to the server and promises a reply on the same event
 			var sendToServer = function (event, val) {
 				var defer = $q.defer();
-				socket.emit(event, val);
+				socket.emit('msgserver', {'event': event, 'data': val});
 
 				//Fails if no reply is received in 3 seconds
 				//TODO: retry
