@@ -2,7 +2,7 @@
   "name": "vidnote",
   "version": "1.0.0",
   "description": "Write notes on youTube videos on specified time (Proof of Concept application)",
-  "main": "index.js",
+  "main": "vidapp.js",
   "engines": {
     "node": "5.7.0"
   }
