@@ -554,6 +554,7 @@ var tankGame = function(){
 		socket.on('player', function(){
 			console.log('player connection!', socket.id);
 			playersSoc[socket.id] = playerCount;
+			socket.emit('playerCol', pInfo[playerCount].colour)
 			addPlayer();
 			playerCount++;	
 		});

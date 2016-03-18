@@ -157,25 +157,27 @@ angular.module('ANEXD')
     function ($scope, ANEXDService, $cookies) {			
 		var anexd = new ANEXDService();
 		
-		anexd.sendToServer('player');
+		//var test = $cookies.getObject('colour');
+		var colour = $cookies.get('colour')
+		if (colour === undefined) {
+			anexd.sendToServer('player');
+		}else {
+			$scope.colour = colour;
+		}
 
 
+		//$scope.colour = $cookies.getObject('colour')
 		//canvas width set from server
-		anexd.expect('playerConnect');
+		anexd.expect('playerCol');
 		$scope.$watch(
 			function() {
 				return anexd.getFromServer();	
 			}, 
 			function (data){
-				if(data && data.event === 'playerConnect'){
+				if(data && data.event === 'playerCol'){
 					console.log('got the player connect message', data);
-					if($cookies.getObject('player') == undefined){
-						$cookies.put('player', data.val.playerNum);	
-					}else{
-						//update socket id with playerNum 
-						var pnum = $cookies.getObject('player');
-						anexd.sendToServer('playerReconnect', pnum);
-					}
+					$cookies.put('colour', data.val);
+					$scope.colour = data.val.toLowerCase();	
 				}
 			}
 		);
