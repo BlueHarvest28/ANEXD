@@ -28,10 +28,8 @@ function onPlayerReady(event) {
 
 function curTime() {
   var time = Math.floor(player.getCurrentTime());
-  //Put Websocket here 
-  //Emit function socket I/o
-  //alert(time);
-  return curTime;
+  alert(time);
+  //return curTime;
 }
 
 function getDuration() {
@@ -41,7 +39,7 @@ function getDuration() {
 function writeComment(){
   var userInput = document.getElementById('userInput').value;
   document.getElementById('dispComment').innerHTML = userInput;
-    // userInput.onKeyUp = function(){
-    //   document.getElementById('dispTime').innerHTML = inputBox.curTime();
-    // }
+// userInput.onKeyUp = function(){
+//   document.getElementById('dispTime').innerHTML = inputBox.curTime();
+// }
 }

@@ -16,13 +16,25 @@
         <div id="player"></div>
         <!-- Get Current Time test -->
         <button type="button" onclick="curTime()">Get Time</button>
+        
     </div>
         <form name="form">
             <!-- Click to write comment at current video time and show comment box -->
-						<input type="text" id="userInput" placeholder="Enter Text Here" />
-						<input type="button" onclick="writeComment();curTime()" value="Write Comment"/>
-						<p> <b id="dispComment"></b> </p> 
+						<!-- <input type="text" id="userInput" value="Enter Text Here" /> -->
+						<!-- <input type="button" onclick="writeComment();curTime()" value="Write Comment"/> -->
+						<!-- <p> <b id="dispComment"></b> </p>  -->
         </form>
+
+        <form name="chatForm" novalidate>  
+            <input class="m-input" 
+                   type="text" 
+                   ng-model="chat" 
+                   placeholder="Comment" required/>
+        </form>
+
+         <div class="repeatbox" ng-repeat="message in messages track by $index">
+            Player: {{message}}
+         </div>
     </body>
     <footer></footer>
 </html>
