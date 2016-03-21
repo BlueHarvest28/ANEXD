@@ -1,11 +1,11 @@
 (function () {
 'use strict';
 angular.module('ANEXD')
-.controller('SCController', [
+.controller('YTController', [
     '$scope',
     'ANEXDService',
-    '$sce',
-    function ($scope, ANEXDService, $sce) {
+    '$yte',
+    function ($scope, ANEXDService, $yte) {
     var anexd = new ANEXDService();
         $scope.url = '';
         $scope.runFlag = '';
@@ -35,7 +35,7 @@ angular.module('ANEXD')
     }                            
 ])
 
-.controller('MobileSCController', [
+.controller('MobileYTController', [
   '$scope',
   'ANEXDService',
   function ($scope, ANEXDService) {

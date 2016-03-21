@@ -9,8 +9,8 @@ var player;
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     videoId: 'M7lc1UVf-VE',
-    width: 720,
-    height: 480,
+    width: 582,
+    height: 383,
     playerVars: {
       color: 'white',
       autoplay: 0,
@@ -23,7 +23,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-  //event.target.playVideo();
+  event.target.playVideo();
 }
 
 function curTime() {

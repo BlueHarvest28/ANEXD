@@ -1,39 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Mobile Side</title>
-
-        <script src="vidapp.js"></script>
-    </head>
-    <body>
-       <div id="play">
-            <h3>Your Comments:</h3>
-        <div class="m-messages">
-            <div class="m-repeat" ng-repeat="message in messages track by $index">
-                Me: {{message}}      
-            </div>
-        </div>
-
-        <form name="chatForm" novalidate>  
-            <input class="m-input" 
-                   type="text" 
-                   ng-model="chat" 
-                   placeholder="Comment" required/>
-        </form>
-        
-        <input type="submit" 
-               class="login-submit" 
-               value="Submit" 
-               ng-click="message(chat);">
+<head>
+  <title>Mobile Side</title>
+  <script src="vidapp.js"></script>
+</head>
+<body>
+  <div id="play">
+    <h3>Your Comments:</h3>
+    <div class="m-messages">
+      <div class="m-repeat" ng-repeat="message in messages track by $index">
+        Me: {{message}}      
+      </div>
     </div>
-        <!-- <form> -->
-            <!-- <input type="text" id="input" onfocus="userTyping()"placeholder="Enter Text Here" /> -->
-            <!-- <input type="button" onclick="writeComment();" value="Write Comment"/> -->
-            <!-- <p> <b id="dispComment"></b> </p> -->
-        <!-- </form> -->
-    </body>
-    <footer>
-    </footer>
+
+    <form name="chatForm" novalidate>  
+        <input class="m-input" 
+               type="text" 
+               ng-model="chat" 
+               placeholder="Comment" required/>
+    </form>
+      <input type="submit" 
+        class="login-submit" 
+        value="Submit" 
+        ng-click="message(chat);">
+  </div>
+    <!-- <form> -->
+        <!-- <input type="text" id="input" onfocus="userTyping()"placeholder="Enter Text Here" /> -->
+        <!-- <input type="button" onclick="writeComment();" value="Write Comment"/> -->
+        <!-- <p> <b id="dispComment"></b> </p> -->
+    <!-- </form> -->
+</body>
 </html>
 
 
