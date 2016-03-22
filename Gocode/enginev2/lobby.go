@@ -125,7 +125,8 @@ func (l *Lobby) connectTcp() error {
 func (l *Lobby) connectSocketio() error {
 	l.timeout = make(chan bool, 1)
 	//call http function to server
-	
+	postSocketRequest(l.game.host, l.lobbyId)
+		
 	go func() {
 		time.Sleep(30 * time.Second)
 		l.timeout <- true
@@ -140,6 +141,24 @@ func (l *Lobby) connectSocketio() error {
 	go l.sendHandler()
 	l.socketioHandler()
 	return nil
+}
+
+//POST Request
+//http://stackoverflow.com/questions/31662411/specify-port-number-in-http-request-node-js
+func postSocketRequest(uri string, lid string) {
+	url := uri
+    log.Println("sent post to url: ", url)
+
+    var jsonStr = []byte(`{"lobbyId":"` + lid + `"}`)
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+    req.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        log.Printf("Error with Post request, %v", err)
+    }
+    defer resp.Body.Close()
 }
 
 func (l *Lobby) createSession() {
