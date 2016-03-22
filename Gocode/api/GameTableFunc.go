@@ -13,7 +13,7 @@ import (
 //            GAME TABLE FUNCTIONS             \\
 //---------------------------------------------\\
 
-type Game struct {
+type GameStuc struct {
 	GameID  int				`json:"gameID, "`
 	CreatorID int			`json:"creatorID"`
 	Name string			 	`json:"name"`
@@ -25,10 +25,23 @@ type Game struct {
 }
 
 func newGame(w http.ResponseWriter, r *http.Request) {
-	var queryString string = "INSERT INTO Game (creatorID, name, date_created, rating, type, description, image) VALUES (?,?,NOW(),0,?,?,?)"
-	
 	//Reading json from request
 	params := requestDecode(r)
+	
+	//check that creatorID = User.userID exists
+	var queryExistString string = "SELECT userID FROM User WHERE userID = ?"
+	var userID int
+	err := db.QueryRow(queryExistString, params["creatorID"]).Scan(&userID)
+	if err == sql.ErrNoRows{
+		//game or creator doesn't exist
+		writeJsonResponse(jsonFail(), w)
+		return
+	}else if err != nil{
+		checkErr("Query execute: ",err)
+	}
+	
+	var queryString string = "INSERT INTO Game (creatorID, name, date_created, rating, type, description, image) VALUES (?,?,NOW(),0,?,?,?)"
+	
 	args := requiredVariables([]string{"creatorID", "name", "type", "description", "image"}, params, nil)
 	
 	result, err := db.Exec(queryString, args...)
@@ -75,45 +88,51 @@ func getGame(w http.ResponseWriter, r *http.Request){
 
 	//Reading json from request
 	params := requestDecode(r)
-	//technically can search on just size
-	args := requiredVariables([]string{"gameID", "creatorID", "name", "date_created", "rating", "type"}, params, &queryString)
 	
-	var response string
+	args := requiredVariables([]string{"gameID", "creatorID", "name", "date_created", "rating", "type"}, params, &queryString)
 	
 	//check for any valid args
 	if len(args) == 0 { //isEmpty
-		response = jsonFail()
-		writeJsonResponse(response, w)
+		writeJsonResponse(jsonFail(), w)
 		return
 	}
 	
 	rows, err := db.Query(queryString, args...)
-	switch{
-		case err == sql.ErrNoRows:
-				response = `{`+
-					`"code" : 303, ` +
-					`"status" : "fail",` +
-					`"descript" : "Game doesnt exist"` +
-				`}`
-		case err != nil:
-				log.Fatal("Query Execute: ",err)
-				panic(err)
-		default:
-				var res []Game
-				for rows.Next() {
-					var game Game
-					
-					err = rows.Scan(&game.GameID, &game.CreatorID, &game.Name, &game.Date_created, &game.Rating, &game.Type, &game.Description, &game.Image)
-					checkErr("Row retrevial: ",err)
-					
-					res = append(res, game)
-				}	
-		
-				b, err := json.Marshal(res)
-				checkErr("Parsing data to json: ", err)	
-				response = string(b)
-    }
 	defer rows.Close()
+	checkErr("Query execute: ", err)
+	
+	var res []GameStuc
+	for rows.Next() {
+		var game GameStuc
+		
+		err = rows.Scan(
+			&game.GameID, 
+			&game.CreatorID, 
+			&game.Name, 
+			&game.Date_created, 
+			&game.Rating, 
+			&game.Type, 
+			&game.Description,
+		)
+		checkErr("Row retrevial: ",err)
+		
+		log.Println(game)
+		
+		res = append(res, game)
+	}
+	
+	var response string
+	if len(res) == 0 { //noRows
+		response = jsonNtExist("Game")
+		writeJsonResponse(response, w)
+		return
+	}			
+	
+	b, err := json.Marshal(res)
+	checkErr("Parsing data to json: ", err)	
+	response = string(b)
+	// response = jsonGetDataMap("Game", response)
+			
 		
 	writeJsonResponse(response, w)
 	
@@ -125,10 +144,18 @@ func getAllGames(w http.ResponseWriter, r *http.Request) {
 	checkErr("Query execute: ",err)
 	defer rows.Close()
 	
-	var res []Game
+	var res []GameStuc
 	for rows.Next() {
-        var game Game
-		err = rows.Scan(&game.GameID, &game.CreatorID, &game.Name, &game.Date_created, &game.Rating, &game.Type, &game.Description, &game.Image)
+        var game GameStuc
+		err = rows.Scan(
+			&game.GameID,
+			&game.CreatorID,
+			&game.Name,
+			&game.Date_created,
+			&game.Rating,
+			&game.Type,
+			&game.Description,
+		)
         checkErr("Row retrevial: ",err)
 		
 		res = append(res, game)
@@ -165,6 +192,8 @@ func changeGameData(w http.ResponseWriter, r *http.Request) {
 			qVars = append(qVars, newVar)	
 		}
 	}
+	rem := len(qStrAdd)-2 //remove last ', '
+	qStrAdd = qStrAdd[:rem] + " "//space so not =?WHERE
 
 	var response string
 	
@@ -175,8 +204,6 @@ func changeGameData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	rem := len(qStrAdd)-2 //remove last ', '
-	qStrAdd = qStrAdd[:rem] + " "//space so not =?WHERE
 	
 	var queryString string = "UPDATE Game SET " + qStrAdd + " WHERE gameID=?"
 	

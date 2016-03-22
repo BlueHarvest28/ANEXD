@@ -3,7 +3,7 @@ package main
 import (
     "log"
     "net/http"
-	"encoding/json"
+	//"encoding/json"
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
 	"crypto/md5"
@@ -21,7 +21,7 @@ import (
     // "email": "test@test.test"
 // }
 
-type User struct {
+type UserStruc struct {
 	UserID int		 `json:"userID"`
 	Username string	 `json:"username"`
 	Email string	 `json:"email"`
@@ -108,7 +108,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	args := requiredVariables(required, params, &queryString)
 
 	
-	var user User
+	var user UserStruc
 	var response string
 	
 	//check for any valid args
@@ -122,18 +122,12 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 			  Scan(&user.UserID, &user.Username, &user.Email)
 	switch{
 		case err == sql.ErrNoRows:
-				response = `{`+
-					`"code" : 303, ` +
-					`"status" : "fail",` +
-					`"descript" : "user doesnt exist"` +
-				`}`
+			response = jsonNtExist("User")
 		case err != nil:
-				log.Fatal("Query Execute: ",err)
-				panic(err)
+			log.Fatal("Query Execute: ",err)
+			panic(err)
 		default:
-				b, err := json.Marshal(user)
-				checkErr("Parsing data to json: ", err)	
-				response = string(b)
+			response = jsonGetData("user", user)
     }
 			
 	writeJsonResponse(response, w)
@@ -171,7 +165,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	args := requiredVariables(required, params, &queryString)
 
 	
-	var user User
+	var user UserStruc
 	var response string
 	
 	//check for any valid args
@@ -190,9 +184,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 				log.Fatal("Query Execute: ",err)
 				panic(err)
 		default:
-				b, err := json.Marshal(user)
-				checkErr("Parsing data to json: ", err)	
-				response = string(b)
+				response = jsonGetData("user", user)
     }
 			
 	writeJsonResponse(response, w)
@@ -203,7 +195,29 @@ func login(w http.ResponseWriter, r *http.Request) {
 func changeUserData(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	params := requestDecode(r)	
-		
+	
+	//Get salt 
+	var passSalt string
+	var querySaltString string = "SELECT passwordSalt FROM User WHERE userID = ?"
+	err := db.QueryRow(querySaltString, params["userID"]).Scan(&passSalt)
+	switch{
+		case err == sql.ErrNoRows:
+			res := jsonNtExist("User")
+			writeJsonResponse(res, w)
+			return
+		case err != nil:
+			log.Fatal("Query Execute: ",err)
+			panic(err)
+		default:
+			//make the hash
+			hashed := md5.Sum([]byte(params["password"].(string) + passSalt))
+			hashedVal:= hex.EncodeToString(hashed[:])
+			params["password"] = hashedVal
+    }
+	newPassHash := md5.Sum([]byte(params["newpass"].(string) + passSalt))
+	newHashedVal := hex.EncodeToString(newPassHash[:])
+	params["newpass"] = newHashedVal
+	
 	var changable = map[string]string{
 		"newpass": "password",
 		"email": "email",
@@ -220,21 +234,18 @@ func changeUserData(w http.ResponseWriter, r *http.Request) {
 			qVars = append(qVars, newVar)	
 		}
 	}
-	
-	var response string
-	
-	//check for any valid args
-	if len(qVars) == 0 { //isEmpty
-		response = jsonFail()
-		writeJsonResponse(response, w)
-		return
-	}
-	
 	rem := len(qStrAdd)-2 //remove last ', '
 	qStrAdd = qStrAdd[:rem] + " "//space so not =?WHERE
 	
 	
-	// var queryString string = "UPDATE User SET password=? WHERE userID=? AND password=?"
+	//check for any valid args
+	if len(qVars) == 0 { //isEmpty
+		writeJsonResponse(jsonFail(), w)
+		return
+	}
+	
+	
+	
 	var queryString string = "UPDATE User SET " + qStrAdd + " WHERE userID=? AND password=?"
 	
 	var required = []string{"userID","password"}
@@ -242,11 +253,9 @@ func changeUserData(w http.ResponseWriter, r *http.Request) {
 
 	//check for any valid args
 	if len(args) != len(required){ //has same args
-		response = jsonFail()
-		writeJsonResponse(response, w)
+		writeJsonResponse(jsonFail(), w)
 		return
 	}
-
 	
 	args = append(qVars, args...)	
 	
@@ -258,6 +267,7 @@ func changeUserData(w http.ResponseWriter, r *http.Request) {
 	rowCnt, err := result.RowsAffected()
 	checkErr("Getting RowsAffected: ",err)
 
+	var response string
 	if rowCnt == 1{
 		//correctly changed the user
 		response = jsonChanged("Password")
@@ -295,7 +305,7 @@ func delUser(w http.ResponseWriter, r *http.Request) {
 	
 	if rowCnt == 1{
 		//correctly changed the user
-		response = jsonDeleted("User", params["userID"].(float64))
+		response = jsonDeleted("User", params["userID"])
 	}else if rowCnt < 1{
 		//no change
 		response = jsonFail()

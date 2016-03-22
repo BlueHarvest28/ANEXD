@@ -20,27 +20,37 @@ type Anon_User struct {
 
 //NOT TESTED
 func newAnonUsers(w http.ResponseWriter, r *http.Request) {
-	var queryString string = "INSERT INTO Anon_User (username,lobby) VALUES (?,?)"
-
 	//Reading json from request
 	params := requestDecode(r)
+	
+	//check that creatorID = User.userID exists
+	var queryExistString string = "SELECT lobbyID FROM Lobby WHERE lobbyID = ?"
+	var lobbyID int
+	err := db.QueryRow(queryExistString, params["lobby"]).Scan(&lobbyID)
+	if err == sql.ErrNoRows{
+		//lobby doesn't exist
+		writeJsonResponse(jsonFail(), w)
+		return
+	}else if err != nil{
+		checkErr("Query execute: ",err)
+	}
+	
+	var queryString string = "INSERT INTO Anon_User (username,lobby) VALUES (?,?)"
+
 	
 	var required = []string{"username","lobby"}
 	args := requiredVariables(required, params, nil)
 	
-	var response string
 	
 	//check for any valid args
 	if len(args) != len(required) { //has same args
-		response = jsonFail()
-		writeJsonResponse(response, w)
+		writeJsonResponse(jsonFail(), w)
 		return
 	}
 	
 	result, err := db.Exec(queryString, args...)
-	// checkErr("Query Execute: ",err)
 	
-	
+	var response string
 	if sqlError, ok := err.(*mysql.MySQLError); ok {
 		if sqlError.Number == 1062 {
 			//user already exists
@@ -72,7 +82,7 @@ func newAnonUsers(w http.ResponseWriter, r *http.Request) {
 		
 	writeJsonResponse(response, w)
 	
-	log.Printf("/insertNewAnonUser has been excuted sucessfully!")
+	log.Printf("/newAnonUser has been excuted sucessfully!")
 }
 
 // example url:: localhost:3000/getAnonUser?lobbyID=xx
@@ -94,31 +104,28 @@ func getAnonUser(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	rows, err := db.Query(queryString, args...)
-	switch{
-		case err == sql.ErrNoRows:
-				response = `{`+
-					`"code" : 303, ` +
-					`"status" : "fail",` +
-					`"descript" : "Lobby doesnt exist"` +
-				`}`
-		case err != nil:
-				log.Fatal("Query Execute: ",err)
-				panic(err)
-		default:
-				var res []Anon_User
-				for rows.Next() {
-					var anon Anon_User
-					err = rows.Scan(&anon.UserID, &anon.Username, &anon.Lobby)
-					checkErr("Row retrevial: ",err)
-					
-					res = append(res, anon)
-				}	
-		
-				b, err := json.Marshal(res)
-				checkErr("Parsing data to json: ", err)	
-				response = string(b)
-    }
 	defer rows.Close()
+	checkErr("Query execute: ", err)
+	
+	var res []Anon_User
+	for rows.Next() {
+		var anon Anon_User
+		err = rows.Scan(&anon.UserID, &anon.Username, &anon.Lobby)
+		checkErr("Row retrevial: ",err)
+		
+		res = append(res, anon)
+	}	
+	
+	if len(res) == 0 { //noRows
+		response = jsonNtExist("Anon User")
+		writeJsonResponse(response, w)
+		return
+	}
+
+	b, err := json.Marshal(res)
+	checkErr("Parsing data to json: ", err)	
+	response = string(b)
+	// response = jsonGetDataMap("Anon User", response)
 		
 	writeJsonResponse(response, w)
 	
@@ -145,7 +152,7 @@ func delAnonUser(w http.ResponseWriter, r *http.Request) {
 	
 	if rowCnt == 1{
 		//correctly changed the user
-		response = jsonDeleted("Anon_User", params["userID"].(float64))
+		response = jsonDeleted("Anon_User", params["userID"])
 	}else if rowCnt < 1{
 		//no change
 		response = jsonFail()

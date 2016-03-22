@@ -8,42 +8,20 @@ package main
 // For working locally do reverse of above so serve at localhost
 // and run .exe for windows or other for linux/ OSX
 
-//------------------------------------------------------------------------------//
-//
-//Comments
-// ::DB_CHANGES::
-// FOREIGN KEY (game) REFERENCES Game(gameID) 
-//------------------------------------------------------------------------------//
-
 //Salting and hashing info https://crackstation.net/hashing-security.htm#salt
 
 //HTTP ERROR CODES
 //http://www.andrewhavens.com/posts/20/beginners-guide-to-creating-a-rest-api/
 
-//Using Marshel vs Encode
-// json.Decoder   - is used when reading and writing
-//				    to HTTP connections, WebSockets, or files.
-// json.Unmarshal - is used when the input is []byte
-//
-// http://stackoverflow.com/questions/21197239/decoding-json-in-golang-using-json-unmarshal-vs-json-newdecoder-decode
-
-// result.LastInsertId only works for inserts otherwise use rows affected.
-
 //.------:ToDo:------.
 // All quiers to do with backend??(James)
 //
 // + ADD rollback to failed insert statments
-// + getLobby can return null if 2 fields dont match
-// + no checks if ID's from other tables exist
+// + NEEDS TO BE TESTED: getLobby can return null if 2 fields dont match
 // + change so all methods take map so can have custom vars so not username but user etc
 // + make it so users can only get information about lobbies, players related to them.
 // + del for all anon users by lobbyid
-// + /changeXXData needs to pass all inputs used into return
-// so the json response.
-//
-// NOT SURE: 
-// + to make the insert check for username and email 
-// seperatly 2x queries will be needed
+// + /changeXXData needs to pass all inputs used into return to the json response.
 
 //.------:DONE:------.
 // - test()
@@ -72,14 +50,13 @@ package main
 //
 // + make the random 6 digits password generator
 // + added salt and pass hashing to backend
-// + ADDING DELETE Lobbies, Anon etc.
+// + ADDING DELETE Lobbies, Anon and User.
 //'------------------'
 
 //.------:CURRENT WORK:------.
-// + TOKEN'S need to be added to stop anyone using api
+// + make getUser return with data same across REST API's
 //
-// + Might need DELETE user api
-// + Update readme.md with del functions
+// + TOKEN'S need to be added to stop anyone using api
 //'--------------------------'
 
 import (
@@ -88,10 +65,12 @@ import (
 	"encoding/json"
 	"database/sql"
 	"github.com/gorilla/mux"
-	//"os"
-	//"fmt"
+	"os"
+	"fmt"
 	"math/rand"
 	"time"
+	//james's imports
+	"github.com/googollee/go-socket.io"
 )
 
 //For adding new apis - see main()
@@ -102,6 +81,7 @@ type Api struct {
 }
 
 var db *sql.DB
+var manager *Manager
 var credentials string = "ANEXD_ADMIN:gn9-MVn-6Bq-q6b@tcp(p3plcpnl0650.prod.phx3.secureserver.net:3306)/ANEXD"
 
 //.:TEST:.
@@ -112,9 +92,9 @@ func test(w http.ResponseWriter, r *http.Request) {
 	checkErr("Query execute: ",err)
 	defer rows.Close()
 	
-	var res []User
+	var res []UserStruc
 	for rows.Next() {
-        var user User
+        var user UserStruc
         err = rows.Scan(&user.UserID, &user.Username, &user.Email)
         checkErr("Row retrevial: ",err)
 		
@@ -134,8 +114,8 @@ func test(w http.ResponseWriter, r *http.Request) {
 //check for error and exists if finds one
 func checkErr(place string, err error) {
     if err != nil {
-		log.Fatal(place, err)
-        panic(err)
+		log.Println(place, err)
+        //panic(err)
     }
 }
 
@@ -178,8 +158,15 @@ func init(){
 }
 
 func main() {
+	server, err := socketio.NewServer(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	manager = newManager()
+	server.On("connection", manager.sessionHandler)
+	
 	//Open database IMP:Doesnt open a connection
-	var err error
+	// var err error
 	db, err = sql.Open("mysql", credentials)
 	checkErr("Database connection: ",err)
 	
@@ -221,17 +208,21 @@ func main() {
             Path(api.Name).
             Handler(api.Method)
     }	
+	
+	router.Path("/socket.io/").Handler(server)
+	// http.Handle("/socket.io/", server)
 
 	//For deployment locally
-	log.Printf("API server is Running!")
-    log.Fatal(http.ListenAndServe(":8080", router))
+	// log.Printf("API server is Running!")
+    // log.Fatal(http.ListenAndServe(":8080", router))
 	
 	//For deployment on openshift
-	// bind := fmt.Sprintf("%s:%s", os.Getenv("OPENSHIFT_GO_IP"), os.Getenv("OPENSHIFT_GO_PORT"))
-	// http.Handle("/", &MyServer{router})
-    // log.Fatal(http.ListenAndServe(bind, nil))	
+	bind := fmt.Sprintf("%s:%s", os.Getenv("OPENSHIFT_GO_IP"), os.Getenv("OPENSHIFT_GO_PORT"))
+	http.Handle("/", &MyServer{router})
+    log.Fatal(http.ListenAndServe(bind, nil))	
 }
 
+//http://stackoverflow.com/questions/12830095/setting-http-headers-in-golang
 //This is for overwritting Mux headers to allow Access-Control-Headers
 //So requests going out which browser would normally stop
 type MyServer struct {
@@ -242,6 +233,7 @@ func (s *MyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
     if origin := req.Header.Get("Origin"); origin != "" {
         rw.Header().Set("Access-Control-Allow-Origin", origin)
         rw.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		rw.Header().Set("Access-Control-Allow-Credentials", "true")
         rw.Header().Set("Access-Control-Allow-Headers",
             "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
     }
@@ -253,7 +245,7 @@ func (s *MyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
     s.r.ServeHTTP(rw, req)
 }
 
-
+//This is for the Salt generation
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 
 func RandStringRunes(n int) string {
