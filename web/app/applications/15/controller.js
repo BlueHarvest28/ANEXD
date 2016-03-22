@@ -115,7 +115,7 @@ angular.module('ANEXD')
 		);*/
 
 		//canvas width set from server
-		anexd.expect('action');
+		//anexd.expect('action');
 		anexd.expect('changes');
 		$scope.$watch(
 			function() {
@@ -132,7 +132,7 @@ angular.module('ANEXD')
 
 		var drawing = function(data) {
 			var objects = data;
-			console.log('the data ', objects)
+			//console.log('the data ', objects)
 			myGameArea.clear();
 			drawGround();
 			for(var i = 0; i < objects.length; i++){
