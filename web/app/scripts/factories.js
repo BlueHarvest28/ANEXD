@@ -107,10 +107,8 @@ angular.module('ANEXD')
  *	http://api-anexd.rhcloud.com/socket.io/:8080
  */
 .factory('SocketService', function (socketFactory) {
-	var lobbySocket = io.connect('http://localhost:3002/');
-	var socket = socketFactory({
-		ioSocket: lobbySocket
-	});
+	//var lobbySocket = io.connect('http://localhost:3002/');
+	var socket = socketFactory();
 	return socket;
 })
 /*
@@ -162,7 +160,7 @@ angular.module('ANEXD')
 	{
 		//*Early implementation*
 		//If we're in an app AND lobby (e.g. multiplayer game)
-		return function(generic){
+		return function(){
 			var socket;
 			
 //			if($rootScope.lobby && $rootScope.app && !generic){

@@ -93,6 +93,7 @@ angular.module('ANEXD')
 		};
 		
 		$scope.selectColour = function(colour){
+			$scope.selectedColour = colour;
 			$scope.$broadcast('colour', $scope.selectedColour);
 		};
 	}

@@ -40,7 +40,7 @@ angular.module('ANEXD')
 		});
         
 		//Instance of lobby socket
-		var lobbySocket;
+		//var lobbySocket;
 		
         /*
         * FH98/HJ80
@@ -58,27 +58,23 @@ angular.module('ANEXD')
         * HJ80
         *
         */
-		var lobby = function(){
-			SocketService.emit('join', $scope.name);
-			
-			SocketService.on('start', function(){
-				console.log('starting');
-				//TODO: replace with actual app id
-				$location.path($location.path() + '/' + 14, true);
-				$cookies.put('name', $scope.name);
-			});
-			
-			SocketService.on('update', function(data){
-				$scope.users = [];
-				angular.forEach(data, function(value){
-					this.push(value);
-				}, $scope.users);
-			});
-			
-			SocketService.on('close', function(){
-				$scope.goBack();
-			});
-		};
+		SocketService.on('start', function(){
+			console.log('starting');
+			//TODO: replace with actual app id
+			$location.path($location.path() + '/' + 14, true);
+			$cookies.put('name', $scope.name);
+		});
+
+		SocketService.on('update', function(data){
+			$scope.users = [];
+			angular.forEach(data, function(value){
+				this.push(value);
+			}, $scope.users);
+		});
+
+		SocketService.on('close', function(){
+			$scope.goBack();
+		});
         
         /*
         * FH98/HJ80
@@ -96,7 +92,6 @@ angular.module('ANEXD')
 			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
 			//Instantiate Socket with LobbyId as the namespace
 //			lobbySocket = new LobbySocket($scope.lobby);
-			lobby();
 			$location.path('/' + $scope.lobby, false);
 		};
 		

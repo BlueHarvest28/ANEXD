@@ -34,6 +34,8 @@ angular.module('ANEXD')
         $scope.maxPlayers = '5';      
 		$scope.app = {};
 		
+		SocketService.emit('message', 'test');
+		
 		SocketService.on('update', function(users){
 			console.log('new users:', users);
 			$scope.users = users;
