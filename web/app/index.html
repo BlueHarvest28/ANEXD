@@ -97,7 +97,12 @@
 			</div>
 		</div>
 	</div>
-
+	
+	<div class="error ng-hide" ng-show="showError">
+		<h2>Error:</h2>
+		<span>{{error}}</span>
+	</div>
+	
 	<div class="container-fluid main">
 		<div ng-view class="slide-animate">
 		</div>

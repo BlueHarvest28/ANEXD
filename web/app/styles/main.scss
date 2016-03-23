@@ -132,6 +132,41 @@ body {
 	background-color: #eee;
 }
 
+.error{
+	position: fixed;
+    width: 300px;
+    left: 50%;
+    margin-left: -150px;
+    bottom: 40px;
+    z-index: 99999;
+    color: white;
+    background-color: #a94442;
+    box-shadow: rgba(0,0,0,0.2) 0 5px 10px;
+    padding: 15px;
+	opacity: 1;
+	
+	h2{
+		margin-top: 0;
+	}
+	
+	&.ng-hide-add, &.ng-hide-remove{
+		-webkit-transition: opacity 0.5s, bottom 0.5s;
+		-moz-transition: opacity 0.5s, bottom 0.5s;
+		-o-transition: opacity 0.5s, bottom 0.5s;
+		transition: opacity 0.5s, bottom 0.5s;
+	}
+	
+	&.ng-hide{
+		bottom: -100px;
+		opacity: 0;
+	}
+	
+	&.ng-show{
+		bottom: 40px;
+		opacity: 1;
+	}
+}
+
 a {
 	transition: color 0.25s;
 	color: #3c5f72;

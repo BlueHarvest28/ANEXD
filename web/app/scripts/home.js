@@ -13,6 +13,7 @@
 *	TODO: 	CONNECT TO GO
 *			TIDY UP DEPENDENCIES
 *			IMPROVE STATE RELIABILITY (SEE: APP.JS)
+*			FIX APP LAUNCH PAGE WITHOUT IMAGES
 */
 
 (function () {
@@ -87,17 +88,25 @@ angular.module('ANEXD')
         * Function then sorts and displays the data held in the JSON object.
         */
         $scope.getGames = function() {
+			console.log('get games');
             var req = {
                  method: 'POST',
                  url: host + 'getAllGames',
             };
-
+			
             $http(req).then(function(response)  {
-                $scope.apps = response.data;
-                for(var i = 0; i < $scope.apps.length; i++) {
-                    var obj = $scope.apps[i];
-                    $scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
-                }
+				//Likely that the response failed to correctly populate the list, or we have an undiagnosed database error
+				if(response.data[0].name === ''){
+					console.log('fail');
+					$rootScope.$broadcast('error', 'Failed to load apps');
+				}
+				else{
+					$scope.apps = response.data;
+					for(var i = 0; i < $scope.apps.length; i++) {
+						var obj = $scope.apps[i];
+						$scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
+					}	
+				}
             });   
         };
         

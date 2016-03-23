@@ -227,5 +227,5 @@ angular.module('ANEXD')
 				getFromServer: getFromServer
 			};	
 		};
-	}]);
+}]);
 }());

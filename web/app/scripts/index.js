@@ -32,7 +32,18 @@ angular.module('ANEXD')
 		$scope.shouldHide = true;                          //Used to hide parts of HTML
         var host = 'http://api-anexd.rhcloud.com/';        //Host address for http requests
         
-        
+		$scope.showError = false;
+		$scope.$on('error', function(event, error){
+			console.log('error', error);
+			if(error){
+				$scope.error = error;
+				$scope.showError = true;
+				$timeout( function(){
+					$scope.showError = false;
+				}, 5000);
+			}
+		});
+		
         //If the someone is logged in then get that users id
     	if($scope.loggedIn){
     		$scope.user = LoginService.getUser();
