@@ -58,6 +58,7 @@ angular.module('ANEXD')
 			shouldHide: '@'	
 		},
 		link: function(scope, elm) {
+			elm.modal('hide');
 			scope.$watch('shouldHide', function(value){
 				if(value){
 					elm.modal('hide');

@@ -137,7 +137,7 @@ body {
     width: 300px;
     left: 50%;
     margin-left: -150px;
-    bottom: 40px;
+    bottom: 80px;
     z-index: 99999;
     color: white;
     background-color: #a94442;
@@ -162,7 +162,7 @@ body {
 	}
 	
 	&.ng-show{
-		bottom: 40px;
+		bottom: 80px;
 		opacity: 1;
 	}
 }

@@ -20,17 +20,17 @@ angular.module('ANEXD')
     '$scope',
 	'$rootScope',
     '$timeout',
-    'LoginService',
     '$http',
     'md5',
-    function ($scope, $rootScope, $timeout, LoginService, $http, md5)
+	'CONST',
+	'LoginService',
+    function ($scope, $rootScope, $timeout, $http, md5, CONST, LoginService)
     {		
         /* Local and $scope variables */
 		$scope.isMobile = $rootScope.isMobile;             //Check if the user is on mobile
     	$scope.loggedIn = LoginService.isLoggedIn();       //Is the user logged in
         $scope.errorDisabled = false;                      //Used to disable a button
 		$scope.shouldHide = true;                          //Used to hide parts of HTML
-        var host = 'http://api-anexd.rhcloud.com/';        //Host address for http requests
         
 		$scope.showError = false;
 		$scope.$on('error', function(event, error){
@@ -97,13 +97,13 @@ angular.module('ANEXD')
 			if(!email){
 				return;
 			}
-
+			
 			var payload = {
                 'email' : email,
             };
             var req = {
                 method: 'POST',
-                url: host + 'getUser',
+                url: CONST.HOST + 'getUser',
                 headers: {'Content-Type': 'application/json'},
                 data: payload,
             };
@@ -115,7 +115,7 @@ angular.module('ANEXD')
             		$scope.newEmail = true;
             	}
             }, function errorCallback(response) {
-                console.log(response);
+                $rootScope.$broadcast(CONST.ERROR, 'Failed to check email;', response.description);
             });
 		};
         
@@ -145,7 +145,7 @@ angular.module('ANEXD')
 
                 var req = {
                     method: 'POST',
-                    url: host + 'changePassword',
+                    url: CONST.HOST + 'changePassword',
                     headers: {'Content-Type': 'application/json'},
                     data: payload,
                 };
@@ -153,7 +153,7 @@ angular.module('ANEXD')
                     console.log(response);
                     $scope.shouldHide = true;
                 }, function errorCallback(response) {
-                    console.log(response);
+                    $rootScope.$broadcast(CONST.ERROR, 'Couldn\'t update user;', response.description);
                 });
                 $scope.shouldHide = false;                                
             } else {

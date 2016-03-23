@@ -18,6 +18,7 @@
 					<p>Get a code to share with your players</p>
 				</div>
 			</div>
+			
 			<div class="lobby-app-container" ng-show="hideIcons">
 				<div class="lobby" ng-show="showLobby" ng-class="{'show-lobby': showLobby}">
 					<div class="lobby-header">
@@ -42,12 +43,10 @@
 						</div>
 					</div>
 				</div>
-				<!-- Form, action on div to send selected data to the API -->
-				<!-- docs.angularjs.org/guide/forms -->
 				<div class="app-container" ng-class="{'show-lobby': showLobby}">
-					<i class="fa fa-close" ng-click="showIcons()"></i>
+					<i class="fa fa-close" ng-click="closeLobby()"></i>
 					<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
-				 	<div class="inner" ng-class="{'show-lobby': showLobby}">
+					<div class="inner" ng-class="{'show-lobby': showLobby}">
 				        <h2>{{app.name}}</h2>
 				        <form ng-hide="showLobby" ng-class="{'show-lobby': showLobby}">
                             <div class="form-group">		
@@ -65,7 +64,7 @@
 				        	<input type="submit" ng-value="launchMessage" class="login-submit" 
 								   ng-class="{disabled: isDisabled}" 
 								   ng-disabled="isDisabled"
-								   ng-click="getLobby()">
+								   ng-click="launchLobby()">
 				    	</form>
 				    </div>
 				    <div class="qr" ng-show="showLobby">
@@ -79,6 +78,7 @@
 			</div>
 		</div>
 	</div>
+	
 	<div class="app-header-list" ng-hide="hideIcons">
 		<div class="navbar navbar-default app-header">
 	        <div class="container">
@@ -98,7 +98,7 @@
 	    <div class="container-fluid app-list">
 	    	<div class="row">
 	    		<div class="col-lg-4 col-xs-6" ng-repeat="app in apps | filter: {type : type}">
-	    			<div class="app-tile" style="background-image: url('{{app.image}}')" scroll-on-click href="#top" require-login login-callback="loadApp(app)">
+	    			<div class="app-tile" style="background-image: url('{{app.image}}')" scroll-on-click href="#top" require-login login-callback="selectApp(app)">
 	    				<div class="app-tile-overlay">
 	    					<img src="../images/icon-settings-large.png"/>
 	    				</div>

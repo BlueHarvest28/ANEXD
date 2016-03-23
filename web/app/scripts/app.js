@@ -97,4 +97,8 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 		};
 		
 	}
-]);
+])
+.constant('CONST', {
+	'ERROR': 'error',
+	'HOST': 'http://api-anexd.rhcloud.com/'
+});

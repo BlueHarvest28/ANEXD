@@ -19,12 +19,12 @@ angular.module('ANEXD')
 .controller('MobileHomeController', [
 	'$scope',
     '$http',
-    'SocketService',
 	'$routeParams',
 	'$location',
 	'$rootScope',
 	'$cookies',
-    function ($scope, $http, SocketService, $routeParams, $location, $rootScope, $cookies)
+	'SocketService',
+    function ($scope, $http, $routeParams, $location, $rootScope, $cookies, SocketService)
 	{
         /* Local and $scope variables */
         $scope.ready = false;                             //

@@ -6,32 +6,32 @@
 (function () {
 'use strict';
 angular.module('ANEXD')
-.factory('LoginService', ['$cookies', '$http', 'md5', function ($cookies, $http, md5) {
-	var host = 'http://api-anexd.rhcloud.com/';
+.factory('LoginService', ['$rootScope', '$cookies', '$http', 'md5', 'CONST', function ($rootScope, $cookies, $http, md5, CONST) {
 	var loggedIn = false;
 
 	var login = function (email, password) {
 		// Creating password hashing using md5 
-		var passwordHash = md5.createHash(password);
+		var hash = md5.createHash(password);
 
 		var payload = {
-			'password': passwordHash,
+			'password': hash,
 			'email': email
 		};
+		
 		var req = {
 			method: 'POST',
-			url: host + 'login',
+			url: CONST.HOST + 'login',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			data: payload,
 		};
+		
 		return $http(req).then(function (response) {
 			if (response.data.status === 'Success') {
 				loggedIn = true;
-				console.log(response.data.data);
 				$cookies.put('userEmail', response.data.data.email);
-				$cookies.put('userID', response.data.data.userID);
+				$cookies.put('userId', response.data.data.userID);
 				return true;
 			} else if (response.data.status === 'Fail') {
 				return false;
@@ -49,60 +49,81 @@ angular.module('ANEXD')
 	};
 
 	var isLoggedIn = function () {
-		if ($cookies.get('userEmail')) {
+		if ($cookies.get('userEmail') && $cookies.get('userId')) {
 			return true;
 		} else {
 			return false;
 		}
 	};
-
-	var getUser = function () {
-		return $cookies.get('userEmail');
-	};
-
+	
 	var createUser = function (email, password) {
-		var passwordHash = md5.createHash(password);
+		var hash = md5.createHash(password);
 
 		var payload = {
 			'username': email,
-			'password': passwordHash,
+			'password': hash,
 			'email': email
 		};
+		
 		var req = {
 			method: 'POST',
-			url: host + 'newUser',
+			url: CONST.HOST + 'newUser',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			data: payload,
 		};
+		
 		return $http(req).then(function (response) {
-			if (response.data.status === 'Success') {
-				loggedIn = true;
-				console.log(response.data.email);
-				$cookies.put('userEmail', response.data.email);
-				$cookies.put('userID', response.data.userID);
-				return true;
-			} else if (response.data.status === 'Fail') {
-				console.log(response);
-				console.log('sign up failed');
+			if (response.data.status === 'Fail') {
+				$rootScope.$broadcast(CONST.ERROR, 'Failed to create user;', response.data.description);
 				return false;
 			}
+			else{
+				loggedIn = true;
+				
+				//Date for cookie expiration - 2 days from now
+				var expiry = new Date();
+        		expiry.setDate(expiry.getDate() + 2);
+				
+				$cookies.put('userEmail', response.data.email, {
+					expires: expiry
+				});
+				$cookies.put('userId', response.data.userID, {
+					expires: expiry
+				});
+				
+				return true;	
+			}
 		}, function errorCallback(response) {
-			console.log(response);
+			$rootScope.$broadcast(CONST.ERROR, 'Failed to create user;', response.description);
 		});
 	};
-
-	var getUserId = function () {
-		return $cookies.get('userID');
+	
+	var getUser = function () {
+		if($cookies.get('userEmail')){
+			return $cookies.get('userEmail');
+		}
+		else{
+			return false;
+		}
 	};
-
+	
+	var getUserId = function () {
+		if($cookies.get('userId')){
+			return parseInt($cookies.get('userId'));
+		}
+		else{
+			return false;
+		}
+	};
+	
 	return {
 		login: login,
 		logout: logout,
 		isLoggedIn: isLoggedIn,
-		getUser: getUser,
 		createUser: createUser,
+		getUser: getUser,
 		getUserId: getUserId
 	};
 }])

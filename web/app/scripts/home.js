@@ -11,9 +11,8 @@
 
 /*
 *	TODO: 	CONNECT TO GO
-*			TIDY UP DEPENDENCIES
 *			IMPROVE STATE RELIABILITY (SEE: APP.JS)
-*			FIX APP LAUNCH PAGE WITHOUT IMAGES
+*			PREPARE FOR RECONNECTIONS
 */
 
 (function () {
@@ -21,33 +20,38 @@
 angular.module('ANEXD')
 .controller('HomeController', [
 	'$scope',
-    '$timeout',
-    'LoginService',
-    '$http',
-	'SocketService',
-	'$location',
 	'$rootScope',
+    '$timeout',
+    '$http',
+	'$location',
 	'$routeParams',
-    function ($scope, $timeout, LoginService, $http, SocketService, $location, $rootScope, $routeParams) 
+	'CONST',
+	'LoginService',
+	'SocketService',
+    function ($scope, $rootScope, $timeout, $http, $location, $routeParams, CONST, LoginService, SocketService) 
     {					
-		/* Local and $scope variables */
-        var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
-        $scope.lobbyDelFlag = false;                    //Flag to stop double clicking on submit
-        $scope.lobbyQR = '';                            //The lobbies QR code
-        $scope.type = '';                               //Application type, used in filtering
-        $scope.users = [];                              //Users in the lobby
-        $scope.launchMessage = 'Launch';                //
-		$scope.isDisabled = false;                      //
-        $scope.maxPlayers = '5';      
-		$scope.app = {};
+        $scope.type = '';
+		var activeLobby = false;
+		var openedApp = false;
 		
-		SocketService.emit('message', 'test');
+		var initialise = function(){
+			$scope.showLobby = false;
+			$scope.launchMessage = 'Launch';
+			$scope.users = [];
+			$scope.lobbyQR = '';
+			$scope.isDisabled = false;
+			$scope.maxPlayers = '5';
+			$scope.app = {};
+		};
+		
+		initialise();
 		
 		SocketService.on('update', function(users){
 			console.log('new users:', users);
 			$scope.users = users;
 		});
 		
+		//For reconnecting
 		if($routeParams.lobbyId){
 			console.log('lobby id:', $routeParams.lobbyId);
 //			SocketService.emit('getappid', parseInt($routeParams.lobbyId));
@@ -76,29 +80,32 @@ angular.module('ANEXD')
     	$scope.$watch(function(){ return LoginService.isLoggedIn();}, function (isLoggedIn){
 			$scope.isLoggedIn = isLoggedIn;
 			if(!$scope.isLoggedIn) {
-				$scope.showIcons();
+				$scope.hideIcons = false;
+				//If we have an open app
+				if(openedApp){
+					//Close and delete any lobby instances
+					$scope.closeLobby();
+				}
 			}
 		});
 	   
         /*
-        * FH98
+        * FH98 / HJ80
         * HTTP Post request to recieve application information.
         * HTTP Post request contains no data.
         * HTTP Post request recieves JSON object.
         * Function then sorts and displays the data held in the JSON object.
         */
         $scope.getGames = function() {
-			console.log('get games');
             var req = {
                  method: 'POST',
-                 url: host + 'getAllGames',
+                 url: CONST.HOST + 'getAllGames',
             };
 			
             $http(req).then(function(response)  {
 				//Likely that the response failed to correctly populate the list, or we have an undiagnosed database error
-				if(response.data[0].name === ''){
-					console.log('fail');
-					$rootScope.$broadcast('error', 'Failed to load apps');
+				if(response.data[0].name === '' || response.data.status === 'Fail'){
+					$rootScope.$broadcast(CONST.ERROR, 'Failed to load apps; no title on first app');
 				}
 				else{
 					$scope.apps = response.data;
@@ -107,25 +114,12 @@ angular.module('ANEXD')
 						$scope.apps[i].rating = Array.apply(null, new Array(obj.rating)).map(Number.prototype.valueOf,0);
 					}	
 				}
-            });   
+            }, function(response){
+				$rootScope.$broadcast(CONST.ERROR, 'Failed to get apps; ' + response.description);
+			});   
         };
         
         $scope.getGames(); //Calling getGames to display applications. 
-        
-        /*
-        * HJ80
-        * Function displays lobby users on the frontend 
-        */
-//        var lobby = function() {
-//			lobbySocket.emit('hostlobby', LoginService.getUserId());
-//			
-//            lobbySocket.on('update', function(players) {
-//                $scope.users = [];
-//                angular.forEach(players, function(value) {
-//                    this.push(value);	
-//                }, $scope.users);
-//            });
-//        };
         
         /*
         * FH98
@@ -134,33 +128,37 @@ angular.module('ANEXD')
         * HTTP Post request receives boolean and the users old lobby id.
         * If a user does have a lobby open it deletes it by called deleteLobby().
         */
-        $scope.getLobby = function() {
-			$scope.isDisabled = true;  //Disable submit button
-			$scope.launchMessage = '';
-
-            var payload = {
-				'creator': LoginService.getUserId(), //Logged in users Id.
-			};
-			var req = {
-				method: 'POST',
-				url: host + 'getLobby',
-				headers: {'Content-Type': 'application/json'},
-				data: payload,
-			};
-			$http(req).then(function successCallback(response) {
-				console.log(response);
-				if(response.data.status === 'Success') {
-					$scope.lobby = response.data.data.lobbyID;	
-					deleteLobby(); //Deletes already open lobby if there is one
-				}
-				else {
-					$scope.launchApp(); //Opens lobby
-				}
-				
-			}, function errorCallback(response) {
-				console.log(response);
-			});
-        };
+//        $scope.getLobby = function() {
+//			$scope.isDisabled = true;  //Disable submit button
+//			$scope.launchMessage = '';
+//
+//            var payload = {
+//				'creator': LoginService.getUserId(), //Logged in users Id.
+//			};
+//			var req = {
+//				method: 'POST',
+//				url: CONST.HOST + 'getLobby',
+//				headers: {'Content-Type': 'application/json'},
+//				data: payload,
+//			};
+//			$http(req).then(function successCallback(response) {
+//				if(response.data.status === 'Fail') {
+//                    $rootScope.$broadcast(CONST.ERROR, 'Failed to get lobby;', response.data.description);
+//                }
+//                else {
+//					console.log(response);
+//					if(response.data.status === 'Success') {
+//						$scope.lobby = response.data.data.lobbyID;	
+//						deleteLobby(); //Deletes already open lobby if there is one
+//					}
+//					else {
+//						$scope.launchLobby(); //Opens lobby
+//					}
+//				}
+//			}, function errorCallback(response) {
+//				$rootScope.$broadcast(CONST.ERROR, 'Failed to get lobby;', response.description);
+//			});
+//        };
         
         /*
         * FH98
@@ -170,27 +168,32 @@ angular.module('ANEXD')
         * HTTP Post request contains the lobbies Id.
         * HTTP Post request receives boolean
         */
-        function deleteLobby() {
-            
+        var deleteLobby = function() {
 			var payload = {
 				'lobbyID': $scope.lobby,  //lobby id to be removed from the database
 			};
+			
 			var req = {
 				method: 'POST',
-				url: host + 'delLobby',
+				url: CONST.HOST + 'delLobby',
 				headers: {'Content-Type': 'application/json'},
 				data: payload,
 			};
+			
 			$http(req).then(function successCallback(response) {
-				console.log(response);
-//				lobbySocket.emit('close');	//websocket emit called closed application
-				if($scope.isDisabled) {
-					$scope.launchApp();
+				if(response.data.status === 'Fail') {
+                    $rootScope.$broadcast(CONST.ERROR, 'Failed to delete lobby; ' + response.data.description);
+                }
+                else {
+					console.log(response);
+					if($scope.isDisabled) {
+						$scope.launchLobby();
+					}
 				}
 			}, function errorCallback(response) {
-				console.log(response);
+				$rootScope.$broadcast(CONST.ERROR, 'Failed to delete lobby; ' + response.description);
 			});
-        }	
+        };	
         
         /*
         * FH98/HJ80
@@ -200,8 +203,11 @@ angular.module('ANEXD')
         * Function uses lobby id to create QR code.
         * Function instantiate web socket connection.
         */
-    	$scope.launchApp = function() {
-    		$scope.lobbyDelFlag = true;
+    	$scope.launchLobby = function() {
+			$scope.isDisabled = true;
+			$scope.launchMessage = '';
+    		activeLobby = true;
+			
             var payload = {
                 'creator': LoginService.getUserId(),
                 'game': $scope.app.gameID,
@@ -210,26 +216,26 @@ angular.module('ANEXD')
             
             var req = {
                 method: 'POST',
-                url: host + 'newLobby',
+                url: CONST.HOST + 'newLobby',
                 headers: {'Content-Type': 'application/json'},
                 data: payload,
             };
 			
             $http(req).then(function(response) {
                 if(response.data.status === 'Fail') {
-                    console.log(response);
+                    $rootScope.$broadcast(CONST.ERROR, 'Failed to start lobby; ' + response.data.description);
                 }
                 else {
                     console.log(response);
                     $scope.showLobby = true;                                    //Load lobby
                     $scope.lobby = response.data.data.pass;                     //Lobby ID creation
-                    $scope.lobbyQR = 'harrymjones.com/anxed/' + $scope.lobby;   //Lobby QR creation.
+                    $scope.lobbyQR = CONST.HOST + $scope.lobby;   //Lobby QR creation.
 					$scope.isDisabled = false;
 					$scope.launchMessage = 'Launch';
 					
 					//Instantiate Socket for lobby
 					$location.path('/' + $scope.lobby, false);
-					SocketService.emit('hostlobby', parseInt(LoginService.getUserId()));
+					SocketService.emit('hostlobby', LoginService.getUserId());
 					//Statement for assigning host to sockets (if necessary)
 					//SocketService.emit('client', 'host');
 
@@ -242,8 +248,7 @@ angular.module('ANEXD')
 //					});
                 }    
             }, function errorCallback(response) {
-                //show error
-				console.log(response);
+                $rootScope.$broadcast(CONST.ERROR, 'Failed to start lobby; ' + response.description);
             });
     	};
 		
@@ -266,7 +271,8 @@ angular.module('ANEXD')
         * HJ80
         * Function called when a application is seleced.
         */
-		$scope.loadApp = function(app) {
+		$scope.selectApp = function(app) {
+			openedApp = true;
     		$scope.hideIcons = true;
     		$scope.app = app;
     	};
@@ -276,7 +282,9 @@ angular.module('ANEXD')
         * Function is called to transition between lobby and homepage.
         * Function hides lobby and displays applications.
         */
-    	$scope.showIcons = function() {
+    	$scope.closeLobby = function() {
+			openedApp = false;
+			//Show icons
     		$scope.hideIcons = false;
             //Wait for the windows to disappear before triggering transitions
             $scope.isDisabled = false;
@@ -284,11 +292,12 @@ angular.module('ANEXD')
 			
 			$timeout( function() {
                 $scope.showLobby = false;
+				initialise();
             }, 1000);
             
-            if($scope.lobbyDelFlag === true) {
+            if(activeLobby) {
                 deleteLobby();
-                $scope.lobbyDelFlag = false;
+                activeLobby = false;
             }
     	};
           

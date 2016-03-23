@@ -60,11 +60,14 @@
 		}
 
 	    >img{
-	    	width: 100%;
+			background-color: #3E5764;
 		    z-index: 0;
 		    position: relative;
 		    top: -38px;;
 		    transition: top 0.5s;
+			width: 500px;
+    		max-height: 372px;
+			min-height: 252px;
 	    }
 
 	    >.fa-close{
