@@ -14,7 +14,6 @@ angular.module('ANEXD')
         $scope.run = function(data) {
             $scope.url = data;
             $scope.runFlag = true;
-            //console.log($scope.url);
             
             SC.oEmbed($scope.url, {}, function(oEmbed) {
                 $scope.$apply($scope.player_html = $sce.trustAsHtml(oEmbed.html));
