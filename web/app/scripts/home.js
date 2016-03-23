@@ -8,6 +8,13 @@
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
+
+/*
+*	TODO: 	CONNECT TO GO
+*			TIDY UP DEPENDENCIES
+*			IMPROVE STATE RELIABILITY (SEE: APP.JS)
+*/
+
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -30,7 +37,6 @@ angular.module('ANEXD')
         $scope.users = [];                              //Users in the lobby
         $scope.launchMessage = 'Launch';                //
 		$scope.isDisabled = false;                      //
-//        var lobbySocket;                                //
         $scope.maxPlayers = '5';      
 		$scope.app = {};
 		
@@ -168,10 +174,7 @@ angular.module('ANEXD')
 			};
 			$http(req).then(function successCallback(response) {
 				console.log(response);
-//				if(lobbySocket) {
-//					lobbySocket.emit('close');	//websocket emit called closed application
-//					$scope.users = [];
-//				}
+//				lobbySocket.emit('close');	//websocket emit called closed application
 				if($scope.isDisabled) {
 					$scope.launchApp();
 				}
@@ -218,6 +221,9 @@ angular.module('ANEXD')
 					//Instantiate Socket for lobby
 					$location.path('/' + $scope.lobby, false);
 					SocketService.emit('hostlobby', parseInt(LoginService.getUserId()));
+					//Statement for assigning host to sockets (if necessary)
+					//SocketService.emit('client', 'host');
+
 //					SocketService.on('lobby', function(data) {
 //						if(data){
 //							lobbySocket = new LobbySocket($scope.lobby);
@@ -227,17 +233,9 @@ angular.module('ANEXD')
 //					});
                 }    
             }, function errorCallback(response) {
-                //show error and send again
+                //show error
 				console.log(response);
             });
-            
-            /*
-            //SOCKET.ON for GameServer "lobbyconnect" event.
-            SocketService.emit('lobbyconnect', {lobbyinfo})
-            Read back some info
-            SocketService.on('lobbyconnect', function (data) {
-            });
-            */  
     	};
 		
         /*
@@ -292,77 +290,6 @@ angular.module('ANEXD')
     	$scope.setFilter = function(type) {
     		$scope.type = type;
     	}; 
-		
-    
-        
-		/*
-        //SOCKET.ON for GameServer "msgall" event.
-        SocketService.on('msgall', function (data) {
-            data will be msg: interfac{}
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "gameend" event.
-        SocketService.on('gameend', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "msgplayer" event.
-        SocketService.on('msgplayer', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "gamestart" event.
-        SocketService.on('gamestart', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for AnonUsers "msgserver" event
-        SocketService.emit('msgserver', {anonUserID, msg: interface}) 
-        */
-        
-        /*
-        //SOCKET.ON for AnonUsers "end" event
-        SocketService.emit('end', {NODATA}) 
-        */   
-        
-        /*
-        //SOCKET.ON for AnonUsers "kick" event
-        SocketService.emit('kick', {username})
-        */  
-        
-        /*
-        Socket for the lobby
-        
-        $scope.users = [
-            {
-                'id': '',
-                'nickname': '',
-                'ready': false,             
-        }];
-        
-        //SOCKET.ON for GameServer "updatelobby" event.
-        SocketService.on('updatelobby', function (data) {
-            
-            for (var i = 0; i < data.length(); i++) {       
-                var incomingId = data[i].id;
-                var incomingNickname = data[i].data.nickname;
-                var incomingReady = data[i].data.ready;
-                
-                $scope.users.push({
-                    'id': incomingId,
-                    'nickname': incomingNickname,
-                    'ready': incomingReady});
-            }
-        });
-        */ 
     }
 ]);
 }());

@@ -8,6 +8,11 @@
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
+
+/*
+*	TODO:	IMPROVE LOGIN RELIABILITY (SEE: FACTORIES.JS)
+*/
+
 (function () {
 'use strict';
 angular.module('ANEXD')

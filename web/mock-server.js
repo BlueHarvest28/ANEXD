@@ -1,3 +1,7 @@
+/*
+*	TODO:	UPDATE TO MATCH GO STANDARDS FOR RISK MANAGEMENT
+*/
+
 var express = require('express');
 var http    = require('http');
 var app     = express();

@@ -1,3 +1,7 @@
+/*
+*	TODO: 	GETTING SOCKET CLIENT UPLOADED TO OPENSHIFT
+*			UPDATING TO MATCH NEW GO STANDARDS
+*/
 var serverappid = 14;
 var imageURL;
 var socketio = require('socket.io-client')

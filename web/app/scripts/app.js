@@ -6,8 +6,13 @@
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
-'use strict';
 
+/*
+*	TODO: 	TIDY UP MOBILE CHECK (REUSE?)
+*			CLEAN ROUTES FOR MORE RELIABLE USE
+*/
+
+'use strict';
 angular
 .module('ANEXD', [
 'ngAnimate',

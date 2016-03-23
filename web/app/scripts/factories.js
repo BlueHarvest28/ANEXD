@@ -1,3 +1,8 @@
+/*
+*	TODO:	CLEAN UP OLD SOCKETS
+			IMPROVE LOGIN SECURITY AND RELIABILITY
+*/
+
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -114,54 +119,54 @@ angular.module('ANEXD')
 	return socket;
 })
 /*
- *	Socket interface for lobbies
- */
-.factory('LobbySocket', function (socketFactory) {
-	return function (lobbyId) {
-		var lobbySocket = io.connect('http://localhost:3002/' + lobbyId);
-		var socket = socketFactory({
-			ioSocket: lobbySocket
-		});
-		return socket;
-	};
-})
-/*
- *	Socket interface for players
- */
-.factory('PlayerSocket', function (socketFactory) {
-	return function(socketId){
-		var playerSocket = io.connect('http://localhost:3002/' + socketId);
-		var socket = socketFactory({
-			ioSocket: playerSocket
-		});
-		return socket;	
-	};
-})
-/*
- *	Socket interface for app server / ANEXD API
- */
-.factory('AppSocket', function (socketFactory) {
-	return function(lobbyId, appId){
-		var appSocket = io.connect('http://localhost:3002/' + lobbyId + '/' + appId);	
-		var socket = socketFactory({
-			ioSocket: appSocket
-		});
-		return socket;	
-	};
-})
+*	OLD SOCKETS
+*/
+///*
+// *	Socket interface for lobbies
+// */
+//.factory('LobbySocket', function (socketFactory) {
+//	return function (lobbyId) {
+//		var lobbySocket = io.connect('http://localhost:3002/' + lobbyId);
+//		var socket = socketFactory({
+//			ioSocket: lobbySocket
+//		});
+//		return socket;
+//	};
+//})
+///*
+// *	Socket interface for players
+// */
+//.factory('PlayerSocket', function (socketFactory) {
+//	return function(socketId){
+//		var playerSocket = io.connect('http://localhost:3002/' + socketId);
+//		var socket = socketFactory({
+//			ioSocket: playerSocket
+//		});
+//		return socket;	
+//	};
+//})
+///*
+// *	Socket interface for app server / ANEXD API
+// */
+//.factory('AppSocket', function (socketFactory) {
+//	return function(lobbyId, appId){
+//		var appSocket = io.connect('http://localhost:3002/' + lobbyId + '/' + appId);	
+//		var socket = socketFactory({
+//			ioSocket: appSocket
+//		});
+//		return socket;	
+//	};
+//})
 /*
  *	Service for ANEXD app developers. Provides an interface to the game server.
  */
 .factory('ANEXDService', [
-	'AppSocket', 
 	'SocketService', 
 	'$q', 
 	'$timeout', 
 	'$rootScope',
-	function (AppSocket, SocketService, $q, $timeout, $rootScope) 
+	function (SocketService, $q, $timeout, $rootScope) 
 	{
-		//*Early implementation*
-		//If we're in an app AND lobby (e.g. multiplayer game)
 		return function(){
 			var socket;
 			

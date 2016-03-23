@@ -7,6 +7,12 @@
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
+
+/*
+*	TODO:	CLEAN UP DEPENDENCIES
+*			IMPROVE STATE RELIABILITY (SEE: APP.JS)
+*/
+
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -15,11 +21,10 @@ angular.module('ANEXD')
     '$http',
     'SocketService',
 	'$routeParams',
-	'LobbySocket',
 	'$location',
 	'$rootScope',
 	'$cookies',
-    function ($scope, $http, SocketService, $routeParams, LobbySocket, $location, $rootScope, $cookies)
+    function ($scope, $http, SocketService, $routeParams, $location, $rootScope, $cookies)
 	{
         /* Local and $scope variables */
         $scope.ready = false;                             //
@@ -39,9 +44,6 @@ angular.module('ANEXD')
 			$scope.users = users;
 		});
         
-		//Instance of lobby socket
-		//var lobbySocket;
-		
         /*
         * FH98/HJ80
         *
@@ -90,8 +92,8 @@ angular.module('ANEXD')
 			$rootScope.app = 14;
 			
 			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
-			//Instantiate Socket with LobbyId as the namespace
-//			lobbySocket = new LobbySocket($scope.lobby);
+			//Statement for assigning host to sockets (if necessary)
+			SocketService.emit('client', 'mobile');
 			$location.path('/' + $scope.lobby, false);
 		};
 		
@@ -103,47 +105,6 @@ angular.module('ANEXD')
 			$scope.ready = !$scope.ready;
 			SocketService.emit('setready', {'nickname': $scope.name, 'ready': $scope.ready});
 		};
-		
-		/*
-        //SOCKET.ON for gameServer "kick" event
-        SocketService.on('kick', function (data) {
-            Display data(reason)
-            $scope.goBack();
-        });
-        */
-        
-        /*
-        //SOCKET.ON for AnonUsers "msgserver" event
-        SocketService.emit('msgserver', {anonUserID, msg: interface}) 
-        */   
-        
-        /*
-        //SOCKET.ON for GameServer "msgall" event.
-        SocketService.on('msgall', function (data) {
-            data will be msg: interfac{}
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "gameend" event.
-        SocketService.on('gameend', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "msgplayer" event.
-        SocketService.on('msgplayer', function (data) {
-            data will be response bool and feedback error
-        });
-        */
-        
-        /*
-        //SOCKET.ON for GameServer "gamestart" event.
-        SocketService.on('gamestart', function (data) {
-            data will be response bool and feedback error
-        });
-        */    
     }
 ]);
 }());
