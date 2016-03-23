@@ -1,6 +1,3 @@
-// const net = require('net');
-// var host = '127.0.0.1';
-// var port = '1337';
 'use strict';
 var ready = false;
 var YT = null;

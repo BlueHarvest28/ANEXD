@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
+<div ng-controller="MobileYTController">
+<script src="vidapp.js"></script> 
+
 <head>
   <title>Mobile Side</title>
-  <script src="vidapp.js"></script>
 </head>
 <body>
   <div id="play">
-    <h3>Your Comments:</h3>
+      <h3>Your Comments:</h3>
     <div class="m-messages">
       <div class="m-repeat" ng-repeat="message in messages track by $index">
-        Me: {{message}}      
+          Me: {{message}}      
       </div>
     </div>
 
@@ -29,13 +31,6 @@
         <!-- <input type="button" onclick="writeComment();" value="Write Comment"/> -->
         <!-- <p> <b id="dispComment"></b> </p> -->
     <!-- </form> -->
+</div>
 </body>
 </html>
-
-
-<!-- function call: event for user typing
-                checks server to get time from curTime
-                when msg is completed - subnmit
-                    send to server over websocket
-
-server needs to append message on to stored current time.  -->

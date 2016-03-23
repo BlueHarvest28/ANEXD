@@ -4,18 +4,10 @@ angular.module('ANEXD')
 .controller('YTController', [
     '$scope',
     'ANEXDService',
-    '$yte',
-    function ($scope, ANEXDService, $yte) {
+    '$sce',
+    function ($scope, ANEXDService, $sce) {
     var anexd = new ANEXDService();
-        $scope.url = '';
-        $scope.runFlag = '';
         $scope.messages = [];
-                        
-        $scope.run = function(data) {
-            $scope.url = data;
-            $scope.runFlag = true;
-            //console.log($scope.url);
-        }; 
         
         anexd.expect('comment');
         $scope.$watch(
@@ -25,9 +17,7 @@ angular.module('ANEXD')
             function(data) {
                 if(data){
                     if(data.event === 'comment') {
-                        //console.log(data.val);
                         $scope.messages.push(data.val.data);
-                        //console.log($scope.messages);
                     }
                 }  
             }
@@ -51,4 +41,5 @@ angular.module('ANEXD')
             }
         };
     }
-])
+]);
+}());
