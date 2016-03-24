@@ -24,7 +24,7 @@ angular.module('ANEXD')
 		}
 	};
 })
-.directive('requireLogin', function (LoginService) {
+.directive('requireLogin', function (SessionService) {
 	return {
 		restrict: 'A',
 		scope: {
@@ -32,15 +32,14 @@ angular.module('ANEXD')
 		},
 		link: function (scope, elm) {
 			elm.on('click', function () {
-				if (!LoginService.isLoggedIn()) {
+				if (!SessionService.isLoggedIn()) {
 					var loginModal = $('.login-modal');
 					loginModal.modal('show');
-					loginModal.on('hidden.bs.modal', function () {
-						//Only listen to the first modal closure
-						loginModal.off('hidden.bs.modal');
-						if (LoginService.isLoggedIn()) {
+					scope.$on('closeModal', function(){
+						console.log('yes');
+						console.log('logged in?', SessionService.isLoggedIn());
+						if (SessionService.isLoggedIn()) {
 							scope.callback();
-							scope.$apply();
 						}
 					});
 				} else {
@@ -58,11 +57,9 @@ angular.module('ANEXD')
 			shouldHide: '@'	
 		},
 		link: function(scope, elm) {
-			elm.modal('hide');
-			scope.$watch('shouldHide', function(value){
-				if(value){
-					elm.modal('hide');
-				}
+			scope.$on('closeModal', function(){
+				console.log('hide modal');
+				elm.modal('hide');
 			});
 		}
 	};

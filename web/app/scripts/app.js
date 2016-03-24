@@ -31,7 +31,6 @@ angular
 	'$routeProvider',
 	'$sceDelegateProvider',
 function ($locationProvider, $routeProvider, $sceDelegateProvider) {
-	
 	$sceDelegateProvider.resourceUrlWhitelist([
 		// Allow same origin resource loads.
 		'self',

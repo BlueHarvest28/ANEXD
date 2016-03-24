@@ -20,18 +20,21 @@ angular.module('ANEXD')
     '$scope',
 	'$rootScope',
     '$timeout',
+	'$location',
     '$http',
     'md5',
 	'CONST',
-	'LoginService',
-    function ($scope, $rootScope, $timeout, $http, md5, CONST, LoginService)
+	'SessionService',
+	'SocketService',
+    function ($scope, $rootScope, $timeout, $location, $http, md5, CONST, SessionService, SocketService)
     {		
         /* Local and $scope variables */
 		$scope.isMobile = $rootScope.isMobile;             //Check if the user is on mobile
-    	$scope.loggedIn = LoginService.isLoggedIn();       //Is the user logged in
+    	$scope.loggedIn = SessionService.isLoggedIn();       //Is the user logged in
         $scope.errorDisabled = false;                      //Used to disable a button
 		$scope.shouldHide = true;                          //Used to hide parts of HTML
-        
+        $scope.showUpdate = false;
+		
 		$scope.showError = false;
 		$scope.$on('error', function(event, error){
 			console.log('error', error);
@@ -44,47 +47,50 @@ angular.module('ANEXD')
 			}
 		});
 		
-        //If the someone is logged in then get that users id
+		$scope.home = function(){
+			SocketService.disconnect();
+			$location.path('/', true);
+		};
+		
+        //If someone is logged in then get that users id
     	if($scope.loggedIn){
-    		$scope.user = LoginService.getUser();
+    		$scope.user = SessionService.getUser();
     	}
+		
+		//Set the flag to false
+		$scope.newEmail = false;
         
         /*
         * HJ80
         * Function is called when a user wants to login
         * Function contains parts for a new and existing users
-        * Calls LoginService with both createUser() and login() 
+        * Calls SessionService with both createUser() and login() 
         */ 
     	$scope.login = function(email, password) {
 			//New user
 			if($scope.newEmail){
-				var createUser = LoginService.createUser(email, password);
-				createUser.then(function(result) {
+				SessionService.createUser(email, password).then(function(result) {
 					if(result){
-						$scope.shouldHide = true;
+						$rootScope.$broadcast('closeModal');
 						$timeout( function(){
 							$scope.loggedIn = true;
 						}, 150);
-						$scope.user = LoginService.getUser();
+						$scope.user = SessionService.getUser();
 					}
 				});	
 			//Existing user
 			} else {
-				var loggedIn = LoginService.login(email, password);
-				loggedIn.then(function(result) {
+				SessionService.login(email, password).then(function(result) {
 					if(result){
-						$scope.shouldHide = true;
+						$rootScope.$broadcast('closeModal');
 						$timeout( function(){
 							$scope.loggedIn = true;
 						}, 150);
-						$scope.user = LoginService.getUser();	
+						$scope.user = SessionService.getUser();	
 					}
-				});	
+				});
 			}
     	}; 
-		
-        //Set the flag to false
-		$scope.newEmail = false;
         
         /*
         * HJ80
@@ -130,6 +136,7 @@ angular.module('ANEXD')
         $scope.update = function(data) {
             console.log(data);
             $scope.errorDisabled = false;
+			$scope.showUpdate = false;
             
             var passwordHashCurrent = md5.createHash(data.cpass); 
             var passwordHash = md5.createHash(data.npass);
@@ -137,7 +144,7 @@ angular.module('ANEXD')
             
             if(passwordHash === passwordHashRepeat) {
                 var payload = {
-                    'userID': LoginService.getUserId(),
+                    'userID': SessionService.getUserId(),
                     'password': passwordHashCurrent,
                     'newpass': passwordHash,
                 };
@@ -164,15 +171,15 @@ angular.module('ANEXD')
         /*
         * HJ80
         * Function is called when the user logout.
-        * Function calles two LoginService functions, logout and getUser.
+        * Function calles two SessionService functions, logout and getUser.
         * Function contains timeout function. 
         */ 
     	$scope.logout = function() {
-			$scope.shouldHide = false;
+			$rootScope.$broadcast('closeModal');
     		//Wait for the modal to animate out
     		$timeout( function(){
-	            $scope.loggedIn = LoginService.logout();
-    			$scope.user = LoginService.getUser();
+	            $scope.loggedIn = SessionService.logout();
+    			$scope.user = undefined;
 	        }, 150);
     	};
 	

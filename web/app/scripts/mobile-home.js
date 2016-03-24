@@ -9,8 +9,7 @@
 **/
 
 /*
-*	TODO:	CLEAN UP DEPENDENCIES
-*			IMPROVE STATE RELIABILITY (SEE: APP.JS)
+*	TODO:	INTEGRATE WITH GO
 */
 
 (function () {
@@ -18,68 +17,61 @@
 angular.module('ANEXD')
 .controller('MobileHomeController', [
 	'$scope',
-    '$http',
 	'$routeParams',
 	'$location',
 	'$rootScope',
 	'$cookies',
+	'SessionService',
 	'SocketService',
-    function ($scope, $http, $routeParams, $location, $rootScope, $cookies, SocketService)
+    function ($scope, $routeParams, $location, $rootScope, $cookies, SessionService, SocketService)
 	{
-        /* Local and $scope variables */
-        $scope.ready = false;                             //
-		$scope.showLobby = false;                         //
-        $scope.inputError = false;                        //
-		$scope.users = [];                                //
-        //UNUSED
-		//var host = 'http://api-anexd.rhcloud.com/';     //Host address for http requests
+        $scope.ready = false;                             
+		$scope.showLobby = false;                        
+        $scope.inputError = false;                        
+		$scope.users = [];     
+		var appId;
 		
-		//If set, get lobby id from url
+		//If set, get the lobby id from url (e.g. QR code)
 		if($routeParams.lobbyId){
 			$scope.lobby = $routeParams.lobbyId;
 		}
-		
-		SocketService.on('updatelobby', function(users){
-			console.log('new users:', users);
-			$scope.users = users;
-		});
         
         /*
         * FH98/HJ80
         *
         */
-		$scope.goBack = function(){
+		$scope.back = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
-            
+            $scope.users = [];
+			
 			//Leave lobby
-			SocketService.emit('leave');
+			SocketService.disconnect();
 		};
 		
 		/*
         * HJ80
         *
         */
-		SocketService.on('start', function(){
-			console.log('starting');
-			//TODO: replace with actual app id
-			$location.path($location.path() + '/' + 14, true);
-			$cookies.put('name', $scope.name);
-		});
-
-		SocketService.on('update', function(data){
-			$scope.users = [];
-			angular.forEach(data, function(value){
-				this.push(value);
-			}, $scope.users);
-		});
-
-		SocketService.on('close', function(){
-			$scope.goBack();
-		});
-        
+		var connect = function(){
+			SocketService.on('start', function(){
+				console.log('starting');
+				$cookies.put('name', $scope.name);
+				$location.path($location.path() + '/' + appId, true);
+			});
+			
+			SocketService.on('updatelobby', function(users){
+				console.log('new users:', users);
+				$scope.users = users;
+			});
+			
+			SocketService.on('close', function(){
+				$scope.back();
+			});
+		};
+		
         /*
-        * FH98/HJ80
+        * HJ80 / FH98
         *
         */
 		$scope.join = function(){
@@ -87,18 +79,21 @@ angular.module('ANEXD')
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
 			
-			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
-			$rootScope.lobby = $scope.lobby;
-			$rootScope.app = 14;
-			
+			//TODO: WAIT FOR CONFIRMATION
+			SocketService.connect();
 			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
+			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
+			SessionService.create($scope.lobby, 14);
+			appId = 14;
 			//Statement for assigning host to sockets (if necessary)
-			SocketService.emit('client', 'mobile');
+			//SocketService.emit('client', 'mobile');
+			
 			$location.path('/' + $scope.lobby, false);
+			connect();
 		};
 		
         /*
-        * FH98/HJ80
+        * HJ80 / FH98
         *
         */
         $scope.toggleReady = function(){

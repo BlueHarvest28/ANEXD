@@ -1,5 +1,5 @@
 <div id="home" class="mobile home">
-	<div class="back" ng-click="goBack()" ng-show="showLobby">
+	<div class="back" ng-click="back()" ng-show="showLobby">
 		<i class="fa fa-chevron-left"/>
 	</div>
     
@@ -34,10 +34,10 @@
 						</div>
 					</div>
 					<hr/>
-					<div class="row empty" ng-show="!users.length">
+					<div class="empty" ng-show="users.length < 2">
 						Waiting for players...
 					</div>
-					<div class="row" ng-repeat="user in users">
+					<div class="row" ng-repeat="user in users" ng-if="user.nickname != name">
 						<div class="col-xs-9">
 							<span>{{user.nickname}}</span>
 						</div>

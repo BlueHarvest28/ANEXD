@@ -107,27 +107,28 @@ textarea {
    ANEXD custom styles
    ========================================================================== */
 
-.slide-animate.ng-enter, .slide-animate.ng-leave{
-	-webkit-transition: opacity 0.5s;
-	-moz-transition: opacity 0.5s;
-	-o-transition: opacity 0.5s;
-	transition: opacity 0.5s;
-}
-
-.slide-animate.ng-enter {
-	opacity: 0;
-}
-
-.slide-animate.ng-enter.ng-enter-active {
+.slide-animate {
 	opacity: 1;
 }
 
+.slide-animate.ng-enter,
 .slide-animate.ng-leave {
-	opacity: 1;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
 }
-
-.slide-animate.ng-leave.ng-leave-active {
-	opacity: 0;
+.slide-animate.ng-enter {
+    opacity: 0;
+}
+.slide-animate.ng-enter-active {
+    opacity: 1;
+}
+.slide-animate.ng-leave {
+    opacity: 1;
+}
+.slide-animate.ng-leave-active {
+    opacity: 0;
 }
 
 body {
@@ -226,6 +227,11 @@ input {
 	.modal-body {
 		padding: 55px;
 	}
+	
+	.update-info-form{
+		padding: 10px;
+    	background-color: rgba(0,0,0,0.25);
+	}
 }
 
 ::-webkit-input-placeholder {
@@ -292,6 +298,10 @@ input {
 	&:hover {
 		background-color: rgba(127, 207, 112, 1);
 	}
+}
+
+.navbar-brand{
+	cursor: pointer;
 }
 
 .fail {

@@ -86,18 +86,23 @@ textarea {
 /* ==========================================================================
    ANEXD custom styles
    ========================================================================== */
-.slide-animate.ng-enter, .slide-animate.ng-leave {
-  -webkit-transition: opacity 0.5s;
-  -moz-transition: opacity 0.5s;
-  -o-transition: opacity 0.5s;
-  transition: opacity 0.5s;
+.slide-animate {
+  opacity: 1;
+}
+
+.slide-animate.ng-enter,
+.slide-animate.ng-leave {
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  transition: all 1s ease;
 }
 
 .slide-animate.ng-enter {
   opacity: 0;
 }
 
-.slide-animate.ng-enter.ng-enter-active {
+.slide-animate.ng-enter-active {
   opacity: 1;
 }
 
@@ -105,12 +110,43 @@ textarea {
   opacity: 1;
 }
 
-.slide-animate.ng-leave.ng-leave-active {
+.slide-animate.ng-leave-active {
   opacity: 0;
 }
 
 body {
   background-color: #eee;
+}
+
+.error {
+  position: fixed;
+  width: 300px;
+  left: 50%;
+  margin-left: -150px;
+  bottom: 80px;
+  z-index: 99999;
+  color: white;
+  background-color: #a94442;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 5px 10px;
+  padding: 15px;
+  opacity: 1;
+}
+.error h2 {
+  margin-top: 0;
+}
+.error.ng-hide-add, .error.ng-hide-remove {
+  -webkit-transition: opacity 0.5s, bottom 0.5s;
+  -moz-transition: opacity 0.5s, bottom 0.5s;
+  -o-transition: opacity 0.5s, bottom 0.5s;
+  transition: opacity 0.5s, bottom 0.5s;
+}
+.error.ng-hide {
+  bottom: -100px;
+  opacity: 0;
+}
+.error.ng-show {
+  bottom: 80px;
+  opacity: 1;
 }
 
 a {
@@ -168,6 +204,10 @@ input {
 }
 .login-modal .modal-body {
   padding: 55px;
+}
+.login-modal .update-info-form {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 ::-webkit-input-placeholder {
@@ -234,6 +274,10 @@ input {
 }
 .login-submit:hover {
   background-color: #7fcf70;
+}
+
+.navbar-brand {
+  cursor: pointer;
 }
 
 .fail {

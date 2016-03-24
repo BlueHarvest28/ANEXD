@@ -26,6 +26,7 @@ var players = [];
 var serverAddress;
 var appsio = io.of('/apps');
 var serverio;
+var host;
 
 var running = false;
 
@@ -33,37 +34,37 @@ var running = false;
 *	USER --> SERVER
 ***********************/
 var launch = function(){
+	//Server restart, close all
+	io.emit('close');	
+	
 	io.on('connection', function(socket){
 		console.log('Socket connection', socket.id);
 		
-		socket.on('message', function(test){
-			console.log(test);
-		});
-		
 		//Host creates a lobby
 		socket.on('hostlobby', function(id){
-			players.unshift({'userSocket': socket.id, 'nickname': 'host', 'ready': false});
 			console.log('lobby request', id);
 			socket.emit('lobby', true);
+			host = socket.id;
 		});
 		
 		//Mobile user joins a lobby
 		socket.on('joinlobby', function(data){
+			console.log('join');
 			players.push({'userSocket': socket.id, 'nickname': data.nickname, 'ready': false});
-			io.emit('update', players);
+			io.emit('updatelobby', players);
 			if(running){
 				socket.emit('start');
 			}
 		});
 		
 		//Mobile user changes ready status
-		socket.on('setready', function (ready){
+		socket.on('setready', function (data){
 			for(var i = 0; i < players.length; i++){
 				if(players[i].userSocket === socket.id){
-					players[i].ready = ready;
+					players[i].ready = data.ready;
 				}
 			}
-			io.emit('update', players);
+			io.emit('updatelobby', players);
 		});
 		
 		//Launch app
@@ -83,28 +84,42 @@ var launch = function(){
 		
 		//Leave
 		socket.on('leave', function(){
+			console.log('leave');
 			socket.disconnect();
 		});
 		
 		socket.on('leaveApp', function(player){
+			console.log('leaveApp');
 			player.disconnect();
 		});
 		
 		socket.on('close', function(){
-			players = {};
+			console.log('close');
+			players = [];
+			running = false
 			io.emit('close');
 			socket.disconnect();
 		});
 		
 		socket.on('disconnect', function(){
-			for(var i = 0; i < players.length; i++){
-				if(players[i]){
-					if(players[i].userSocket === socket.id){
-						players.splice(i, 1);
-					}	
-				}
+			//Host has disconnected
+			if(socket.id === host){
+				console.log('HOST DISCONNECTION');
+				running = false;
+				io.emit('close');
+				players = [];
 			}
-			io.emit('update', players);
+			else{
+				for(var i = 0; i < players.length; i++){
+					if(players[i]){
+						if(players[i].userSocket === socket.id){
+							console.log('PLAYER DISCONNECTION');
+							players.splice(i, 1);
+						}	
+					}
+				}
+				io.emit('updatelobby', players);
+			}
 		});
 	});
 }
@@ -126,9 +141,8 @@ appWatch();
 *	SERVER --> GAME
 ***********************/
 var play = function(){
-	console.log('play');
 	serverio.on('connection', function(socket){
-		console.log('new game connection');
+		console.log('mock connected to game server');
 		
 		socket.on('message', function(data){
 			serverio.emit(data.event, data.data);
@@ -137,7 +151,10 @@ var play = function(){
 		//Send to one
 		socket.on('msgplayer', function(data){
 			console.log('sending to player');
-			if(players[data.player]){
+			if(data.player === 0){
+				io.sockets.connected[host].emit(data.msg.event, data.msg.data);	
+			}
+			else if(players[data.player]){
 				io.sockets.connected[players[data.player].userSocket].emit(data.msg.event, data.msg.data);	
 			}
 		});
@@ -156,7 +173,6 @@ var imageURL;
 var socketio = require('socket.io-client')
 var appsocket = socketio('http://' + app.get('ip') + ':' + app.get('port') + '/apps');
 var socket;
-console.log('appsocket', 'http://' + app.get('ip') + ':' + app.get('port') + '/apps');
 appsocket.on('connect', function(){
 	console.log('connect to apps list');
 	appsocket.on('start', function(appid){
@@ -170,9 +186,8 @@ appsocket.on('connect', function(){
 });
 
 var imageannotate = function(){
-	console.log('play image annotate');
 	socket.on('connect', function(){
-		console.log('connected');
+		console.log('game server connected to mock');
 		
 		socket.on('new', function(data){
 			console.log('new');

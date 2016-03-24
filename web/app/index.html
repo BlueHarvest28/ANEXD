@@ -33,7 +33,7 @@
 	<nav class="navbar navbar-default navbar-fixed-top" ng-style="fixedHeight">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#!/"><img src="images/logo.png" alt="ANEXD" /></a>
+				<a class="navbar-brand" ng-click="home()"><img src="images/logo.png" alt="ANEXD" /></a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-right">
@@ -71,25 +71,29 @@
 					<div class="account-info" ng-show="loggedIn">
 						<h2>Hi, {{user}}!</h2>
 						<br/>
-						<form class="updateInfoForm">
-							<div class="login-input-back password">
-								<img class="password-icon" src="../images/icon-password.png" />
-								<input name="pass" type="password" class="login-input" ng-model="data.cpass" placeholder="Current Password" required/>
-							</div>
-							<div class="login-input-back password">
-								<img class="password-icon" src="../images/icon-password.png" />
-								<input name="pass" type="password" class="login-input" ng-model="data.npass" placeholder="New Password" ng-change="reenterDisabled = true;" required/>
-							</div>
-							<div class="login-input-back password">
-								<img class="password-icon" src="../images/icon-password.png" />
-								<input name="rpass" placeholder="Retype New Password" class="login-input" type="password" compare-to="npass" ng-model="data.rpass" required />
-							</div>
-
-							<div ng-show="errorDisabled">
-								Error: Please Fix Inputs
+						<form class="update-info-form">
+							<button class="login-submit" ng-click="showUpdate = !showUpdate" ng-show="!showUpdate">Update password</button>
+							<div ng-show="showUpdate">
+								<div class="login-input-back password">
+									<img class="password-icon" src="../images/icon-password.png" />
+									<input name="pass" type="password" class="login-input" ng-model="data.cpass" placeholder="Current Password" required/>
+								</div>
+								<div class="login-input-back password">
+									<img class="password-icon" src="../images/icon-password.png" />
+									<input name="pass" type="password" class="login-input" ng-model="data.npass" placeholder="New Password" ng-change="reenterDisabled = true;" required/>
+								</div>
+								<div class="login-input-back password">
+									<img class="password-icon" src="../images/icon-password.png" />
+									<input name="rpass" placeholder="Retype New Password" class="login-input" type="password" compare-to="npass" ng-model="data.rpass" required />
+								</div>
+								
+								<div ng-show="errorDisabled">
+									Error: Please Fix Inputs
+								</div>
+								
+								<input type="submit" class="login-submit update-submit" value="Update" ng-click="update(data);">
 							</div>
 						</form>
-						<input type="submit" class="login-submit update-submit" value="Update" ng-click="update(data);">
 						<br/>
 						<input type="submit" class="login-submit" value="Logout" ng-click="logout();">
 					</div>
