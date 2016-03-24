@@ -1,3 +1,10 @@
+/*
+  Styles app 1 quiz creation
+  Written by HJ80
+
+  QA by FH98
+*/
+
 .quiz ::-webkit-input-placeholder {
   color: rgba(0, 0, 0, 0.4);
 }
