@@ -9,7 +9,6 @@
 
 /*
 *	TODO: 	TIDY UP MOBILE CHECK (REUSE?)
-*			CLEAN ROUTES FOR MORE RELIABLE USE
 */
 
 'use strict';
@@ -31,14 +30,14 @@ angular
 	'$routeProvider',
 	'$sceDelegateProvider',
 function ($locationProvider, $routeProvider, $sceDelegateProvider) {
+	//Allow same-origin resource loading
 	$sceDelegateProvider.resourceUrlWhitelist([
-		// Allow same origin resource loads.
 		'self',
-		// Allow loading from our assets domain.  Notice the difference between * and **.
-		//'http://srv*.assets.example.com/**'
 	]);
-
 	$locationProvider.hashPrefix('!');
+	
+	//Check if the client is using a mobile browser
+	//Code taken from: LINK
 	var isMobile = (function () {
 		var check = false;
 		(function (a) {
@@ -50,6 +49,7 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 	})();
 
 	console.log('viewing on mobile?', isMobile);
+	//Define the different application states
 	$routeProvider
 	.when('/', {
 		templateUrl: (isMobile) ? '/views/mobile-home.html' : './views/home.html',
@@ -72,6 +72,8 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 	'$location',
 	'$route',
 	function ($rootScope, $location, $route) {
+		//Repeated code due to inability for .config() to inject $rootScope data
+		//TODO: FIND A BETTER IMPLEMENTATION WITHOUT REPEATING
 		$rootScope.isMobile = (function () {
 			var check = false;
 			(function (a) {
@@ -83,6 +85,7 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 		})();
 		
 		//Allow us to change URL without reloading the controller
+		//Code taken from: LINK
 		var original = $location.path;
 		$location.path = function (path, reload) {
 			if (reload === false) {

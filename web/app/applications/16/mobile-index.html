@@ -1,11 +1,7 @@
-<!doctype html>
 <div ng-controller="MobileSCController">
-<head>
     <link rel="stylesheet" href="applications/16/style.css"/>
-</head>
-<body>
     <div id="play">
-            <h3>Your Comments:</h3>
+        <h3>Your Comments:</h3>
         <div class="m-messages">
             <div class="m-repeat" ng-repeat="message in messages track by $index">
                 Me: {{message}}      
@@ -23,5 +19,3 @@
                ng-click="message(chat);">
     </div>
 </div>
-</body>
-</html>

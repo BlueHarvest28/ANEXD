@@ -1,7 +1,7 @@
 /**
  * CO600 ANEXD Project Code
  *
- * Contributor(s): Frederick Harrington(fh98) and Harry Jones(hj80)
+ * Contributor(s): Harry Jones(hj80) and Frederick Harrington(fh98)
  * mobile-home.js is a part of the frontend web deveoplment
  * mobile-home.js manages all mobile based frontend in partnership with mobile-home.html
  *
@@ -37,7 +37,7 @@ angular.module('ANEXD')
 		}
         
         /*
-        * FH98/HJ80
+        * HJ80/FH98
         *
         */
 		$scope.back = function(){

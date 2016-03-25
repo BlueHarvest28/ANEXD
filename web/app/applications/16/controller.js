@@ -53,9 +53,5 @@ angular.module('ANEXD')
             }
         };
     }
-])
+]);
 }());
-        
-
-        
-
