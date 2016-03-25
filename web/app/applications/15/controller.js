@@ -187,7 +187,7 @@ angular.module('ANEXD')
 		var waiter;
 
 		var shooting = function(id) {
-		    if (waiter == undefined) {
+		    if (waiter === undefined) {
 		    	var message = {
 		    		action: 'shoot',
 		    		params: []	
