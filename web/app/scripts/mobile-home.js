@@ -83,8 +83,8 @@ angular.module('ANEXD')
 			SocketService.connect();
 			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
 			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
-			SessionService.create($scope.lobby, 14);
-			appId = 14;
+			SessionService.create($scope.lobby, 15);
+			appId = 15;
 			//Statement for assigning host to sockets (if necessary)
 			//SocketService.emit('client', 'mobile');
 			
