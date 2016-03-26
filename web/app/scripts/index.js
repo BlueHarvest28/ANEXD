@@ -37,7 +37,6 @@ angular.module('ANEXD')
 		
 		$scope.showError = false;
 		$scope.$on('error', function(event, error){
-			console.log('error', error);
 			if(error){
 				$scope.error = error;
 				$scope.showError = true;
@@ -47,8 +46,23 @@ angular.module('ANEXD')
 			}
 		});
 		
+		var clientType;
+		
+		if($scope.isMobile){
+			clientType = 'mobile';
+		}
+		else {
+			clientType = 'desktop';
+		}
+		
+		SocketService.promise('client', clientType, true)
+		.then(function(response){
+			if(response){
+				//Client connection successful
+			}
+		});
+		
 		$scope.home = function(){
-			SocketService.disconnect();
 			$location.path('/', true);
 		};
 		
@@ -182,9 +196,6 @@ angular.module('ANEXD')
     			$scope.user = undefined;
 	        }, 150);
     	};
-	
-        //Check if the user is on mobile
-		$scope.isMobile = $rootScope.isMobile;
 	}    
 ]);
 }());

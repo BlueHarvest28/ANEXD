@@ -40,10 +40,14 @@ var launch = function(){
 	io.on('connection', function(socket){
 		console.log('Socket connection', socket.id);
 		
+		socket.on('client', function(){
+			socket.emit('client', true);
+		});
+		
 		//Host creates a lobby
-		socket.on('hostlobby', function(id){
-			console.log('lobby request', id);
-			socket.emit('lobby', true);
+		socket.on('hostlobby', function(data){
+			console.log('lobby request', data.lobbyid);
+			socket.emit('hostlobby', true);
 			host = socket.id;
 		});
 		
@@ -67,42 +71,37 @@ var launch = function(){
 			io.emit('updatelobby', players);
 		});
 		
+		socket.on('launch', function(){
+			
+		});
+		
 		//Launch app
 		socket.on('start', function(data){
-			io.emit('start');
-			appsio.emit('start', data.app);
-			serverio = io.of('/apps/' + data.app);
-			console.log('serverio on:', '/apps/' + data.app);
+			socket.emit('start', {
+				'complete': true,
+				'failed': false,
+				'feedback': 'all good'
+			});
+			io.emit('start', {
+				'complete': true,
+				'failed': false,
+				'feedback': 'all good'
+			});
+			appsio.emit('start', 14);
+			serverio = io.of('/apps/' + 14);
+			console.log('serverio on:', '/apps/' + 14);
 			play();
 			running = true;
 		});	
 		
 		//Send message to the game server
-		socket.on('msgserver', function(data){
+		socket.on('msg', function(data){
 			serverio.emit(data.event, data.data);
 		});
 		
 		//Leave
 		socket.on('leave', function(){
 			console.log('leave');
-			socket.disconnect();
-		});
-		
-		socket.on('leaveApp', function(player){
-			console.log('leaveApp');
-			player.disconnect();
-		});
-		
-		socket.on('close', function(){
-			console.log('close');
-			players = [];
-			running = false
-			io.emit('close');
-			socket.disconnect();
-		});
-		
-		socket.on('disconnect', function(){
-			//Host has disconnected
 			if(socket.id === host){
 				console.log('HOST DISCONNECTION');
 				running = false;
@@ -120,6 +119,17 @@ var launch = function(){
 				}
 				io.emit('updatelobby', players);
 			}
+		});
+		
+		socket.on('leaveApp', function(player){
+			console.log('leaveApp');
+		});
+		
+		socket.on('close', function(){
+			console.log('close');
+			players = [];
+			running = false
+			io.emit('close');
 		});
 	});
 }

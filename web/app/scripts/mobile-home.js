@@ -9,7 +9,7 @@
 **/
 
 /*
-*	TODO:	INTEGRATE WITH GO
+*	TODO:	COMMENTS
 */
 
 (function () {
@@ -46,7 +46,7 @@ angular.module('ANEXD')
             $scope.users = [];
 			
 			//Leave lobby
-			SocketService.disconnect();
+			SocketService.default.emit('leave');
 		};
 		
 		/*
@@ -54,18 +54,18 @@ angular.module('ANEXD')
         *
         */
 		var connect = function(){
-			SocketService.on('start', function(){
-				console.log('starting');
-				$cookies.put('name', $scope.name);
-				$location.path($location.path() + '/' + appId, true);
+			SocketService.default.on('start', function(response){
+				if(!response.failed){
+					$cookies.put('name', $scope.name);
+					$location.path($location.path() + '/' + appId, true);
+				}
 			});
 			
-			SocketService.on('updatelobby', function(users){
-				console.log('new users:', users);
+			SocketService.default.on('updatelobby', function(users){
 				$scope.users = users;
 			});
 			
-			SocketService.on('close', function(){
+			SocketService.default.on('close', function(){
 				$scope.back();
 			});
 		};
@@ -80,16 +80,24 @@ angular.module('ANEXD')
             $scope.submitIsDisabled = false;
 			
 			//TODO: WAIT FOR CONFIRMATION
-			SocketService.connect();
-			SocketService.emit('joinlobby', {'nickname': $scope.name, 'lobbyid': parseInt($scope.lobby)});
-			//TEMPORARY - NEED TO GET THE APP ID FROM THE LOBBY
-			SessionService.create($scope.lobby, 14);
-			appId = 14;
-			//Statement for assigning host to sockets (if necessary)
-			//SocketService.emit('client', 'mobile');
-			
-			$location.path('/' + $scope.lobby, false);
-			connect();
+			var data = {
+				'lobbyid': parseInt($scope.lobby),
+				'nickname': $scope.name
+			};
+			SocketService.promise('joinlobby', data, true).then(
+				function(response){
+					if(response){
+						SocketService.promise('getappid', null, true).then(
+							function(response){
+								appId = response;
+								SessionService.create($scope.lobby, appId);
+								$location.path('/' + $scope.lobby, false);
+								connect();	
+							}
+						);
+					}
+				}
+			);
 		};
 		
         /*
@@ -98,7 +106,7 @@ angular.module('ANEXD')
         */
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
-			SocketService.emit('setready', {'nickname': $scope.name, 'ready': $scope.ready});
+			SocketService.default.emit('setready', $scope.ready);
 		};
     }
 ]);

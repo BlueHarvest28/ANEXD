@@ -10,8 +10,7 @@
 **/
 
 /*
-*	TODO: 	CONNECT TO GO
-*			PREPARE FOR RECONNECTIONS
+*	TODO: 	PREPARE FOR RECONNECTIONS
 */
 
 (function () {
@@ -36,6 +35,11 @@ angular.module('ANEXD')
 		var appId;
 		
 		$scope.apps = [];
+		
+		SocketService.default.on('test', function(data){
+			console.log(data);
+			SocketService.default.emit('test', 'test');
+		});
 		
 		/**********************************
 		*	INITIALISATION FUNCTIONS
@@ -86,39 +90,18 @@ angular.module('ANEXD')
 		/**********************************
 		*	SOCKET EVENTS FOR HOST -> GO
 		**********************************/
+		var connect = function(){
+			//HJ80 - When the player list is updated
+			SocketService.default.on('updatelobby', function(users){
+				$scope.users = users;
+			});
+
+			//HJ80 - On server restart or force exit
+			SocketService.default.on('close', function(){
+				$scope.closeLobby();
+			});	
+		};
 		
-		//HJ80 - When the player list is updated
-		SocketService.on('updatelobby', function(users){
-			console.log('new users:', users);
-			$scope.users = users;
-		});
-		
-		//HJ80 - On server restart or force exit
-		SocketService.on('close', function(){
-			$scope.closeLobby();
-		});
-		
-		//For reconnecting
-//		if($routeParams.lobbyId){
-//			console.log('lobby id:', $routeParams.lobbyId);
-//			$location.path('/', true);
-//			SocketService.emit('getappid', parseInt($routeParams.lobbyId));
-//			
-//			SocketService.on('sendappid', function(id){
-//				$scope.game.gameid	
-//			});
-//			
-//			//TEMPORARY; ALEX NEEDS TO SEND JAMES THE APP ID
-//			$scope.app.gameID = 2;
-//			$scope.app.name = 'Return of the Aliens';
-//			$scope.app.image = 'images/return-of-the-aliens-tile.png';
-//			$scope.hideIcons = true;
-//			$scope.lobby = $routeParams.lobbyId;
-//			$scope.showLobby = true;                                    //Load lobby
-//			$scope.lobbyQR = CONST.HOST + $scope.lobby;   //Lobby QR creation.
-//			$scope.isDisabled = false;
-//			$scope.launchMessage = 'Launch';
-//		}
 		
 		/**********************************
 		*	LOBBY EVENTS
@@ -146,31 +129,27 @@ angular.module('ANEXD')
             APIService.post('newLobby', payload).then(function(response){
 				if(response){
                     console.log(response);
-					SocketService.connect();
-					
 					lobbyId = response.data.data.pass;
-					SessionService.create(lobbyId, appId);
-                    
-					$scope.showLobby = true;
-                    $scope.lobbyQR = CONST.HOST + lobbyId;
-					$scope.isDisabled = false;
-					$scope.launchMessage = 'Launch';
+					$scope.lobbyQR = CONST.HOST + lobbyId;
 					
-					//Instantiate Socket for lobby
-					$location.path('/' + lobbyId, false);
-					SocketService.emit('hostlobby', SessionService.getUserId());
-					//TODO: PROMISE FUNCTION FOR SUCCESSFUL RETURN
+					var data = {
+						'lobbyid': lobbyId,
+						'username': SessionService.getUser(),
+					};
 					
-					//Statement for assigning host to sockets (if necessary)
-					//SocketService.emit('client', 'host');
-					
-//					SocketService.on('lobby', function(data) {
-//						if(data){
-//							lobbySocket = new LobbySocket($scope.lobby);
-//							lobby();
-//							$location.path('/' + $scope.lobby, false);
-//						}
-//					});
+					SocketService.promise('hostlobby', data, true).then(
+						function(result){
+							if(result){
+								connect();
+								SessionService.create(lobbyId, appId);
+								$scope.showLobby = true;
+								$scope.isDisabled = false;
+								$scope.launchMessage = 'Launch';
+								
+								$location.path('/' + lobbyId, false);
+							}	
+						}
+					);
                 }    
             });
     	};     
@@ -182,8 +161,19 @@ angular.module('ANEXD')
         * Function sets path URL with game infomation. 
         */
 		$scope.start = function() {
-			SocketService.emit('start', {'lobby': lobbyId, 'app': appId});
-			$location.path($location.path() + '/' + appId, true);
+			SocketService.promise('start', null, true).then(
+				function(response){
+					if(response){
+						if(response.complete){
+							SocketService.default.emit('launch');
+							$location.path($location.path() + '/' + appId, true);	
+						}
+						else if(response.failed){
+							$rootScope.$broadcast(CONST.ERROR, 'Failed to start app; ' + response.feedback);
+						}	
+					}
+				}
+			);
         };
 		
 		/*
@@ -208,7 +198,7 @@ angular.module('ANEXD')
 				
                 activeLobby = false;
 				SessionService.close();
-				SocketService.disconnect();
+				SocketService.default.emit('leave');
 				$location.path('/', false);
             }
     	};
@@ -221,7 +211,7 @@ angular.module('ANEXD')
 				//Close and delete any lobby instances
 				$scope.closeLobby();
 			}
-			SocketService.disconnect();
+			SocketService.default.emit('leave');
 			$location.path('/', true);
 		});
 		

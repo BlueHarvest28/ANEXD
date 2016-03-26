@@ -33,7 +33,7 @@ angular.module('ANEXD')
 			}
 		}
 		else{
-			SocketService.disconnect();
+			SocketService.default.emit('leave');
 			$location.path('/', true);
 		}
 		
