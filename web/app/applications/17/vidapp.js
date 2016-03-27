@@ -21,16 +21,19 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
   event.target.playVideo();
+  console.log("Play Video - onReady()");
 }
 
 function curTime() {
   var time = Math.floor(player.getCurrentTime());
   alert(time);
+  console.log("Current Time - curTime()");
   //return curTime;
 }
 
 function getDuration() {
   player.getDuration();
+  console.log("Duration of vid - getDuration()");
 }
 
 // function writeComment(){
