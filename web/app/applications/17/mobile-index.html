@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
 <div ng-controller="MobileYTController">
 <script src="vidapp.js"></script> 
-
 <head>
   <title>Mobile Side</title>
 </head>
-<body>
   <div id="play">
       <h3>Your Comments:</h3>
     <div class="m-messages">
@@ -14,7 +10,6 @@
           Me: {{message}}      
       </div>
     </div>
-
     <form name="chatForm" novalidate>  
         <input class="m-input" 
                type="text" 
@@ -26,11 +21,10 @@
         value="Submit" 
         ng-click="message(chat);">
   </div>
-    <!-- <form> -->
+</div>
+
+ <!-- <form> -->
         <!-- <input type="text" id="input" onfocus="userTyping()"placeholder="Enter Text Here" /> -->
         <!-- <input type="button" onclick="writeComment();" value="Write Comment"/> -->
         <!-- <p> <b id="dispComment"></b> </p> -->
     <!-- </form> -->
-</div>
-</body>
-</html>
