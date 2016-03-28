@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 	"net"
+	"bytes"
+	"net/http"
 	"encoding/json"
 	"github.com/googollee/go-socket.io"
 )
@@ -25,7 +27,12 @@ type Lobby struct {
 	socket *socketio.Socket
 }
 
-func newLobby(l string, g Game) (*Lobby, error) {
+/*
+	lobbyid string
+	Game{connType, host, port string gameId, maxUsers int
+	}
+*/
+func newSession(l string, g Game) *Lobby {
 	lobby := Lobby {
 		lobbyId: l,
 		game: g,
@@ -35,10 +42,10 @@ func newLobby(l string, g Game) (*Lobby, error) {
 		command: make(chan Command),
 		quit: make(chan int),
 	}
-	return &lobby, nil
+	go lobby.commandHandler()
+	return &lobby
 }
 
-// NEED TO ADD LOGIC FOR HOST USER IF LEN IS 0, OR ANON USER OTHERWISE TO START FUNCS
 func (l *Lobby) addNewUser(uname string, s *socketio.Socket) error {
 	l.Lock()
 	defer l.Unlock()
@@ -52,7 +59,7 @@ func (l *Lobby) addNewUser(uname string, s *socketio.Socket) error {
 	}
 	index := len(l.users)
 	p := float64(index)
-	user := newUser(p, uname, l, s)
+	user := newSessionUser(p, uname, l, s)
 	err := (*user.socket).Join(l.lobbyId)
 	if err != nil {
 		return err

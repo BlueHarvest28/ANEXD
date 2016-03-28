@@ -24,9 +24,10 @@ func newManager() *Manager {
 	return &m
 }
 
-func (m *Manager) addLobby(lobbyId string, lobby *Lobby) error {
+func (m *Manager) addLobby(lobby *Lobby) error {
 	m.Lock()
 	defer m.Unlock()
+	lobbyId := lobby.lobbyId
 	if _, ok := m.lobbies[lobbyId]; ok {
 		return errors.New("manager.addLobby: lobby already exists with given ID.")
 	}
@@ -58,12 +59,12 @@ func (m *Manager) socketSetup(socket socketio.Socket) {
 }
 
 func (m *Manager) serverSetup(socket *socketio.Socket) {
-	(*socket).On("lobby", func(lobbyid string) {
+	(*socket).On("connectlobby", func(lobbyid string) {
 		m.Lock()
 		defer m.Unlock()
 		l, ok := m.lobbies[lobbyid]
 		if !ok {
-			(*socket).Emit("lobby", false)
+			(*socket).Emit("connectlobby", false)
 			log.Printf("manager.serverSetup: lobby with id %s does not exist.", lobbyid)
 			return
 		}
@@ -71,60 +72,43 @@ func (m *Manager) serverSetup(socket *socketio.Socket) {
 			Socket: socket,
 		}
 	})
+	(*socket).Emit("client", true)
 }
 
-//MAKE FUNCTION INTO MESSAGE OBJECT PROCESSES
 func (m *Manager) desktopSetup(socket *socketio.Socket) {
 	(*socket).On("hostlobby", func(msg map[string]interface{}) {
 		m.Lock()
 		defer m.Unlock()
 		lobbyid := msg["lobbyid"].(string)
-		username := msg["username"].(string)
 		l, ok := m.lobbies[lobbyid]
 		if !ok {
 			(*socket).Emit("hostlobby", false)
 			log.Printf("manager.desktopSetup: lobby with id %s does not exist.", lobbyid)
 			return
 		}
-		if len(l.users) != 0 {
-			(*socket).Emit("hostlobby", false)
-			log.Printf("manager.desktopSetup: lobby id entered %s already has a host user.", lobbyid)
-			return
+		l.command <-HostLobby{
+			Username: msg["username"].(string),
+			Socket: socket,
 		}
-		err := l.addNewUser(username, socket)
-		if err != nil {
-			(*socket).Emit("hostlobby", false)
-			log.Print(err)
-			return
-		}
-		(*socket).Emit("hostlobby", true)
 	})
+	(*socket).Emit("client", true)
 }
 
-//MAKE FUNCTION INTO MESSAGE OBJECT PROCESSES
 func (m *Manager) mobileSetup(socket *socketio.Socket) {
-	(*socket).On("joinlobby", func(msg map[string]interface{}) {
+	(*socket).On("joinlobby", func(msg map[string]interface{}) { //MAKE EMIT APP ID
 		m.Lock()
 		defer m.Unlock()
 		lobbyid := msg["lobbyid"].(string)
-		username := msg["username"].(string)
 		l, ok := m.lobbies[lobbyid]
 		if !ok {
 			(*socket).Emit("joinlobby", false)
 			log.Printf("manager.mobileSetup: lobby with id %s does not exist.", lobbyid)
 			return
 		}
-		if len(l.users) == 0 {
-			(*socket).Emit("joinlobby", false)
-			log.Printf("manager.desktopSetup: lobby id entered %s does not have a host user.", lobbyid)
-			return
+		l.command <-JoinLobby{
+			Username: msg["username"].(string),
+			Socket: socket,
 		}
-		err := l.addNewUser(username, socket)
-		if err != nil {
-			(*socket).Emit("joinlobby", false)
-			log.Print(err)
-			return
-		}
-		(*socket).Emit("hostlobby", true)
 	})
+	(*socket).Emit("client", true)
 }

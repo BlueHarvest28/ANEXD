@@ -78,23 +78,6 @@ type LobbyUser struct {
 	Ready	 bool	                `json:"ready"`
 }
 
-
-
-type JoinLobby struct {
-	Nickname   string               `json:"nickname"`
-	Lobbyid    string               `json:"lobbyid"`
-}
-
-type Joined struct {
-	Response bool                   `json:"response"`
-	Feedback string                 `json:"feedback"`
-}
-
-type GameEnd struct {
-	Response bool                   `json:"response"`
-	Feedback string                 `json:"feedback"`
-}
-
 /*
 	Commands received by the lobby for accessing/changing the lobby data structure.
 */
@@ -109,7 +92,7 @@ type ServerMessage struct {
 }
 
 /*
-	MsgPlayer uses multiple inheritence for both Command and UserMessage
+	MsgPlayer uses multiple interface implementation for both Command and UserMessage
 */
 type MsgPlayer struct {
 	Player int
@@ -134,6 +117,46 @@ func (m MsgAll) execute(l *Lobby) {
 	l.users[0].send <- m
 }
 
+type HostLobby struct {
+	Username string
+	Socket *socketio.Socket
+}
+
+func (h HostLobby) execute(l *Lobby) {
+	if len(l.users) != 0 {
+		(*h.Socket).Emit("hostlobby", false)
+		log.Print("manager.desktopSetup: lobby id entered already has a host user.")
+		return
+	}
+	err := l.addNewUser(h.Username, h.Socket)
+	if err != nil {
+		(*h.Socket).Emit("hostlobby", false)
+		log.Print(err)
+		return
+	}
+	(*h.Socket).Emit("hostlobby", true)
+}
+
+type JoinLobby struct {
+	Username string
+	Socket *socketio.Socket
+}
+
+func (j JoinLobby) execute(l *Lobby) {
+	if len(l.users) == 0 {
+		(*j.Socket).Emit("joinlobby", false)
+		log.Print("manager.desktopSetup: lobby id entered does not have a host user.")
+		return
+	}
+	err := l.addNewUser(j.Username, j.Socket)
+	if err != nil {
+		(*j.Socket).Emit("joinlobby", false)
+		log.Print(err)
+		return
+	}
+	(*j.Socket).Emit("joinlobby", true)
+}
+
 type Update struct {}
 
 func (u Update) execute(l *Lobby) {
@@ -151,7 +174,7 @@ func (s ServerSocket) execute(l *Lobby) {
 			l.Lock()
 			l.socket = s.Socket
 			l.Unlock()
-			(*l.socket).Emit("lobby", true)
+			(*l.socket).Emit("connectlobby", true)
 		}
 		l.timeout <- false
 	}
@@ -224,7 +247,7 @@ func (r RemovedUser) execute(l *Lobby) {
 	}
 	if r.Player == 0 { //if still not set, does not exist
 		log.Print("RemovedUser: User not found in session.")
-		l.users[0].send <- Kicked{
+		l.users[0].send <- Kick{
 			Response: false,
 			Feedback: fmt.Sprintf("%s was not found in lobby.", r.Username),
 		}
@@ -233,21 +256,21 @@ func (r RemovedUser) execute(l *Lobby) {
 	err := l.removeUser(r.Player)
 	if err != nil {
 		log.Print(err)
-		l.users[0].send <- Kicked{
+		l.users[0].send <- Kick{
 			Response: false,
 			Feedback: fmt.Sprintf("%s was unable to be removed.", r.Username),
 		}
 		return
 	}
 	if kicked {
-		l.users[0].send <- Kicked{
+		l.users[0].send <- Kick{
 			Response: true,
 			Feedback: fmt.Sprintf("%s was removed from the lobby.", r.Username),
 		}
 	}
 	//message removed user:
 	if r.Reason != "" {
-		l.users[int(r.Player)].send <- Kick{
+		l.users[int(r.Player)].send <- Kicked{
 			Reason: r.Reason,
 		}
 	}
@@ -264,7 +287,7 @@ type UserMessage interface {
 type Leave struct {}
 
 func (l Leave) process(u *User) {
-	(*u.socket).Emit("leaveroom")//, "You have been removed from the lobby.")
+	(*u.socket).Emit("leave")//, "You have been removed from the lobby.")
 	(*u.socket).Emit("disconnect")
 }
 
@@ -273,24 +296,24 @@ type GetAppId struct {
 }
 
 func (g GetAppId) process(u *User) {
-	(*u.socket).Emit("appid", g.Appid)
-}
-
-type Kick struct {
-	Reason string
-}
-
-func (k Kick) process(u *User) {
-	(*u.socket).Emit("kick", k.Reason)
+	(*u.socket).Emit("getappid", g.Appid)
 }
 
 type Kicked struct {
+	Reason string
+}
+
+func (k Kicked) process(u *User) {
+	(*u.socket).Emit("kicked", k.Reason)
+}
+
+type Kick struct {
 	Response bool                   `json:"response"`
 	Feedback string                 `json:"feedback"`
 }
 
-func (k Kicked) process(u *User) {
-	(*u.socket).Emit("kicked", k)
+func (k Kick) process(u *User) {
+	(*u.socket).Emit("kick", k)
 }
 
 type GameStart struct {
@@ -301,9 +324,9 @@ type GameStart struct {
 }
 
 func (g GameStart) process(u *User) {
-	(*u.socket).Emit("gamestart", g)
+	(*u.socket).Emit("start", g)
 	if g.Complete {
-		(*u.socket).BroadcastTo(g.Room, "gamestart", g)
+		(*u.socket).BroadcastTo(g.Room, "start", g)
 	}
 }
 

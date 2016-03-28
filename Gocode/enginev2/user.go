@@ -18,7 +18,7 @@ type User struct {
 	socket *socketio.Socket
 }
 
-func newUser(p float64, uname string, l *Lobby, s *socketio.Socket) *User {
+func newSessionUser(p float64, uname string, l *Lobby, s *socketio.Socket) *User {
 	user := User{
 		player: p,
 		username: uname,
@@ -42,13 +42,18 @@ func (u *User) hostSetup() {
 	(*u.socket).On("kick", func(r RemovedUser) {
 		u.lobby.command <- r
 	})
+	(*u.socket).On("getappid", func() {
+		u.send <- GetAppId{
+			Appid: float64(u.lobby.game.gameId),
+		}
+	})
 	(*u.socket).On("start", func() {
 		u.lobby.command <- Start{}
 	})
 	(*u.socket).On("launch", func() {
 		u.lobby.command <- Launch{}
 	})
-	(*u.socket).On("msgserver", func(msg map[string]interface{}) {
+	(*u.socket).On("msg", func(msg map[string]interface{}) {//Change to "msg"
 		u.lobby.send <- MsgServer{
 			Player: u.player,
 			Msg: msg,
@@ -64,7 +69,7 @@ func (u *User) anonSetup() {
 		u.ready = r
 		u.lobby.command <- Update{}
 	})
-	(*u.socket).On("leavelobby", func() {
+	(*u.socket).On("leave", func() {
 		u.lobby.command <- RemovedUser{
 			Player: u.player,
 		}
@@ -74,7 +79,7 @@ func (u *User) anonSetup() {
 			Appid: float64(u.lobby.game.gameId),
 		}
 	})
-	(*u.socket).On("msgserver", func(msg map[string]interface{}) {
+	(*u.socket).On("msg", func(msg map[string]interface{}) {//Change to "msg"
 		u.lobby.send <- MsgServer{
 			Player: u.player,
 			Msg: msg,
