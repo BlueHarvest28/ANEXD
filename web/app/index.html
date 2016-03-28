@@ -33,11 +33,15 @@
 	<nav class="navbar navbar-default navbar-fixed-top" ng-style="fixedHeight">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand" ng-click="home()"><img src="images/logo.png" alt="ANEXD" /></a>
+				<a class="navbar-brand" ng-click="home()">
+					<img src="images/logo.png" alt="ANEXD" />
+				</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="" data-toggle="modal" data-target=".login-modal"><span class="nav-user" ng-show="loggedIn" ng-bind="user"></span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
+					<li><a href="" data-toggle="modal" data-target=".login-modal">
+						<span class="nav-user" ng-show="loggedIn" ng-bind="user">
+						</span><img src="images/icon-account.png" class="nav-icon" alt="account"/></a></li>
 				</ul>
 			</div>
 		</div>
@@ -47,51 +51,87 @@
 			<div class="modal-content">
 				<div class="modal-body">
 					<form name="userForm" ng-show="!loggedIn">
-						<div class="login-input-back email" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
+						<div class="login-input-back email" 
+							 ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
 							<img class="email-icon" src="../images/icon-account-small.png" />
-							<input placeholder="email" type="email" class="login-input" name="email" ng-model="email" ng-change="checkEmail(email)" ng-model-options="{debounce: 500}" required>
-							<p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Valid Email is required.</p>
+							<input placeholder="email" 
+								   type="email" 
+								   class="login-input" 
+								   name="email" 
+								   ng-model="email" 
+								   ng-change="checkEmail(email)" 
+								   ng-model-options="{debounce: 500}" required>
+							<p ng-show="userForm.email.$invalid && !userForm.email.$pristine" 
+							   class="help-block">Valid Email is required.</p>
 						</div>
 
-						<div class="login-input-back password" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
+						<div class="login-input-back password" 
+							 ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
 							<img class="password-icon" src="../images/icon-password.png" />
-							<input placeholder="password" type="password" class="login-input" name="password" ng-model="password" ng-minlength="3" required>
-							<p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">Password is too short</p>
+							<input placeholder="password" 
+								   type="password" 
+								   class="login-input" 
+								   name="password" 
+								   ng-model="password" 
+								   ng-minlength="3" required>
+							<p ng-show="userForm.password.$invalid && !userForm.password.$pristine" 
+							   class="help-block">Password is too short</p>
 						</div>
 
-						<div class="login-input-back password" ng-class="{ 'has-error' : userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine }" ng-show="newEmail">
+						<div class="login-input-back password" 
+							 ng-class="{ 'has-error' : userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine }" 
+							 ng-show="newEmail">
 							<img class="password-icon" src="../images/icon-password.png" />
-							<input placeholder="confirm password" type="password" class="login-input" name="repeatPassword" ng-model="repeatPassword" ng-minlength="3" ng-required="newEmail" compare-to="password" should-validate="newEmail">
-							<p ng-show="userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine" class="help-block">Passwords don't match</p>
+							<input placeholder="confirm password" 
+								   type="password" 
+								   class="login-input" 
+								   name="repeatPassword" 
+								   ng-model="repeatPassword" 
+								   ng-minlength="3" 
+								   ng-required="newEmail" 
+								   compare-to="password" 
+								   should-validate="newEmail">
+							<p ng-show="userForm.repeatPassword.$invalid && !userForm.repeatPassword.$pristine" 
+							   class="help-block">Passwords don't match</p>
 						</div>
 
-						<input type="submit" value="Login / Signup" class="login-submit" name="submit" ng-click="login(email, password)" ng-disabled="userForm.$invalid">
+						<input type="submit" value="Login / Signup" 
+								class="login-submit" name="submit" 
+								ng-click="login(email, password)" ng-disabled="userForm.$invalid">
 						<small><a href="">Forgotten your password?</a></small>
 					</form>
 					<div class="account-info" ng-show="loggedIn">
 						<h2>Hi, {{user}}!</h2>
 						<br/>
 						<form class="update-info-form">
-							<button class="login-submit" ng-click="showUpdate = !showUpdate" ng-show="!showUpdate">Update password</button>
+							<button class="login-submit" ng-click="showUpdate = !showUpdate" 
+							  		ng-show="!showUpdate">Update password</button>
 							<div ng-show="showUpdate">
 								<div class="login-input-back password">
 									<img class="password-icon" src="../images/icon-password.png" />
-									<input name="pass" type="password" class="login-input" ng-model="data.cpass" placeholder="Current Password" required/>
+									<input name="pass" type="password" 
+											class="login-input" ng-model="data.cpass" 
+											placeholder="Current Password" required/>
 								</div>
 								<div class="login-input-back password">
 									<img class="password-icon" src="../images/icon-password.png" />
-									<input name="pass" type="password" class="login-input" ng-model="data.npass" placeholder="New Password" ng-change="reenterDisabled = true;" required/>
+									<input name="pass" type="password" 
+											class="login-input" ng-model="data.npass" 
+											placeholder="New Password" ng-change="reenterDisabled = true;" required/>
 								</div>
 								<div class="login-input-back password">
 									<img class="password-icon" src="../images/icon-password.png" />
-									<input name="rpass" placeholder="Retype New Password" class="login-input" type="password" compare-to="npass" ng-model="data.rpass" required />
+									<input name="rpass" placeholder="Retype New Password" 
+											class="login-input" type="password" 
+											compare-to="npass" ng-model="data.rpass" required />
 								</div>
 								
 								<div ng-show="errorDisabled">
 									Error: Please Fix Inputs
 								</div>
 								
-								<input type="submit" class="login-submit update-submit" value="Update" ng-click="update(data);">
+								<input type="submit" class="login-submit update-submit" 
+										value="Update" ng-click="update(data);">
 							</div>
 						</form>
 						<br/>

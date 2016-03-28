@@ -7,11 +7,14 @@
 		<form ng-submit="join()">            
 			<div class="login-input-back">
 				<img class="password-icon" src="../images/icon-password.png"/>
-				<input class="login-input" type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="6" ng-model="lobby" placeholder="Lobby ID" required/>
-			</div>         
+				<input class="login-input" 
+						type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+						maxlength="6" ng-model="lobby" placeholder="Lobby ID" required/>
+			</div>
 			<div class="login-input-back">	
 				<img class="email-icon" src="../images/icon-account-small.png"/>
-				<input class="login-input" type="text" maxlength="10" ng-model="name" placeholder="Name" required/>
+				<input class="login-input" type="text" maxlength="10" 
+						ng-model="name" placeholder="Name" required/>
 			</div>
             <div class="input-error" ng-show="inputError">Incorrect lobby ID or username is currently in use</div>
 			<input class="login-submit" type="submit"/>

@@ -2,12 +2,16 @@
 	<div class="icons-row-container container-fluid">
 		<div class="container icons-row" ng-class="{expand: hideIcons}">
 			<div class="row icons" ng-hide="hideIcons">
-				<div class="col-xs-4" data-toggle="modal" data-target=".login-modal" ng-class="{disabled: loggedIn}">
+				<div class="col-xs-4" data-toggle="modal" 
+					 data-target=".login-modal" 
+					 ng-class="{disabled: loggedIn}">
 					<img class="row-icon" src="../images/icon-account-large.png" alt="login"/>
 					<h2>Login</h2>
 					<p>Sign up or login to access ANEXD</p>
 				</div>
-				<div class="col-xs-4" scroll-on-click href=".app-header" ng-class="{disabled: !loggedIn}">
+				<div class="col-xs-4" 
+					 scroll-on-click href=".app-header" 
+					 ng-class="{disabled: !loggedIn}">
 					<img class="row-icon" src="../images/icon-settings-large.png" alt="settings"/>
 					<h2>Create</h2>
 					<p>Choose an application to launch</p>
@@ -87,10 +91,15 @@
 	          	</div>
 	          	<div id="navbar" class="navbar-collapse collapse">
 	            	<ul class="nav navbar-nav navbar-right">
-	              		<li ng-class="{active: type == ''}" ng-click="setFilter('')"><span class="app-filter">All</span></li>
-						<li ng-class="{active: type == 'app'}" ng-click="setFilter('app')"><span class="app-filter">Apps</span></li>
-	              		<li ng-class="{active: type == 'quiz'}" ng-click="setFilter('quiz')"><span class="app-filter">Quizzes</span></li>
-	              		<li ng-class="{active: type == 'game'}" ng-click="setFilter('game')"><span class="app-filter">Games</span></li>
+	              		<li ng-class="{active: type == ''}" 
+	              			ng-click="setFilter('')"><span 
+	              			class="app-filter">All</span></li>
+						<li ng-class="{active: type == 'app'}" ng-click="setFilter('app')">
+							<span class="app-filter">Apps</span></li>
+	              		<li ng-class="{active: type == 'quiz'}" ng-click="setFilter('quiz')">
+	              			<span class="app-filter">Quizzes</span></li>
+	              		<li ng-class="{active: type == 'game'}" ng-click="setFilter('game')">
+	              			<span class="app-filter">Games</span></li>
 	            	</ul>
 	          	</div>
 	        </div>
@@ -98,7 +107,10 @@
 	    <div class="container-fluid app-list">
 	    	<div class="row">
 	    		<div class="col-lg-4 col-xs-6" ng-repeat="app in apps | filter: {type : type}">
-	    			<div class="app-tile" style="background-image: url('{{app.image}}')" scroll-on-click href="#top" require-login login-callback="selectApp(app)">
+	    			<div class="app-tile" 
+	    				 style="background-image: url('{{app.image}}')" 
+	    				 scroll-on-click href="#top" 
+	    				 require-login login-callback="selectApp(app)">
 	    				<div class="app-tile-overlay">
 	    					<img src="../images/icon-settings-large.png"/>
 	    				</div>
