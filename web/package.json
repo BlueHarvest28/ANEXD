@@ -42,9 +42,10 @@
   "dependencies": {
     "body-parser": "^1.14.2",
     "express": "^4.13.3",
+    "grunt-ngdocs": "^0.2.9",
     "mysql": "^2.9.0",
+    "phantomjs-prebuilt": "2.1.4",
     "socket.io": "^1.4.5",
-    "socket.io-client": "^1.4.5",
-	"phantomjs-prebuilt": "2.1.4"
+    "socket.io-client": "^1.4.5"
   }
 }

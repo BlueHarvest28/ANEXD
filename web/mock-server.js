@@ -53,8 +53,9 @@ var launch = function(){
 		
 		//Mobile user joins a lobby
 		socket.on('joinlobby', function(data){
+			socket.emit('joinlobby', true);
 			console.log('join');
-			players.push({'userSocket': socket.id, 'nickname': data.nickname, 'ready': false});
+			players.push({'userSocket': socket.id, 'nickname': data.username, 'ready': false});
 			io.emit('updatelobby', players);
 			if(running){
 				socket.emit('start');
@@ -65,14 +66,14 @@ var launch = function(){
 		socket.on('setready', function (data){
 			for(var i = 0; i < players.length; i++){
 				if(players[i].userSocket === socket.id){
-					players[i].ready = data.ready;
+					players[i].ready = data;
 				}
 			}
 			io.emit('updatelobby', players);
 		});
 		
 		socket.on('launch', function(){
-			
+			//stub
 		});
 		
 		//Launch app

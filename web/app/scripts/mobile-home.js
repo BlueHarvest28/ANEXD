@@ -2,15 +2,17 @@
  * CO600 ANEXD Project Code
  *
  * Contributor(s): Harry Jones(hj80) and Frederick Harrington(fh98)
- * mobile-home.js is a part of the frontend web deveoplment
- * mobile-home.js manages all mobile based frontend in partnership with mobile-home.html
+ * mobile-home.js manages all mobile user lobby connections
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
 
-/*
-*	TODO:	COMMENTS
-*/
+/**
+ * @ngdoc controller
+ * @name ANEXD.controller:MobileHomeController
+ * @description
+ * Handle all mobile-user lobby connections. 
+ */
 
 (function () {
 'use strict';
@@ -38,29 +40,33 @@ angular.module('ANEXD')
         
         /*
         * HJ80/FH98
-        *
+        * Return the user to the home screen and clear scope variables
         */
 		$scope.back = function(){
 			$scope.showLobby = false;
 			$scope.ready = false;
             $scope.users = [];
 			
-			//Leave lobby
-			SocketService.default.emit('leave');
+			//Inform the server
+			SocketService.emit('leave');
 		};
 		
 		/*
         * HJ80
-        *
+        * Called after a successful lobby generation
+		* Listens on relevant socket events to update the lobby
         */
-		var connect = function(){
+//		var connect = function(){
 			SocketService.default.on('start', function(response){
 				if(!response.failed){
+					//Create cookie for reconnecting
 					$cookies.put('name', $scope.name);
+					//Move to the application page
 					$location.path($location.path() + '/' + appId, true);
 				}
 			});
 			
+			//Update the player list
 			SocketService.default.on('updatelobby', function(users){
 				console.log(users);
 				$scope.users = users;
@@ -69,31 +75,32 @@ angular.module('ANEXD')
 			SocketService.default.on('close', function(){
 				$scope.back();
 			});
-		};
+//		};
 		
         /*
-        * HJ80 / FH98
-        *
+        * HJ80
+        * Attempt to join a lobby
         */
 		$scope.join = function(){
             $scope.inputError = false;
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
-			console.log('lobby id', $scope.lobby);
-			//TODO: WAIT FOR CONFIRMATION
+			
 			var data = {
 				'lobbyid': $scope.lobby,
 				'username': $scope.name
 			};
+			
 			SocketService.promise('joinlobby', data, true).then(
 				function(response){
 					if(response){
+						//Follow-up call for retrieving the app's id
 						SocketService.promise('getappid', null, true).then(
 							function(response){
 								appId = response;
 								SessionService.create($scope.lobby, appId);
 								$location.path('/' + $scope.lobby, false);
-								connect();	
+								//connect();	
 							}
 						);
 					}
@@ -102,12 +109,18 @@ angular.module('ANEXD')
 		};
 		
         /*
-        * HJ80 / FH98
-        *
+        * HJ80
+        * Toggle the mobile user's ready status
+		* Send the result to the server
         */
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
-			SocketService.default.emit('setready', $scope.ready);
+			SocketService.promise('setready', $scope.ready, true).then(
+				function(){
+					//There won't be a response
+				}
+			);
+			//SocketService.emit('setready', $scope.ready);
 		};
     }
 ]);

@@ -88,7 +88,7 @@ angular.module('ANEXD')
 		/**********************************
 		*	SOCKET EVENTS FOR HOST -> GO
 		**********************************/
-		var connect = function(){
+//		var connect = function(){
 			//HJ80 - When the player list is updated
 			SocketService.default.on('updatelobby', function(users){
 				$scope.users = users;
@@ -98,7 +98,7 @@ angular.module('ANEXD')
 			SocketService.default.on('close', function(){
 				$scope.closeLobby();
 			});	
-		};
+//		};
 		
 		
 		/**********************************
@@ -138,7 +138,7 @@ angular.module('ANEXD')
 					SocketService.promise('hostlobby', data, true).then(
 						function(result){
 							if(result){
-								connect();
+								//connect();
 								SessionService.create(lobbyId, appId);
 								$scope.showLobby = true;
 								$scope.isDisabled = false;
