@@ -28,9 +28,7 @@ angular.module('ANEXD')
 	'SocketService',
     function ($scope, $rootScope, $timeout, $http, $location, CONST, APIService, SessionService, SocketService) 
     {					
-		var activeLobby;
 		var openedApp;
-		
 		var lobbyId;
 		var appId;
 		
@@ -118,7 +116,7 @@ angular.module('ANEXD')
     	$scope.launchLobby = function() {
 			$scope.isDisabled = true;
 			$scope.launchMessage = '';
-    		activeLobby = true;
+    		$scope.activeLobby = true;
 			
             var payload = {
                 'creator': SessionService.getUserId(),
@@ -188,15 +186,15 @@ angular.module('ANEXD')
 			$timeout( function() {
 				initialise();
             }, 1000);
-            
-            if(activeLobby) {
+			
+            if($scope.activeLobby) {
                 var payload = {
 					'lobbyID': SessionService.details().lobby,
 				};
 				
 				APIService.post('delLobby', payload);
 				
-                activeLobby = false;
+                $scope.activeLobby = false;
 				SessionService.close();
 				SocketService.default.emit('leave');
 				$location.path('/', false);
@@ -212,7 +210,6 @@ angular.module('ANEXD')
 				$scope.closeLobby();
 			}
 			SocketService.default.emit('leave');
-			$location.path('/', true);
 		});
 		
 		//HJ80 - Called on application selection.

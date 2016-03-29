@@ -189,7 +189,7 @@ angular.module('ANEXD')
 	function ($rootScope, $q, $timeout, CONST, socketFactory) {
 		//Used for web connection (same server)
 		//var socket = socketFactory();
-		var host = io.connect('http://localhost:3002/');
+		var host = io.connect('http://api-anexd.rhcloud.com/socket.io/:8080');
 		var socket = socketFactory({
 			ioSocket: host
 		});
@@ -205,7 +205,8 @@ angular.module('ANEXD')
 				defer.reject('failed to receive response');
 				//Do we want to send an error message if we don't get a reply?
 				if(error){
-					$rootScope.$broadcast(CONST.ERROR, 'We\'re having problems connecting to the server right now, please try again; ' + event + ', ' + 'val');	
+					console.log('error:', event, val);
+					$rootScope.$broadcast(CONST.ERROR, 'We\'re having problems connecting to the server right now, please try again; ' + event + ', ' + val);	
 				}
 			}, 6000);
 			

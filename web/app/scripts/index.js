@@ -25,8 +25,9 @@ angular.module('ANEXD')
     'md5',
 	'CONST',
 	'SessionService',
+	'APIService',
 	'SocketService',
-    function ($scope, $rootScope, $timeout, $location, $http, md5, CONST, SessionService, SocketService)
+    function ($scope, $rootScope, $timeout, $location, $http, md5, CONST, SessionService, APIService, SocketService)
     {		
         /* Local and $scope variables */
 		$scope.isMobile = $rootScope.isMobile;             //Check if the user is on mobile
@@ -121,22 +122,17 @@ angular.module('ANEXD')
 			var payload = {
                 'email' : email,
             };
-            var req = {
-                method: 'POST',
-                url: CONST.HOST + 'getUser',
-                headers: {'Content-Type': 'application/json'},
-                data: payload,
-            };
-            $http(req).then(function(response) {
-            	if(response.data.status === 'Success'){
-            		$scope.newEmail = false;
+			
+            APIService.post('getUser', payload).then(
+				function(response){
+					if(response.data.status === 'Success'){
+						$scope.newEmail = false;
+					}
+					else if(response.data.status === 'Fail'){
+						$scope.newEmail = true;
+					}
             	}
-            	else if(response.data.status === 'Fail'){
-            		$scope.newEmail = true;
-            	}
-            }, function errorCallback(response) {
-                $rootScope.$broadcast(CONST.ERROR, 'Failed to check email;', response.description);
-            });
+			);
 		};
         
         /*
@@ -148,7 +144,6 @@ angular.module('ANEXD')
         * HTTP Post request recieves boolean.
         */ 
         $scope.update = function(data) {
-            console.log(data);
             $scope.errorDisabled = false;
 			$scope.showUpdate = false;
             
@@ -162,21 +157,14 @@ angular.module('ANEXD')
                     'password': passwordHashCurrent,
                     'newpass': passwordHash,
                 };
-                console.log(payload);
-
-                var req = {
-                    method: 'POST',
-                    url: CONST.HOST + 'changePassword',
-                    headers: {'Content-Type': 'application/json'},
-                    data: payload,
-                };
-                $http(req).then(function(response) {
-                    console.log(response);
-                    $scope.shouldHide = true;
-                }, function errorCallback(response) {
-                    $rootScope.$broadcast(CONST.ERROR, 'Couldn\'t update user;', response.description);
-                });
-                $scope.shouldHide = false;                                
+                
+				APIService.post('changePassword', payload).then(
+					function(response){
+						if(response){
+							$rootScope.$broadcast('closeModal');
+						}
+                	}
+				);
             } else {
                 $scope.errorDisabled = true;
             }

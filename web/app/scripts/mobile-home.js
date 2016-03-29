@@ -62,6 +62,7 @@ angular.module('ANEXD')
 			});
 			
 			SocketService.default.on('updatelobby', function(users){
+				console.log(users);
 				$scope.users = users;
 			});
 			
@@ -78,11 +79,11 @@ angular.module('ANEXD')
             $scope.inputError = false;
             $scope.showLobby = true;
             $scope.submitIsDisabled = false;
-			
+			console.log('lobby id', $scope.lobby);
 			//TODO: WAIT FOR CONFIRMATION
 			var data = {
-				'lobbyid': parseInt($scope.lobby),
-				'nickname': $scope.name
+				'lobbyid': $scope.lobby,
+				'username': $scope.name
 			};
 			SocketService.promise('joinlobby', data, true).then(
 				function(response){
