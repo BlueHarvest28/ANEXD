@@ -4,8 +4,7 @@ angular.module('ANEXD')
 .controller('YTController', [
     '$scope',
     'ANEXDService',
-    '$sce',
-    function ($scope, ANEXDService, $sce) {
+    function ($scope, ANEXDService) {
     var anexd = new ANEXDService();
         $scope.messages = [];
         
