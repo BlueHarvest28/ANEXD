@@ -9,10 +9,6 @@
  * Copyright (C): University Of Kent 01/03/2016 
 **/
 
-/*
-*	TODO:	IMPROVE LOGIN RELIABILITY (SEE: FACTORIES.JS)
-*/
-
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -31,7 +27,7 @@ angular.module('ANEXD')
     {		
         /* Local and $scope variables */
 		$scope.isMobile = $rootScope.isMobile;             //Check if the user is on mobile
-    	$scope.loggedIn = SessionService.isLoggedIn();       //Is the user logged in
+    	$scope.loggedIn = SessionService.isLoggedIn();     //Is the user logged in
         $scope.errorDisabled = false;                      //Used to disable a button
 		$scope.shouldHide = true;                          //Used to hide parts of HTML
         $scope.showUpdate = false;
