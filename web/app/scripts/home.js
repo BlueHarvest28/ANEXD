@@ -9,10 +9,6 @@
  * Copyright (C): University Of Kent 01/03/2016 
 **/
 
-/*
-*	TODO: 	PREPARE FOR RECONNECTIONS
-*/
-
 (function () {
 'use strict';
 angular.module('ANEXD')
