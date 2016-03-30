@@ -224,10 +224,28 @@ angular.module('ANEXD')
 		};
 	}
 ])
-
+/**
+* @ngdoc service
+* @name ANEXD.APIService
+* @description 
+* APIService provides a simple interface for sending HTTP POST requests
+* @requires $rootScope
+* @requires $http
+* @requires CONST
+*/
 .factory('APIService', ['$rootScope', '$http', 'CONST', function($rootScope, $http, CONST) {
 	//var session;
 	
+	/**
+	* @ngdoc function
+	* @name ANEXD.APIService#post
+	* @methodOf ANEXD.APIService
+	* @description Post an HTTP POST request
+	* @param {string} event The URL on the API to POST on
+	* @param {string} data Any data to POST in JSON form
+	* @param {boolean=true} error Should successful POSTs that return negative responses display an error message?
+	* @returns {string} Either HTTP response on successful post or false otherwise
+	*/
 	var post = function(event, data, error){
 		error = typeof error !== 'undefined' ? error : true;
 		//data.cookie = session;
@@ -260,9 +278,18 @@ angular.module('ANEXD')
 		post: post,
 	};
 }])
-/*
- *	Socket.io interface
- */
+/**
+* @ngdoc service
+* @name ANEXD.SocketService
+* @description 
+* SocketService provides an interface for sending and receiving websocket events.
+* Also provides promises for sending then receiving a message on the same event.
+* @requires $rootScope
+* @requires $q
+* @requires $timeout
+* @requires CONST
+* @requires socketFactory
+*/
 .factory('SocketService', [
 	'$rootScope', 
 	'$q', 
@@ -277,7 +304,16 @@ angular.module('ANEXD')
 			ioSocket: host
 		});
 		
-		//Sends a value to the server and promises a reply on the same event
+		/**
+		* @ngdoc function
+		* @name ANEXD.SocketService#promise
+		* @methodOf ANEXD.SocketService
+		* @description Promises a response on the same event sent
+		* @param {string} event The event to send the websocket message on
+		* @param {string} val Contents of message
+		* @param {boolean} error Whether to show errors on timeout (3 seconds)
+		* @returns {string} Promise of the return message
+		*/
 		var promise = function (event, val, error) {
 			var defer = $q.defer();
 			socket.emit(event, val);
@@ -301,6 +337,14 @@ angular.module('ANEXD')
 			return defer.promise;
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SocketService#emit
+		* @methodOf ANEXD.SocketService
+		* @description Sends a message on the provided event (also possible using socket.default.emit)
+		* @param {string} event The event to send the websocket message on
+		* @param {string} val Contents of message
+		*/
 		var emit = function(event, val){
 			socket.emit(event, val);
 		};
@@ -312,9 +356,15 @@ angular.module('ANEXD')
 		};
 	}
 ])
-/*
- *	Service for ANEXD app developers. Provides an interface to the game server.
- */
+/**
+* @ngdoc service
+* @name ANEXD.ANEXDService
+* @description 
+* Provides a simple interface for application developers to send and receive websocket messages from the server
+* @requires $rootScope
+* @requires $timeout
+* @requires SocketService
+*/
 .factory('ANEXDService', [
 	'SocketService', 
 	'$timeout', 
@@ -329,7 +379,14 @@ angular.module('ANEXD')
 			//Holds the most recent expected event
 			var expected;
 			
-			//Sends a value to the server and promises a reply on the same event
+			/**
+			* @ngdoc function
+			* @name ANEXD.ANEXDService#sendToServer
+			* @methodOf ANEXD.ANEXDService
+			* @description Send a message to the server and wait for a reply using SocketService promise
+			* @param {string} event The event to send the websocket message on
+			* @param {string} val Contents of message
+			*/
 			var sendToServer = function (event, val) {
 				return SocketService.promise('msg', {'event': event, 'data': val}).then(
 					function(response) {
@@ -338,8 +395,15 @@ angular.module('ANEXD')
 				);
 			};
 			
-			//One expect function for each event that you could receive at any time
-			//Updates expected variable with recent event result
+			/**
+			* @ngdoc function
+			* @name ANEXD.ANEXDService#expect
+			* @methodOf ANEXD.ANEXDService
+			* @description Call once for each message expected from the server that may be received at any time
+			* Different from sendToServer in that it isn't in response to any other event
+			* Results are gathered from the getFromServer function
+			* @param {string} event The event to listen on
+			*/
 			var expect = function (event) {
 				SocketService.default.on(event, function (val) {
 					expected = {
@@ -349,7 +413,14 @@ angular.module('ANEXD')
 				});
 			};
 			
-			//Scope watch getFromServer() for events defined by expect(event)
+			/**
+			* @ngdoc function
+			* @name ANEXD.ANEXDService#getFromServer
+			* @methodOf ANEXD.ANEXDService
+			* @description returns the most recent websocket message received being listened on by expect
+			* Use $scope.$watch to access on the $digest cycle
+			* @returns {string} Object of the event and data received from the most recent event
+			*/
 			var getFromServer = function () {
 				return expected;
 			};

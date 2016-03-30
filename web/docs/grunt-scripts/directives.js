@@ -25,6 +25,7 @@ angular.module('ANEXD')
 				var target;
 				if (id) {
 					target = $(id);
+					console.log('target', target.offset());
 				} else {
 					target = elm;
 				}
