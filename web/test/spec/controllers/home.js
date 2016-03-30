@@ -7,12 +7,14 @@ describe('Controller: HomeController', function () {
 
 	var scope,
 		httpBackend,
+		socket,
 		controller;
 
 	// Initialize the controller and a mock scope
-	beforeEach(inject(function ($rootScope, $controller, $httpBackend, $http) {
+	beforeEach(inject(function ($rootScope, $controller, $httpBackend, $http, _SocketService_) {
 		scope = $rootScope.$new();
 		httpBackend = $httpBackend;
+		socket = _SocketService_;
 		
 		httpBackend.when('GET', './views/home.html').respond();
 		
@@ -75,11 +77,15 @@ describe('Controller: HomeController', function () {
 		scope.launchLobby();
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/newLobby');
     	httpBackend.flush();
+		socket.default.receive('hostlobby', true);
 		expect(scope.lobbyQR).toBe('http://api-anexd.rhcloud.com/1');
 	});
 	
 	it('should close the lobby', function () {
-		scope.activeLobby = true;
+		scope.launchLobby();
+		httpBackend.expectPOST('http://api-anexd.rhcloud.com/newLobby');
+		httpBackend.flush();
+		socket.default.receive('hostlobby', true);
 		scope.closeLobby();
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/delLobby');
     	httpBackend.flush();

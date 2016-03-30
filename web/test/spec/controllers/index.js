@@ -31,9 +31,7 @@ describe('Controller: IndexController', function () {
 		});
 		
 		httpBackend.when('POST', 'http://api-anexd.rhcloud.com/getUser').respond({
-			'data' : {
-				'status': 'Fail' 
-			}
+			'status': 'Fail'
 		});
 		
 		httpBackend.when('POST', 'http://api-anexd.rhcloud.com/changePassword').respond({
@@ -70,8 +68,8 @@ describe('Controller: IndexController', function () {
 	}));
 	
 	it('should set the newEmail flag to true', function () {
+		scope.newEmail = false;
 		scope.checkEmail('gorgonzola@kent.ac.uk');
-		
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/getUser');
     	httpBackend.flush();
 		expect(scope.newEmail).toBe(true);

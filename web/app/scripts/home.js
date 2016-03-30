@@ -139,6 +139,7 @@ angular.module('ANEXD')
 					SocketService.promise('hostlobby', data, true).then(
 						function(result) {
 							if(result){
+								console.log('return from hostlobby');
 								//Create a new lobby session
 								//SEE: factories.js for more information on SessionService functions
 								SessionService.create(lobbyId, appId);
@@ -191,6 +192,7 @@ angular.module('ANEXD')
             }, 1000);
 			
             if($scope.activeLobby) {
+				console.log('session:', SessionService.details());
                 var payload = {
 					'lobbyID': SessionService.details().lobby,
 				};

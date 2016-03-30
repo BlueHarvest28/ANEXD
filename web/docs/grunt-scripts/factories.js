@@ -228,7 +228,8 @@ angular.module('ANEXD')
 .factory('APIService', ['$rootScope', '$http', 'CONST', function($rootScope, $http, CONST) {
 	//var session;
 	
-	var post = function(event, data){
+	var post = function(event, data, error){
+		error = typeof error !== 'undefined' ? error : true;
 		//data.cookie = session;
 		var req = {
 			method: 'POST',
@@ -242,12 +243,11 @@ angular.module('ANEXD')
 		return $http(req).then(function (response) {
 			if (response.data.status === 'Fail') {
 				console.log(response);
-				$rootScope.$broadcast(CONST.ERROR, 'Request failed;', response.data.description);
-				return false;
+				if(error){
+					$rootScope.$broadcast(CONST.ERROR, 'Request failed;', response.data.description);	
+				}
 			}
-			else{
-				return response;
-			}
+			return response;
 		}, function errorCallback(response) {
 			console.log(response);
 			$rootScope.$broadcast(CONST.ERROR, 'Request failed;', response.description);

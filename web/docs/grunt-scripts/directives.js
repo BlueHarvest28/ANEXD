@@ -9,10 +9,6 @@
  * Copyright (C): University Of Kent 24/03/2016 
 **/
 
-/*
-*	TODO: COMMENTS
-*/
-
 (function () {
 'use strict';
 angular.module('ANEXD')

@@ -131,7 +131,7 @@ angular.module('ANEXD')
                 'email' : email,
             };
 			
-            APIService.post('getUser', payload).then(
+            APIService.post('getUser', payload, false).then(
 				function(response) {
 					if(response.data.status === 'Success'){
 						$scope.newEmail = false;
