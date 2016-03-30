@@ -4,14 +4,10 @@ import (
     "log"
     "net/http"
 	"encoding/json"
+	
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
 )
-
-
-//---------------------------------------------\\
-//            GAME TABLE FUNCTIONS             \\
-//---------------------------------------------\\
 
 type GameStuc struct {
 	GameID  int				`json:"gameID, "`
@@ -24,6 +20,7 @@ type GameStuc struct {
 	Image string			`json:"image"`
 }
 
+//This will add a new game to the database.
 func newGame(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	params := requestDecode(r)
@@ -40,9 +37,15 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 		checkErr("Query execute: ",err)
 	}
 	
-	var queryString string = "INSERT INTO Game (creatorID, name, date_created, rating, type, description, image) VALUES (?,?,NOW(),0,?,?,?)"
+	var queryString string = "INSERT INTO Game "+
+							 "(creatorID, name, date_created, rating, type, description, image)" +
+							 " VALUES (?,?,NOW(),0,?,?,?)"
 	
-	args := requiredVariables([]string{"creatorID", "name", "type", "description", "image"}, params, nil)
+	args := requiredVariables(
+		[]string{"creatorID", "name", "type", "description", "image"},
+		params,
+		nil,
+	)
 	
 	result, err := db.Exec(queryString, args...)
 	// checkErr("Query Execute: ",err)
@@ -83,13 +86,20 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/newGame has been excuted sucessfully!")
 }
 
+//This will get a game or games depending on fields used in string array in args.
 func getGame(w http.ResponseWriter, r *http.Request){
-	var queryString string = "SELECT * FROM Game WHERE "
+	var queryString string = "SELECT gameID, creatorID, name, date_created, "+
+							 " rating, type, description, image" +
+							 " FROM Game WHERE "
 
 	//Reading json from request
 	params := requestDecode(r)
 	
-	args := requiredVariables([]string{"gameID", "creatorID", "name", "date_created", "rating", "type"}, params, &queryString)
+	args := requiredVariables(
+		[]string{"gameID", "creatorID", "name", "date_created", "rating", "type"},
+		params, 
+		&queryString,
+	)
 	
 	//check for any valid args
 	if len(args) == 0 { //isEmpty
@@ -113,6 +123,7 @@ func getGame(w http.ResponseWriter, r *http.Request){
 			&game.Rating, 
 			&game.Type, 
 			&game.Description,
+			&game.Image,
 		)
 		checkErr("Row retrevial: ",err)
 		
@@ -139,8 +150,11 @@ func getGame(w http.ResponseWriter, r *http.Request){
 	log.Printf("/getGame has been excuted sucessfully!")
 }
 
+//This will get all the games currently in the database.
 func getAllGames(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT * FROM Game")
+	rows, err := db.Query("SELECT gameID, creatorID, name, date_created, " +
+						  "rating, type, description, image" + 
+						  " FROM Game")
 	checkErr("Query execute: ",err)
 	defer rows.Close()
 	
@@ -155,6 +169,7 @@ func getAllGames(w http.ResponseWriter, r *http.Request) {
 			&game.Rating,
 			&game.Type,
 			&game.Description,
+			&game.Image,
 		)
         checkErr("Row retrevial: ",err)
 		
@@ -169,6 +184,7 @@ func getAllGames(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/getAllGameUsers has been excuted sucessfully!")
 }
 
+//Allows any data in changable to be edited in the Game table
 func changeGameData(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	params := requestDecode(r)	

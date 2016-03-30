@@ -8,68 +8,44 @@ package main
 // For working locally do reverse of above so serve at localhost
 // and run .exe for windows or other for linux/ OSX
 
-//Salting and hashing info https://crackstation.net/hashing-security.htm#salt
+//Request Readme:
+//There is a readme on the Github called ReadMe.md which tells you the 
+//requirements and expected input and outputs when making requests to the api
 
-//HTTP ERROR CODES
-//http://www.andrewhavens.com/posts/20/beginners-guide-to-creating-a-rest-api/
+//DEPRECATED
+//Any places commented out with DEPRECATED means that it is no longer used.
+//Anon Users go file will no longer be used since this is managed by the backend.
 
-//.------:ToDo:------.
-// All quiers to do with backend??(James)
-//
+//.------:FUTURE WORK:------.
 // + ADD rollback to failed insert statments
-// + NEEDS TO BE TESTED: getLobby can return null if 2 fields dont match
-// + change so all methods take map so can have custom vars so not username but user etc
+// + INPROGRESS change so all methods take map so can have custom vars so not username but user etc
 // + make it so users can only get information about lobbies, players related to them.
-// + del for all anon users by lobbyid
-// + /changeXXData needs to pass all inputs used into return to the json response.
-
-//.------:DONE:------.
-// - test()
 //
-// - newUser()
-// - getUser()
-// - changeEmail()
-// - changePassword()
-// - changeUserData()
-// - delUser()
-
-// - insertNewAnonUsers()
-// - getAnonUser()
-// - delAnonUser()
-
-// - newLobby()
-// - getLobby()
-// - newLobbyPassword()
-// - newLobbyTitle()
-// - delLobby()
-//
-// - newGame()
-// - changeGameData()
-// - getGame()
-// - getAllGames()
-//
-// + make the random 6 digits password generator
-// + added salt and pass hashing to backend
-// + ADDING DELETE Lobbies, Anon and User.
-//'------------------'
-
 //.------:CURRENT WORK:------.
-// + make getUser return with data same across REST API's
-//
+// + Make the json response more specific when an error occurs
+// 
+// SECURITY
 // + TOKEN'S need to be added to stop anyone using api
+//     OR
+// + IMPLEMENETED::Map containing unique hash of time.
+// + NOT NEEDED. Can only get info relevant to you.
 //'--------------------------'
 
 import (
     "log"
     "net/http"
 	"encoding/json"
-	"database/sql"
-	"github.com/gorilla/mux"
-	"os"
-	"fmt"
 	"math/rand"
 	"time"
-	//james's imports
+	
+	"database/sql"
+	"github.com/gorilla/mux"
+	
+	//Openshift
+	"os"
+	"fmt"
+	
+	//James's
 	"github.com/googollee/go-socket.io"
 )
 
@@ -82,9 +58,10 @@ type Api struct {
 
 var db *sql.DB
 var manager *Manager
-var credentials string = "ANEXD_ADMIN:gn9-MVn-6Bq-q6b@tcp(p3plcpnl0650.prod.phx3.secureserver.net:3306)/ANEXD"
-
-//.:TEST:.
+var credentials string = "ANEXD_ADMIN:gn9-MVn-6Bq-q6b@"+
+						 "tcp(p3plcpnl0650.prod.phx3.secureserver.net:3306)/ANEXD"
+var logged  = make(map[string]int64)
+						 
 //Test url to see if database connects
 //GET localhost:8080/test
 func test(w http.ResponseWriter, r *http.Request) {
@@ -153,17 +130,21 @@ func requiredVariables(vars []string, params map[string]interface{}, qStr *strin
 	return args
 }
 
+//initalize the random generator
 func init(){
 	rand.Seed(time.Now().UnixNano())
 }
 
+//Establish database connection
+//Adds all accessable apis and routes
+//Add all vars needed to access backend
 func main() {
 	server, err := socketio.NewServer(nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	manager = newManager()
-	server.On("connection", manager.sessionHandler)
+	server.On("connection", manager.socketSetup)
 	
 	//Open database IMP:Doesnt open a connection
 	// var err error
@@ -184,9 +165,10 @@ func main() {
 		Api{"POST", "/changeUserData", changeUserData},
 		Api{"POST", "/delUser", delUser},
 		
-		Api{"POST", "/newAnonUser", newAnonUsers},
-		Api{"POST", "/getAnonUser", getAnonUser},
-		Api{"POST", "/delAnonUser", delAnonUser},
+		//DEPRECATED
+		// Api{"POST", "/newAnonUser", newAnonUsers},
+		// Api{"POST", "/getAnonUser", getAnonUser},
+		// Api{"POST", "/delAnonUser", delAnonUser},	
 		
 		Api{"POST", "/newLobby", newLobby},
 		Api{"POST", "/getLobby", getLobby},

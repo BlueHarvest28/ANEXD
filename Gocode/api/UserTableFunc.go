@@ -3,23 +3,15 @@ package main
 import (
     "log"
     "net/http"
-	//"encoding/json"
-	"database/sql"
-	"github.com/go-sql-driver/mysql"
 	"crypto/md5"
 	"encoding/hex"
+	"time"
+	"strconv"
+	
+	"database/sql"
+	"github.com/go-sql-driver/mysql"
 )
 
-//---------------------------------------------\\
-//            USER TABLE FUNCTIONS             \\
-//---------------------------------------------\\
-
-
-// {
-    // "username":"salttest",
-    // "password":"test",
-    // "email": "test@test.test"
-// }
 
 type UserStruc struct {
 	UserID int		 `json:"userID"`
@@ -27,10 +19,11 @@ type UserStruc struct {
 	Email string	 `json:"email"`
 }
 
-//POST
-// example url:: localhost:3000/insertNewUser?username=xx&password=xx&email=xx
+//Will create new User in the database.
+//With there salt.
 func newUser(w http.ResponseWriter, r *http.Request) {
-	var queryString string = "INSERT INTO User (username,password,email,passwordSalt) VALUES (?,?,?,?)"
+	var queryString string = "INSERT INTO User (username,password,email,passwordSalt) " + 
+							 "VALUES (?,?,?,?)"
 	
 	//Reading json from request
 	params := requestDecode(r)
@@ -91,13 +84,7 @@ func newUser(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/insertNewUser has been excuted sucessfully!")
 }
 
-
-//POST
-//Examples:
-//		url:: localhost:3000/getUser?username=xx&email=xx
-//		url:: localhost:3000/getUser?username=xx
-//		url:: localhost:3000/getUser?email=xx
-// 		url:: localhost:3000/getUser?userID=xx
+//Gets any existing user(s) from the database.
 func getUser(w http.ResponseWriter, r *http.Request) {
 	
 	params := requestDecode(r)
@@ -135,6 +122,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/getUser has been excuted sucessfully!")
 }
 
+//Similar to get but requires userId and password.
 func login(w http.ResponseWriter, r *http.Request) {
 	
 	params := requestDecode(r)
@@ -179,12 +167,16 @@ func login(w http.ResponseWriter, r *http.Request) {
 			  Scan(&user.UserID, &user.Username, &user.Email)
 	switch{
 		case err == sql.ErrNoRows:
-				response = jsonNtExist("User")
+			response = jsonNtExist("User")
 		case err != nil:
-				log.Fatal("Query Execute: ",err)
-				panic(err)
+			log.Fatal("Query Execute: ",err)
+			panic(err)
 		default:
-				response = jsonGetData("user", user)
+			data := make(map[string]interface{})
+			// hashId := addLogged() //add to response
+			// data["cookie"] = hashId
+			data["data"] = user
+			response = jsonGetData("user", data)
     }
 			
 	writeJsonResponse(response, w)
@@ -192,6 +184,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/login has been excuted sucessfully!")
 }
 
+//Allows any data in changable to be edited in the User table.
+//With the password changing will need to grab the salt and apply.
 func changeUserData(w http.ResponseWriter, r *http.Request) {
 	//Reading json from request
 	params := requestDecode(r)	
@@ -284,7 +278,8 @@ func changeUserData(w http.ResponseWriter, r *http.Request) {
 	log.Printf("/changeUserData has been excuted sucessfully!")
 }
 
-
+//Will remove User from the database.
+//Can only use the userId to do this.
 func delUser(w http.ResponseWriter, r *http.Request) {
 	var queryString string = "DELETE FROM User WHERE userID = ?"
 
@@ -318,4 +313,37 @@ func delUser(w http.ResponseWriter, r *http.Request) {
 	writeJsonResponse(response, w)
 	
 	log.Printf("/delAnonUser has been excuted sucessfully!")
+}
+
+//gen cookie key
+func addLogged() (string) {	
+	hashed := md5.Sum([]byte(strconv.FormatInt(time.Now().UnixNano(), 10) + "ANEXD_S@1t"))
+	hash:= hex.EncodeToString(hashed[:])
+	
+	good := true
+	
+	//ensure no hash collisions.
+	for good {
+		_, ok := logged[hash] 
+		if !ok {
+			good = false
+		}
+	}
+	logged[hash] = time.Now().UnixNano()
+	return hash
+}
+
+//check cookie key
+func checkLogged(hash string) (bool) {
+	curTime := time.Now().UnixNano()
+	if logged[hash] + int64(48 * time.Hour) < curTime {
+		// cookie is valid 
+		logged[hash] = curTime //update time
+		return true
+	}else {
+		// cookie isnt valid
+		delete(logged, hash)
+		jsonBadCookie()
+		return false
+	}
 }
