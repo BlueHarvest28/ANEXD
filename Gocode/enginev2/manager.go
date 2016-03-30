@@ -7,16 +7,28 @@ import (
 	"github.com/googollee/go-socket.io"
 )
 
+/*
+	Main data structure for the API to store struct instances of Lobby
+	When mutating the map structure, mutual exclusion locks should be used.
+*/
 type Manager struct {
 	sync.RWMutex
 	lobbies map[string]*Lobby
 }
 
+/*
+	Struct used for storing parameters about the Application that a lobby is to run.
+	Obtained from the API on creation of a lobby (data obtained from database).
+*/
 type Game struct {
 	connType, host, port string
 	gameId, maxUsers int
 }
 
+/*
+	Function to instantiate a new Manager struct for storing Lobby instance pointers.
+	Returns a pointer to the created Manager.
+*/
 func newManager() *Manager {
 	m := Manager{
 		lobbies: make(map[string]*Lobby),
@@ -24,6 +36,10 @@ func newManager() *Manager {
 	return &m
 }
 
+/*
+	Adds the Lobby stored at the param pointer to the respective Manager map.
+	Uses Mutual Exclusion Locks.
+*/
 func (m *Manager) addLobby(lobby *Lobby) error {
 	m.Lock()
 	defer m.Unlock()
@@ -35,6 +51,10 @@ func (m *Manager) addLobby(lobby *Lobby) error {
 	return nil
 }
 
+/*
+	Removes the Lobby stored at the parameter Key (lobby ID).
+	Uses Mutual Exclusion Locks.
+*/
 func (m *Manager) removeLobby(lobbyId string) error {
 	m.Lock()
 	defer m.Unlock()
@@ -45,6 +65,11 @@ func (m *Manager) removeLobby(lobbyId string) error {
 	return nil
 }
 
+/*
+	On Socket.IO connection to the server, this is the only event accessible.
+	Client should emit whether they are an Application Server, a Desktop, or Mobile
+	user respectively.
+*/
 func (m *Manager) socketSetup(socket socketio.Socket) {
 	socket.On("client", func(client string) {
 		switch client {
@@ -58,10 +83,11 @@ func (m *Manager) socketSetup(socket socketio.Socket) {
 	})
 }
 
+/*
+	Used to give access to an Application server to connect to a lobby.
+*/
 func (m *Manager) serverSetup(socket *socketio.Socket) {
 	(*socket).On("connectlobby", func(lobbyid string) {
-		m.Lock()
-		defer m.Unlock()
 		l, ok := m.lobbies[lobbyid]
 		if !ok {
 			(*socket).Emit("connectlobby", false)
@@ -75,10 +101,11 @@ func (m *Manager) serverSetup(socket *socketio.Socket) {
 	(*socket).Emit("client", true)
 }
 
+/*
+	Used to give access to a desktop user to host a lobby.
+*/
 func (m *Manager) desktopSetup(socket *socketio.Socket) {
 	(*socket).On("hostlobby", func(msg map[string]interface{}) {
-		m.Lock()
-		defer m.Unlock()
 		lobbyid := msg["lobbyid"].(string)
 		l, ok := m.lobbies[lobbyid]
 		if !ok {
@@ -94,10 +121,11 @@ func (m *Manager) desktopSetup(socket *socketio.Socket) {
 	(*socket).Emit("client", true)
 }
 
+/*
+	Used to give access to a mobile user to join a lobby.
+*/
 func (m *Manager) mobileSetup(socket *socketio.Socket) {
-	(*socket).On("joinlobby", func(msg map[string]interface{}) { //MAKE EMIT APP ID
-		m.Lock()
-		defer m.Unlock()
+	(*socket).On("joinlobby", func(msg map[string]interface{}) {
 		lobbyid := msg["lobbyid"].(string)
 		l, ok := m.lobbies[lobbyid]
 		if !ok {

@@ -2,39 +2,47 @@ package main
 
 import (
 	"fmt"
-	//"log"
-	//"errors"
-	//"encoding/json"
 	"github.com/googollee/go-socket.io"
 )
 
+/*
+	Main struct for a User instance in a lobby, storing all variables required 
+	for User functionality.
+*/
 type User struct {
 	player float64 //json decodes to float64
 	username string
 	ready bool
 	lobby *Lobby
-	send chan UserMessage
+	send chan MessageUser
 	quit chan bool
 	socket *socketio.Socket
 }
 
+/*
+	Instantiates and returns a pointer to a new User.
+*/
 func newSessionUser(p float64, uname string, l *Lobby, s *socketio.Socket) *User {
 	user := User{
 		player: p,
 		username: uname,
 		ready: false,
 		lobby: l,
-		send: make(chan UserMessage),
+		send: make(chan MessageUser),
 		quit: make(chan bool),
 		socket: s,
 	}
 	return &user
 }
 
+/*
+	If a User has connected to a lobby as a host, this function will be
+	executed, setting up all Socket.IO events required by a host according 
+	to the Message Data Specification document.
+*/
 func (u *User) hostSetup() {
 	(*u.socket).Join(fmt.Sprintf("%d", u.lobby.lobbyId))
 	go u.sendHandler()
-
 	(*u.socket).On("setready", func(r bool) {
 		u.ready = r
 		u.lobby.command <- Update{}
@@ -53,7 +61,7 @@ func (u *User) hostSetup() {
 	(*u.socket).On("launch", func() {
 		u.lobby.command <- Launch{}
 	})
-	(*u.socket).On("msg", func(msg map[string]interface{}) {//Change to "msg"
+	(*u.socket).On("msg", func(msg map[string]interface{}) {
 		u.lobby.send <- MsgServer{
 			Player: u.player,
 			Msg: msg,
@@ -61,10 +69,14 @@ func (u *User) hostSetup() {
 	})
 }
 
+/*
+	If a User has connected to a lobby as a mobile user, this function will be
+	executed, setting up all Socket.IO events required by a mobile user according 
+	to the Message Data Specification document.
+*/
 func (u *User) anonSetup() {
 	(*u.socket).Join(fmt.Sprintf("%d", u.lobby.lobbyId))
 	go u.sendHandler()
-
 	(*u.socket).On("setready", func(r bool) {
 		u.ready = r
 		u.lobby.command <- Update{}
@@ -79,7 +91,7 @@ func (u *User) anonSetup() {
 			Appid: float64(u.lobby.game.gameId),
 		}
 	})
-	(*u.socket).On("msg", func(msg map[string]interface{}) {//Change to "msg"
+	(*u.socket).On("msg", func(msg map[string]interface{}) {
 		u.lobby.send <- MsgServer{
 			Player: u.player,
 			Msg: msg,
@@ -87,17 +99,23 @@ func (u *User) anonSetup() {
 	})
 }
 
+/*
+	Handler function for outbound messages to the User, sent over Socket.IO.
+*/
 func (u *User) sendHandler() {
 	for {
 		select {
 			case message := <-u.send:
 			go message.process(u)
 			case <-u.quit:
-			return
+			break
 		}
 	}
 }
 
+/*
+	Function called to prevent any goroutine leaks when User removed.
+*/
 func (u *User) terminate() {
 	close(u.quit)
 }

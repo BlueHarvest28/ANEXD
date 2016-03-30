@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"fmt"
 	"log"
 	"errors"
 	"sync"
@@ -13,14 +12,20 @@ import (
 	"github.com/googollee/go-socket.io"
 )
 
+/*
+	Main data struct for a lobby instance, contains a slice storing
+	points to all User instances connected to the lobby.
+	
+	Functions that operate on the slice must use Mutual Exclusion Locks.
+*/
 type Lobby struct {
 	sync.RWMutex
 	lobbyId string
 	game Game
 	started bool
 	users []*User
-	send chan MessageServer //[]byte for TCP?
-	command chan Command //Message type?
+	send chan MessageServer
+	command chan Command
 	quit chan int
 	timeout chan bool
 	tcpConn *net.TCPConn
@@ -28,9 +33,20 @@ type Lobby struct {
 }
 
 /*
-	lobbyid string
-	Game{connType, host, port string gameId, maxUsers int
-	}
+	Struct for creating a JSON object to be emitted within a JSON array of
+	users currently in the lobby.
+*/
+type LobbyUser struct {
+	Nickname string                 `json:"nickname"`
+	Ready	 bool	                `json:"ready"`
+}
+
+/*
+	Function to instantiate a new Lobby struct, runs the instance's
+	commandHandler() goroutine, which listens on the command channel
+	for instructions to manipulate the data held in the struct.
+	
+	Returns a pointer to the instance created.
 */
 func newSession(l string, g Game) *Lobby {
 	lobby := Lobby {
@@ -46,6 +62,16 @@ func newSession(l string, g Game) *Lobby {
 	return &lobby
 }
 
+/*
+	Called by a "hostlobby" or "joinlobby" Socket.IO event from the front-end.
+	Uses mutual exclusion locks to modify the data structure.
+	Checks whether the lobby is full or username already exists in lobby.
+	Calls newSessionUser() function to instantiate a new User struct
+	Joins the Socket.IO lobby Room and sets up Socket.IO events for User, 
+	respective of the type.
+	
+	Adds a new User instance to the lobby data structure.
+*/
 func (l *Lobby) addNewUser(uname string, s *socketio.Socket) error {
 	l.Lock()
 	defer l.Unlock()
@@ -64,24 +90,30 @@ func (l *Lobby) addNewUser(uname string, s *socketio.Socket) error {
 	if err != nil {
 		return err
 	}
-	if index > 0 {
-		user.anonSetup()
-	} else { //index is 0, so new user is a host
-		user.hostSetup()
-	}
 	l.users = append(l.users, user)
-	l.command <- Update{}
+	if index == 0 {
+		user.hostSetup()
+		go l.pollUpdate()
+	} else {
+		user.anonSetup() //index is not 0, so new user is a mobile player
+	}
 	return nil
 }
 
 /*
-	Removes a player from the users slice - No Memory Leak:
+	This function should not be run if the started bool is true, as 
+	player numbers should be fixed at that point.
+	Removes a player from the users slice
+	No Memory Leak:
 	Example: Removing index 2 from: 			 [0][1][2][3][4]
 										 Append: [0][1]   [3][4]
 	Final memory block still has redundant data: [0][1][3][4][4]
 							 Overwrite with nil: [0][1][3][4][nil]
 */
 func (l *Lobby) removeUser(p float64) error {
+	if l.started {
+		return errors.New("Lobby.removeUser: Lobby has started so cannot remove user.")
+	}
 	l.Lock()
 	defer l.Unlock()
 	player := int(p)
@@ -97,6 +129,27 @@ func (l *Lobby) removeUser(p float64) error {
 	return nil
 }
 
+/*
+	Function to be called as a goroutine, to constantly emit a lobby update.
+	While not necessary if connections are all consistent, if a user misses 
+	an event based update (such as on a user join/leave), this function 
+	keeps polling on time intervals.
+*/
+func (l *Lobby) pollUpdate() {
+	for {
+		if !l.started {
+			l.updateLobby()
+			time.Sleep(3 * time.Second)
+		} else {
+			break
+		}
+	}
+}
+
+/*
+	Creates an array of objects (to be JSON Marshaled later) representing
+	the current users in the lobby, and their ready status.
+*/
 func (l *Lobby) updateLobby() {
 	var list []LobbyUser
 	//players := l.users[1:]
@@ -113,6 +166,9 @@ func (l *Lobby) updateLobby() {
 	}
 }
 
+/*
+	Connects an Application Server to this session via TCP.
+*/
 func (l *Lobby) connectTcp() error {
 	addr := l.game.host + ":" + l.game.port
 	tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
@@ -129,6 +185,9 @@ func (l *Lobby) connectTcp() error {
 	return nil
 }
 
+/*
+	Connects an Application Server to this session via client sided Socket.IO
+*/
 func (l *Lobby) connectSocketio() error {
 	l.timeout = make(chan bool, 1)
 	//call http function to server
@@ -150,8 +209,12 @@ func (l *Lobby) connectSocketio() error {
 	return nil
 }
 
-//POST Request
-//http://stackoverflow.com/questions/31662411/specify-port-number-in-http-request-node-js
+/*
+	Function by Alex Austin:
+	POST Request to an Application Server to inform them to initiate a Socket.IO 
+	connection, with the lobbyid to associate the received socket with this lobby.
+	http://stackoverflow.com/questions/31662411/specify-port-number-in-http-request-node-js
+*/
 func postSocketRequest(uri string, lid string) {
 	url := uri
     log.Println("sent post to url: ", url)
@@ -168,13 +231,19 @@ func postSocketRequest(uri string, lid string) {
     defer resp.Body.Close()
 }
 
+/*
+	Once a connection with the Application server is established, 
+	this function attempts to create a lobby instance (on the Application Server)
+	and prepare the server with the respective lobby parameters, such as player count.
+	Sends a response to the host user to report success over Socket.IO message.
+*/
 func (l *Lobby) createSession() {
 	room := l.lobbyId
 	//create timeout for request
 	l.timeout = make(chan bool, 1)
 	//request new game with parameters
 	l.send <- NewSession{
-		Event: "newsession",
+		Event: "new",
 		Players: float64(len(l.users)),
 		MaxPlayers: float64(cap(l.users)),
 	}
@@ -208,6 +277,10 @@ func (l *Lobby) createSession() {
 	}
 }
 
+/*
+	Handler function for outbound messages to the Application server, sent 
+	over the respective connection instance, over tcp, ws or Socket.IO.
+*/
 func (l *Lobby) sendHandler() {
 	if l.game.connType == "tcp" {
 		for {
@@ -215,7 +288,7 @@ func (l *Lobby) sendHandler() {
 				case message := <-l.send:
 				go message.tcp(l)
 				case <-l.quit:
-				return
+				break
 			}
 		}
 	} else { //l.game.connType == "socketio"
@@ -224,66 +297,62 @@ func (l *Lobby) sendHandler() {
 				case message := <-l.send:
 				go message.socketio(l)
 				case <-l.quit:
-				return
+				break
 			}
 		}
 	}
 }
 
+/*
+	Handler function for inbound messages from the Application server, received 
+	over the respective TCP connection instance.
+*/
 func (l *Lobby) tcpHandler() {
 	decoder := json.NewDecoder(l.tcpConn)
 	for {
-		var sMsg ServerMessage
-		err := decoder.Decode(&sMsg)
-		if err != nil {
-			log.Print(err)
-		}
-		//check event
-		switch sMsg.Event {
-			case "msgplayer":
-			l.command <- MsgPlayer{
-				Player: int(sMsg.Player),
-				Msg: sMsg.Msg,
+		select {
+			case <-l.quit:
+			break
+			default:
+			var sMsg ServerMessage
+			err := decoder.Decode(&sMsg)
+			if err != nil {
+				log.Print(err)
 			}
-			case "msgall":
-			l.command <- MsgAll{
-				Msg: sMsg.Msg,
-			}
-			case "created":
-			l.command <- Created{}
+			l.command <- sMsg
 		}
 	}
 }
 
+/*
+	Handler setup function for inbound messages from the Application server, received 
+	over the respective Socket.IO connection instance.
+*/
 func (l *Lobby) socketioHandler() {
-	(*l.socket).On("msgplayer", func(sMsg ServerMessage) {
-		l.command <- MsgPlayer{
-			Player: int(sMsg.Player),
-			Msg: sMsg.Msg,
-		}
-	})
-	(*l.socket).On("msgall", func(sMsg ServerMessage) {
-		l.command <- MsgAll {
-			Msg: sMsg.Msg,
-		}
+	(*l.socket).On("out", func(sMsg ServerMessage) {
+		l.command <- sMsg
 	})
 }
 
+/*
+	Handler function for processing commands to change the lobby struct data.
+*/
 func (l *Lobby) commandHandler() {
 	for {
 		select {
 			case command := <-l.command:
 			go command.execute(l)
 			case <-l.quit:
-			return
+			break
 		}
 	}
 }
 
 /*
-	End all running goroutines for lobby
+	End all running goroutines for lobby, prevent goroutine leaks to ensure
+	garbage collection when the lobby is removed.
 */
 func (l *Lobby) terminate() {
+	l.started = true
 	close(l.quit)
-
 }
