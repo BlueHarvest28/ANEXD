@@ -1,141 +1,143 @@
 /*
-*	TODO: 	GETTING SOCKET CLIENT UPLOADED TO OPENSHIFT
-*			UPDATING TO MATCH NEW GO STANDARDS
+*	TODO: 	COMMENTS
 */
-var serverappid = 14;
-var imageURL;
-var socketio = require('socket.io-client')
-var appsocket = socketio('http://localhost:3002/apps');
-var socket;
+var net = require('net');
+var express = require('express');
+var http    = require('http');
+var app     = express();
+var server  = http.createServer(app);
+var socketio = require('socket.io-client');
+var bodyParser = require('body-parser');
 
-//var net = require('net');
-//
-//var express = require('express');
-//var http    = require('http');
-//var app     = express();
-//var server  = http.createServer(app);
-//var io      = require('socket.io').listen(server);
-//
-//app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3004);
-//app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "localhost");
-//
-////Launch server
-//server.listen(app.get('port') ,app.get('ip'), function () {
-//    console.log("✔ Express server listening at %s:%d ", app.get('ip'),app.get('port'));
-//});
+var games = [];
 
-appsocket.on('connect', function(){
-	console.log('connect to apps list');
-	appsocket.on('start', function(appid){
-		if(serverappid === appid){
-			if(!socket){
-				socket = socketio('http://localhost:3002/apps/' + appid);
-				play();	
-			}
-		}
-	});
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3004);
+app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "localhost");
+app.use(bodyParser.json());
+
+//Launch server
+server.listen(app.get('port'), app.get('ip'), function () {
+    console.log("✔ Express server listening at %s:%d ", app.get('ip'), app.get('port'));
 });
 
-var play = function(){
-	console.log('play');
-	socket.on('connect', function(){
-		console.log('connected');
-		
-		socket.on('new', function(data){
+app.post("/",function(request, response){
+	console.log(request.body);
+	var lobbyid = request.body.lobbyid;
+	var instance = new app().init();
+	games.push(instance);
+});
+
+function app() {
+    this.imageURL = '';
+    this.init = function() {
+		console.log('Initialising');
+		this.socket = socketio('http://api-anexd.rhcloud.com:8000/');
+		this.socket.on('connect', function(){
+			this.socket.emit('client', 'server');
+			this.socket.emit('connectlobby', lobbyid);
+			this.socket.on('connectlobby', function(data){
+				this.run();
+			});
+		});
+    };
+    this.run = function() {
+		console.log('Running');
+        this.socket.on('new', function(data){
 			console.log('new');
-			if(imageURL){
-				console.log('sending image', imageURL);
-				socket.emit('image', imageURL);
+			if(this.imageURL){
+				console.log('sending image', this.imageURL);
+				this.socket.emit('image', this.imageURL);
 			}
 		});
 		
-		socket.on('image', function(data){
+		this.socket.on('image', function(data){
 			console.log('image:', data);
-			imageURL = data;
+			this.imageURL = data;
 			var msg = {
 				'event': 'image',
-				'data': imageURL,
+				'data': this.imageURL,
 			};
-			socket.emit('msgall', {'msg': msg});
+			this.emit('msgall', {'msg': msg});
 		});
-
-		socket.on('drawing', function(data){
+		
+		this.socket.on('drawing', function(data){
 			console.log('drawing:', data);
 			var msg = {
 				'event': 'drawing',
 				'data': data,
 			}
-			socket.emit('msgplayer', {'player': 0, 'msg': msg});
+			this.emit('msgplayer', {'player': 0, 'msg': msg});
 		});
-
-		socket.on('save', function(data){
+		
+		this.socket.on('save', function(data){
 			console.log('save:', data);
 			var msg = {
 				'event': 'save',
 				'data': data,
 			}
-			socket.emit('msgplayer', {'player': 0, 'msg': msg});
+			this.emit('msgplayer', {'player': 0, 'msg': msg});
 		});
-
-		socket.on('undo', function(data){
+		
+		this.socket.on('undo', function(data){
 			console.log('undo');
 			var msg = {
 				'event': 'undo',
 			}
-			socket.emit('msgplayer', {'player': 0, 'msg': msg});
+			this.emit('msgplayer', {'player': 0, 'msg': msg});
 		});	
-	});
-}
+    };
+};
 
-//client.on('data', function(data) {
-//	var data = JSON.parse(data).msg;
-//	console.log('Received: ' + data);
 //
-//	if(data.event === 'new'){
-//		console.log('new');
-//		if(imageURL){
-//			console.log('sending image', imageURL);
-//			client.write('image', imageURL);
-//		}
-//	}
+//var play = function(namespace, instance){
+//	var socket = socketio(namespace); 
+//	games.push({'socket': socket, 'imageURL': ''});
+//	
+//	socket.on('connect', function(){
+//		console.log('game server connected to mock');
+//		
+//		socket.on('new', function(data){
+//			console.log('new');
+//			if(imageURL){
+//				console.log('sending image', imageURL);
+//				socket.emit('image', imageURL);
+//			}
+//		});
+//		
+//		socket.on('image', function(data){
+//			console.log('image:', data);
+//			imageURL = data;
+//			var msg = {
+//				'event': 'image',
+//				'data': games[instance].imageURL,
+//			};
+//			socket.emit('msgall', {'msg': msg});
+//		});
 //
-//	if(data.event === 'image'){
-//		console.log('image');
-//		imageURL = data.data;
-//		var msg = {
-//			'event': 'image',
-//			'data': imageURL,
-//		};
-//		client.write(new Buffer(JSON.stringify({'event': 'msgall', 'msg': msg})));
-//	}
+//		socket.on('drawing', function(data){
+//			console.log('drawing:', data);
+//			var msg = {
+//				'event': 'drawing',
+//				'data': data,
+//			}
+//			socket.emit('msgplayer', {'player': 0, 'msg': msg});
+//		});
 //
-//	if(data.event === 'drawing'){
-//		console.log('drawing');
-//		var msg = {
-//			'event': 'drawing',
-//			'data': data.data,
-//		}
-//		client.write(new Buffer(JSON.stringify({'event': 'msgplayer', 'player': 0, 'msg': msg})));
-//	}
+//		socket.on('save', function(data){
+//			console.log('save:', data);
+//			var msg = {
+//				'event': 'save',
+//				'data': data,
+//			}
+//			socket.emit('msgplayer', {'player': 0, 'msg': msg});
+//		});
 //
-//	if(data.event === 'save'){
-//		console.log('save');
-//		var msg = {
-//			'event': 'save',
-//			'data': data.data,
-//		}
-//		client.write(new Buffer(JSON.stringify({'event': 'msgplayer', 'player': 0, 'msg': msg})));
-//	}
-//
-//	if(data.event === 'undo'){
-//		console.log('undo');
-//		var msg = {
-//			'event': 'undo',
-//		}
-//		client.write(new Buffer(JSON.stringify({'event': 'msgplayer', 'player': 0, 'msg': msg})));
-//	}	
-//});
-//
-//client.on('close', function() {
-//	console.log('Connection closed');
-//});
+//		socket.on('undo', function(data){
+//			console.log('undo');
+//			var msg = {
+//				'event': 'undo',
+//			}
+//			socket.emit('msgplayer', {'player': 0, 'msg': msg});
+//		});	
+//	});
+//};

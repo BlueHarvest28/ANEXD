@@ -7,6 +7,13 @@
  * Copyright (C): University Of Kent 01/03/2016 
 **/
 
+/**
+  * @ngdoc overview
+  * @name ANEXD
+  * @description 
+  * A platform for real time, collaborative web applications.
+  */
+
 /*
 *	TODO: 	TIDY UP MOBILE CHECK (REUSE?)
 */

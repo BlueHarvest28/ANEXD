@@ -1,18 +1,13 @@
 /**
  * CO600 ANEXD Project Code
  *
- * Contributor(s): Frederick Harrington(FH98) and Harry Jones(HJ80)
- * index.js is a part of the frontend web deveoplment
- * index.js manages all mobile based frontend in partnership with index.html
- * index.js includes functions for signing in and login.
+ * Contributor(s): Harry Jones(HJ80) and Frederick Harrington(FH98)
+ * index.js is the main frontend controller.
+ * All other controllers are injected into index.html's ng-view, giving us session-wide persistence in this controller.
+ * It handles the navigation header, logging in, out (and other account functions), and also displays errors.
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
-
-/*
-*	TODO:	IMPROVE LOGIN RELIABILITY (SEE: FACTORIES.JS)
-*/
-
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -27,17 +22,31 @@ angular.module('ANEXD')
 	'SessionService',
 	'APIService',
 	'SocketService',
-    function ($scope, $rootScope, $timeout, $location, $http, md5, CONST, SessionService, APIService, SocketService)
-    {		
-        /* Local and $scope variables */
-		$scope.isMobile = $rootScope.isMobile;             //Check if the user is on mobile
-    	$scope.loggedIn = SessionService.isLoggedIn();       //Is the user logged in
-        $scope.errorDisabled = false;                      //Used to disable a button
-		$scope.shouldHide = true;                          //Used to hide parts of HTML
+    function ($scope, $rootScope, $timeout, $location, $http, md5, CONST, SessionService, APIService, SocketService) 
+	{		
+		//Check if the user is on mobile
+		$scope.isMobile = $rootScope.isMobile;   
+		//Is the user logged in?
+    	$scope.loggedIn = SessionService.isLoggedIn();    
+		//Used to disable a button
+        $scope.errorDisabled = false; 
+		//Used for signing in / up; is this email recognised?
+		$scope.newEmail = false;
+		//Conditional show/hide vars
+		$scope.shouldHide = true;                          
         $scope.showUpdate = false;
 		
+		//If logged in, get user's email to display on the header
+    	if($scope.loggedIn){
+    		$scope.user = SessionService.getUser();
+    	}
+		
+		/*
+		* HJ80
+		* When we receive an error event, output it to the user for 5 seconds
+		*/
 		$scope.showError = false;
-		$scope.$on('error', function(event, error){
+		$scope.$on(CONST.ERROR, function(event, error) {
 			if(error){
 				$scope.error = error;
 				$scope.showError = true;
@@ -47,46 +56,42 @@ angular.module('ANEXD')
 			}
 		});
 		
+		//Send the correct client type to the Go server
+		//SEE: factories.js for more information on the SocketService functions
 		var clientType;
-		
 		if($scope.isMobile){
 			clientType = 'mobile';
 		}
 		else {
 			clientType = 'desktop';
 		}
-		
 		SocketService.promise('client', clientType, true)
-		.then(function(response){
+		.then(function(response) {
 			if(response){
-				//Client connection successful
+				//Client connection successful - no action required
 			}
 		});
 		
-		$scope.home = function(){
+		//Hard move to the root path, used when clicking the ANEXD logo in the header
+		$scope.home = function() {
 			$location.path('/', true);
 		};
-		
-        //If someone is logged in then get that users id
-    	if($scope.loggedIn){
-    		$scope.user = SessionService.getUser();
-    	}
-		
-		//Set the flag to false
-		$scope.newEmail = false;
         
         /*
         * HJ80
-        * Function is called when a user wants to login
-        * Function contains parts for a new and existing users
-        * Calls SessionService with both createUser() and login() 
+        * Function called when a user wants to login.
+        * By this point, we already know if the email is recognised in the database or not
+        * If it's a new user, we create them. If it's an existing user we log them straight in
+		* SEE: factories.js for more information on the SessionService functions
         */ 
     	$scope.login = function(email, password) {
 			//New user
 			if($scope.newEmail){
 				SessionService.createUser(email, password).then(function(result) {
 					if(result){
+						//Successful, force close the login modal
 						$rootScope.$broadcast('closeModal');
+						//Wait for the modal to animate out before updating
 						$timeout( function(){
 							$scope.loggedIn = true;
 						}, 150);
@@ -97,7 +102,9 @@ angular.module('ANEXD')
 			} else {
 				SessionService.login(email, password).then(function(result) {
 					if(result){
+						//Successful, force close the login modal
 						$rootScope.$broadcast('closeModal');
+						//Wait for the modal to animate out before updating
 						$timeout( function(){
 							$scope.loggedIn = true;
 						}, 150);
@@ -109,12 +116,13 @@ angular.module('ANEXD')
         
         /*
         * HJ80
-        * Function called on email input
-        * Function checks if the email exisits in the database.
-        * HTTP Post request contains submitted email
-        * HTTP Post request receives boolean
+        * Function called on email input in the login/signup modal
+        * Check if the email exisits in the database.
+		* SEE: factories.js for more information on the APIService functions
         */
 		$scope.checkEmail = function(email) {
+			//If empty, save the server the effort
+			//(We have already checked that email is valid - this is just defensive)
 			if(!email){
 				return;
 			}
@@ -124,7 +132,7 @@ angular.module('ANEXD')
             };
 			
             APIService.post('getUser', payload).then(
-				function(response){
+				function(response) {
 					if(response.data.status === 'Success'){
 						$scope.newEmail = false;
 					}
@@ -136,7 +144,7 @@ angular.module('ANEXD')
 		};
         
         /*
-        * FH98
+        * FH98/HJ80
         * Function called when submit called on users settings page.
         * Function updates password to new password.
         * Function checks if the retyped password is correct.
@@ -145,13 +153,14 @@ angular.module('ANEXD')
         */ 
         $scope.update = function(data) {
             $scope.errorDisabled = false;
-			$scope.showUpdate = false;
+			$scope.showUpdate = false; 
             
-            var passwordHashCurrent = md5.createHash(data.cpass); 
-            var passwordHash = md5.createHash(data.npass);
-            var passwordHashRepeat = md5.createHash(data.rpass);
-            
-            if(passwordHash === passwordHashRepeat) {
+            //Double-check that the two passwords match
+			//(This is already validated in index.html)
+			if(data.npass === data.rpass) {
+				var passwordHashCurrent = md5.createHash(data.cpass); 
+				var passwordHash = md5.createHash(data.npass);
+				
                 var payload = {
                     'userID': SessionService.getUserId(),
                     'password': passwordHashCurrent,
@@ -159,8 +168,9 @@ angular.module('ANEXD')
                 };
                 
 				APIService.post('changePassword', payload).then(
-					function(response){
+					function(response) {
 						if(response){
+							//Successful, close the login modal
 							$rootScope.$broadcast('closeModal');
 						}
                 	}
@@ -172,14 +182,13 @@ angular.module('ANEXD')
 		
         /*
         * HJ80
-        * Function is called when the user logout.
-        * Function calles two SessionService functions, logout and getUser.
-        * Function contains timeout function. 
+        * Function is called when the user logs out.
+        * Closes the modal and calls the relevant SessionService functions
         */ 
     	$scope.logout = function() {
 			$rootScope.$broadcast('closeModal');
     		//Wait for the modal to animate out
-    		$timeout( function(){
+    		$timeout(function() {
 	            $scope.loggedIn = SessionService.logout();
     			$scope.user = undefined;
 	        }, 150);

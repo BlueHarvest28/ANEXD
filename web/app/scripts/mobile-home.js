@@ -11,7 +11,8 @@
  * @ngdoc controller
  * @name ANEXD.controller:MobileHomeController
  * @description
- * Handle all mobile-user lobby connections. 
+ * Handles all mobile-user lobby connections. 
+ * Users are able to join, toggle their ready state, and leave a lobby from here.
  */
 
 (function () {
@@ -115,11 +116,12 @@ angular.module('ANEXD')
         */
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
-			SocketService.promise('setready', $scope.ready, true).then(
-				function(){
-					//There won't be a response
+			SocketService.promise('setready', $scope.ready, false)
+			.then(function(response){
+				if(response){
+					//Client connection successful
 				}
-			);
+			});
 			//SocketService.emit('setready', $scope.ready);
 		};
     }

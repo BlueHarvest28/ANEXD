@@ -55,7 +55,7 @@ module.exports = function (grunt) {
 				tasks: ['compass:server', 'postcss:server']
 			},
 			gruntfile: {
-				files: ['Gruntfile.js']
+				files: ['Gruntfile.js', 'ngdocs']
 			},
 			livereload: {
 				options: {
@@ -340,7 +340,7 @@ module.exports = function (grunt) {
 					cwd: '<%= yeoman.app %>/images',
 					src: '{,*/}*.{png,jpg,jpeg,gif}',
 					dest: '<%= yeoman.dist %>/images'
-        }]
+        		}]
 			}
 		},
 
@@ -351,7 +351,7 @@ module.exports = function (grunt) {
 					cwd: '<%= yeoman.app %>/images',
 					src: '{,*/}*.svg',
 					dest: '<%= yeoman.dist %>/images'
-        }]
+        		}]
 			}
 		},
 
@@ -368,7 +368,7 @@ module.exports = function (grunt) {
 					cwd: '<%= yeoman.dist %>',
 					src: ['*.html'],
 					dest: '<%= yeoman.dist %>'
-        }]
+        		}]
 			}
 		},
 

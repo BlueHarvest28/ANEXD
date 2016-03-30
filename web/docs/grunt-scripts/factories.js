@@ -1,8 +1,15 @@
-/*
-*	TODO:	CLEAN UP OLD SOCKETS
-			IMPROVE LOGIN SECURITY AND RELIABILITY
+/**
+* @ngdoc service
+* @name ANEXD.SessionService
+* @description 
+* SessionService provides application-wide access to logging in, logging out, creating and removing sessions, and accessing their states
+* @requires $rootScope
+* @requires $cookies
+* @requires $http
+* @requires md5
+* @requires CONST
+* @requires APIService
 */
-
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -21,12 +28,22 @@ angular.module('ANEXD')
 		var app;
 		var isRunning = false;
 		
+		//Check if the user has existing cookies, and automatically log them in if so
 		if($cookies.get('userId') && $cookies.get('userEmail')){
 			userId = $cookies.get('userId');
 			userEmail = $cookies.get('userEmail');
 			loggedIn = true;
 		}
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#login
+		* @methodOf ANEXD.SessionService
+		* @description attempt to log a user in given a validated existing email and password
+		* @param {string} email - The user's email (confirmed by checkEmail to be a valid user email)
+		* @param {string} password - The user's supposed password
+		* @returns {boolean} True if the user successfully logs in, false otherwise
+		*/
 		var login = function (email, password) {
 			// Creating password hashing using md5 
 			var hash = md5.createHash(password);
@@ -53,6 +70,13 @@ angular.module('ANEXD')
 			});
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#logout
+		* @methodOf ANEXD.SessionService
+		* @description Log the user out, clear cookies, and broadcast the 'logout' event
+		* @returns {undefined} No return as all actions are taken locally
+		*/
 		var logout = function () {
 			loggedIn = false;
 			$cookies.remove('userEmail');
@@ -62,6 +86,13 @@ angular.module('ANEXD')
 			$rootScope.$broadcast('logout');
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#isLoggedIn
+		* @methodOf ANEXD.SessionService
+		* @description Returns whether a user is currently logged in or not
+		* @returns {boolean} True if the user is logged in, false otherwise
+		*/
 		var isLoggedIn = function () {
 			if (loggedIn) {
 				return true;
@@ -70,6 +101,13 @@ angular.module('ANEXD')
 			}
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#createUser
+		* @methodOf ANEXD.SessionService
+		* @description Request to create a new user. If successful, call the login function on the new user.
+		* @returns {boolean} True if the user is successfully created and logged in, false otherwise
+		*/
 		var createUser = function (email, password) {
 			var hash = md5.createHash(password);
 			var payload = {
@@ -85,6 +123,13 @@ angular.module('ANEXD')
 			});
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#getUser
+		* @methodOf ANEXD.SessionService
+		* @description Get the email of the user currently logged in, if any
+		* @returns {string} User's email if logged in, false otherwise
+		*/
 		var getUser = function () {
 			if(userEmail){
 				return userEmail;
@@ -94,6 +139,13 @@ angular.module('ANEXD')
 			}
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#getUserId
+		* @methodOf ANEXD.SessionService
+		* @description Get the id of the currently logged in user, if any
+		* @returns {string} User's id if logged in, false otherwise
+		*/
 		var getUserId = function () {
 			if(userId){
 				return userId;
@@ -103,27 +155,59 @@ angular.module('ANEXD')
 			}
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#create
+		* @methodOf ANEXD.SessionService
+		* @description Create a new session holding the lobby and application ids
+		* @param {string} lobbyId - The lobby's id
+		* @param {string} appId - The application's id
+		*/
 		var create = function(lobbyId, appId){
 			lobby = lobbyId;
 			app = appId;
 			isRunning = true;
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#running
+		* @methodOf ANEXD.SessionService
+		* @description Check if a session is currently running
+		* @returns {boolean} True if a session is running, false otherwise
+		*/
 		var running = function(){
 			return isRunning;
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#details
+		* @methodOf ANEXD.SessionService
+		* @description Return the lobby and app ids of a running service
+		* @returns {string} Object of two strings; {'lobby': lobby, 'app', app}
+		*/
 		var details = function(){
-			return {
-				'lobby': lobby,
-				'app': app,
-			};
+			if(isRunning){
+				return {
+					'lobby': lobby,
+					'app': app,
+				};	
+			}
 		};
 		
+		/**
+		* @ngdoc function
+		* @name ANEXD.SessionService#close
+		* @methodOf ANEXD.SessionService
+		* @description End a running session
+		*/
 		var close = function(){
-			lobby = undefined;
-			app = undefined;
-			isRunning = false;
+			if(isRunning){
+				lobby = undefined;
+				app = undefined;
+				isRunning = false;	
+			}
 		};
 		
 		return {
@@ -140,6 +224,7 @@ angular.module('ANEXD')
 		};
 	}
 ])
+
 .factory('APIService', ['$rootScope', '$http', 'CONST', function($rootScope, $http, CONST) {
 	//var session;
 	
