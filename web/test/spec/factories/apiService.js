@@ -20,6 +20,7 @@ describe('Factory: APIService', function () {
 		httpBackend.when('POST', 'http://api-anexd.rhcloud.com/test-example').respond({'status': 'Success'});
 	}));
 
+	//19
 	it('should send a POST request', function () {
 		api.post('test-example').then(function(response){
 			expect(response).toBeDefined();

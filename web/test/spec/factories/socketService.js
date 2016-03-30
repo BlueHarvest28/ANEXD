@@ -20,6 +20,7 @@ describe('Factory: SocketService', function () {
 		httpBackend.when('POST', 'http://api-anexd.rhcloud.com/test-example').respond({'status': 'Success'});
 	}));
 
+	//24
 	it('should send a message and return a promise response', inject(function ($q) {
 		var test;
 		var defer = $q.defer();
@@ -33,13 +34,13 @@ describe('Factory: SocketService', function () {
 		expect(test).toEqual('test-in');
 	}));
 	
-	it('should send a message and timeout', inject(function ($q) {
+	//25
+	it('should send a message and fail', inject(function ($q) {
 		var test;
 		var defer = $q.defer();
 		defer.resolve('failed to receive response');
 		spyOn(socket, 'promise').and.returnValue(defer.promise);
 		socket.promise('test-2', 'test-out').then(function(response){
-			console.log('promise', response);
 			test = response;
 		});
 		expect(test).toBeUndefined();

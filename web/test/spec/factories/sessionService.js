@@ -35,6 +35,7 @@ describe('Factory: SessionService', function () {
 		});
 	}));
 
+	//20
 	it('should log in an existing user', function () {
 		session.login('hj80@kent.ac.uk', 'test').then(function(response){
 			expect(response).toBe(true);	
@@ -43,6 +44,7 @@ describe('Factory: SessionService', function () {
     	httpBackend.flush();
 	});
 	
+	//21
 	it('should fail to log in an existing user', function () {
 		login.respond({'status': 'Fail'});
 		session.login('hj80@kent.ac.uk', 'wrongpass').then(function(response){
@@ -52,6 +54,7 @@ describe('Factory: SessionService', function () {
     	httpBackend.flush();
 	});
 	
+	//22
 	it('should create a new user and log in', function () {
 		session.createUser('gorgonzola@kent.ac.uk', 'test').then(function(response){
 			expect(response).toBe(true);	
@@ -60,6 +63,7 @@ describe('Factory: SessionService', function () {
     	httpBackend.flush();
 	});
 	
+	//23
 	it('should create a session, check it, and close it', function () {
 		session.create('12345', '14');
 		expect(session.details()).toEqual({'lobby': '12345', 'app': '14'});

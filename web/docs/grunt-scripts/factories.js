@@ -291,7 +291,7 @@ angular.module('ANEXD')
 					console.log('error:', event, val);
 					$rootScope.$broadcast(CONST.ERROR, 'We\'re having problems connecting to the server right now, please try again; ' + event + ', ' + val);
 				}
-			}, 6000);
+			}, 3000);
 			
 			//Return from server
 			socket.on(event, function (response) {
@@ -317,10 +317,9 @@ angular.module('ANEXD')
  */
 .factory('ANEXDService', [
 	'SocketService', 
-	'$q', 
 	'$timeout', 
 	'$rootScope',
-	function (SocketService, $q, $timeout, $rootScope) {
+	function (SocketService, $timeout, $rootScope) {
 		return function(){
 			//Leave game if we receieve the message from PlayController
 			$rootScope.$on('leave', function(){
@@ -332,21 +331,11 @@ angular.module('ANEXD')
 			
 			//Sends a value to the server and promises a reply on the same event
 			var sendToServer = function (event, val) {
-				var defer = $q.defer();
-				SocketService.default.emit('msg', {'event': event, 'data': val});
-				
-				//Fails if no reply is received in 6 seconds
-				//TODO: retry
-				var resolveTimout = $timeout(function () {
-					defer.reject('failed to receive response');
-				}, 6000);
-				
-				//Return from server
-				SocketService.default.on(event, function (val) {
-					$timeout.cancel(resolveTimout);
-					defer.resolve(val);
-				});
-				return defer.promise;
+				return SocketService.promise('msg', {'event': event, 'data': val}).then(
+					function(response) {
+						return response;
+					}
+				);
 			};
 			
 			//One expect function for each event that you could receive at any time

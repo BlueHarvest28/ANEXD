@@ -5,11 +5,13 @@ describe('Controller: IndexController', function () {
 	// load the controller's module
 	beforeEach(module('ANEXD'));
 
-	var scope,
+	var rootScope,
+		scope,
 		httpBackend;
 
 	// Initialize the controller and a mock scope
 	beforeEach(inject(function ($rootScope, $controller, $httpBackend) {
+		rootScope = $rootScope;
 		scope = $rootScope.$new();
 		httpBackend = $httpBackend;
 		
@@ -43,8 +45,10 @@ describe('Controller: IndexController', function () {
 			$scope: scope
 		});
 	}));
-
+	
+	//1
 	it('should log in an existing user', function () {
+		expect(scope.user).toBeUndefined();
 		scope.newEmail = false;
 		scope.login('hj80@kent.ac.uk', 'test');
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/login');
@@ -52,7 +56,9 @@ describe('Controller: IndexController', function () {
 		expect(scope.user).toBeDefined();
 	});
 	
+	//2
 	it('should create a new user and log in', function () {
+		expect(scope.user).toBeUndefined();
 		scope.newEmail = true;
 		scope.login('newguy@kent.ac.uk', 'test');
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/newUser');
@@ -60,6 +66,7 @@ describe('Controller: IndexController', function () {
 		expect(scope.user).toBeDefined();
 	});
 	
+	//3
 	it('should log the user out', inject(function ($timeout) {
 		scope.user = 'Edgar Badgerdon';
 		scope.logout();
@@ -67,6 +74,7 @@ describe('Controller: IndexController', function () {
 		expect(scope.user).toBeUndefined();
 	}));
 	
+	//4
 	it('should set the newEmail flag to true', function () {
 		scope.newEmail = false;
 		scope.checkEmail('gorgonzola@kent.ac.uk');
@@ -75,6 +83,7 @@ describe('Controller: IndexController', function () {
 		expect(scope.newEmail).toBe(true);
 	});
 	
+	//5
 	it('should update the user\'s password', function () {
 		scope.update({
 			'cpass': 'test',
@@ -84,6 +93,9 @@ describe('Controller: IndexController', function () {
 		
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/changePassword');
     	httpBackend.flush();
+		spyOn(rootScope, '$broadcast').and.callThrough();
+		rootScope.$broadcast('closeModal');
+		expect(rootScope.$broadcast).toHaveBeenCalledWith('closeModal');
 	});
 	
 });

@@ -43,12 +43,14 @@ describe('Controller: HomeController', function () {
 		});
 	}));
 
+	//6
 	it('should get all applications', function () {
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/getAllGames');
     	httpBackend.flush();
 		expect(scope.apps.length).toBe(1);
 	});
 	
+	//7
 	it('should set the active app', function () {
 		var app = {
 			'gameID': '2',
@@ -61,18 +63,22 @@ describe('Controller: HomeController', function () {
 		expect(scope.app).toBe(app);
 	});
 	
+	//8
 	it('should set the filter type to \'Games\'', function () {
 		var type = 'Games';
 		scope.setFilter(type);
 		expect(scope.type).toBe(type);
 	});
 	
-	it('should get all applications', function () {
-		httpBackend.expectPOST('http://api-anexd.rhcloud.com/getAllGames');
-    	httpBackend.flush();
-		expect(scope.apps.length).toBe(1);
-	});
+	//9
+	it('should re-initialise the variables', inject(function ($timeout) {
+		scope.showLobby = true;
+		scope.closeLobby();
+		$timeout.flush();
+		expect(scope.showLobby).toBe(false);
+	}));
 	
+	//10
 	it('should create a new lobby', function () {
 		scope.launchLobby();
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/newLobby');
@@ -81,6 +87,7 @@ describe('Controller: HomeController', function () {
 		expect(scope.lobbyQR).toBe('http://api-anexd.rhcloud.com/1');
 	});
 	
+	//11
 	it('should close the lobby', function () {
 		scope.launchLobby();
 		httpBackend.expectPOST('http://api-anexd.rhcloud.com/newLobby');
@@ -92,6 +99,7 @@ describe('Controller: HomeController', function () {
 		expect(scope.activeLobby).toBe(false);
 	});
 	
+	//12
 	it('should close windows on logout', function () {
 		scope.hideIcons = true;
 		scope.$broadcast('logout');

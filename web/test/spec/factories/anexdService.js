@@ -19,6 +19,7 @@ describe('Factory: ANEXDService', function () {
 		httpBackend.when('GET', './views/home.html').respond();
 	}));
 	
+	//17
 	it('should send a message and return a promise', inject(function ($q) {
 		var test;
 		var defer = $q.defer();
@@ -32,6 +33,7 @@ describe('Factory: ANEXDService', function () {
 		expect(test).toEqual('test-in');
 	}));
 	
+	//18
 	it('should expect then receive a message and return it', function() {
 		anexd.expect('test-4');
 		socket.default.receive('test-4', 'test-in');
