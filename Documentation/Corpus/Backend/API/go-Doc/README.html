@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>anxedapi - Go</title>
+
+<link type="text/css" rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="jquery.treeview.css">
+<script type="text/javascript">window.initFuncs = [];</script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>Package anxedapi</h1>
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "apidoc"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				<p>
+For the api
+</p>
+<h3 id="hdr-READ_ME">READ ME</h3>
+<p>
+When pushing to openshift make sure that ports are set to that.
+Which is commented out in the bottom. Also make sure that import.
+os and fmt is umcommented.
+</p>
+<p>
+For working locally do reverse of above so serve at localhost
+and run .exe for windows or other for linux/ OSX.
+</p>
+<p>
+Request Readme:
+</p>
+<p>
+There is a readme on the Github called ReadMe.md which tells you the.
+requirements and expected input and outputs when making requests to the api.
+</p>
+<h3 id="hdr-Deprecated">Deprecated</h3>
+<p>
+Any places commented out with DEPRECATED means that it is no longer used.
+Anon Users go file will no longer be used since this is managed by the backend.
+</p>
+<h3 id="hdr-Future_work">Future work</h3>
+<p>
++ ADD rollback to failed insert statments.<p>
++ INPROGRESS change so all methods take map so can have custom vars so not username but user etc.<p>
++ Make the json response more specific when an error occurs<p>
++ make it so users can only get information about lobbies, players related to them.
+</p>
+<h3 id="hdr-Current_work">Current work</h3>
+<p>
+SECURITY:<p>
++ TOKEN&#39;S need to be added to stop anyone using api
+</p>
+<p>
+or
+</p>
+<p>
++ IMPLEMENETED::Map containing unique hash of time.
+</p>
+<p>
++ NOT NEEDED. Can only get info relevant to you.
+</p>
+
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+				<dd><a href="#pkg-variables">Variables</a></dd>
+			
+			
+				
+				<dd><a href="#AddLogged">func AddLogged() string</a></dd>
+			
+				
+				<dd><a href="#ChangeGameData">func ChangeGameData(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#ChangeLobbyData">func ChangeLobbyData(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#ChangeUserData">func ChangeUserData(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#CheckErr">func CheckErr(place string, err error)</a></dd>
+			
+				
+				<dd><a href="#CheckLogged">func CheckLogged(hash string) bool</a></dd>
+			
+				
+				<dd><a href="#DelLobby">func DelLobby(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#DelUser">func DelUser(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#FailMessage">func FailMessage() map[string]interface{}</a></dd>
+			
+				
+				<dd><a href="#GetAllGames">func GetAllGames(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#GetGame">func GetGame(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#GetLobby">func GetLobby(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#GetUser">func GetUser(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#JsonAdded">func JsonAdded(table string, id int64) string</a></dd>
+			
+				
+				<dd><a href="#JsonAddedData">func JsonAddedData(table string, data map[string]interface{}) string</a></dd>
+			
+				
+				<dd><a href="#JsonBadCookie">func JsonBadCookie() string</a></dd>
+			
+				
+				<dd><a href="#JsonChanged">func JsonChanged(table string) string</a></dd>
+			
+				
+				<dd><a href="#JsonDeleted">func JsonDeleted(table string, id interface{}) string</a></dd>
+			
+				
+				<dd><a href="#JsonDupKey">func JsonDupKey(table string, message string) string</a></dd>
+			
+				
+				<dd><a href="#JsonFail">func JsonFail() string</a></dd>
+			
+				
+				<dd><a href="#JsonGetData">func JsonGetData(table string, data interface{}) string</a></dd>
+			
+				
+				<dd><a href="#JsonNtExist">func JsonNtExist(table string) string</a></dd>
+			
+				
+				<dd><a href="#Login">func Login(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#NewGame">func NewGame(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#NewLobby">func NewLobby(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#NewRandStr">func NewRandStr() string</a></dd>
+			
+				
+				<dd><a href="#NewUser">func NewUser(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#RandStringRunes">func RandStringRunes(n int) string</a></dd>
+			
+				
+				<dd><a href="#RequestDecode">func RequestDecode(r *http.Request) map[string]interface{}</a></dd>
+			
+				
+				<dd><a href="#RequiredVariables">func RequiredVariables(vars []string, params map[string]interface{}, qStr *string) []interface{}</a></dd>
+			
+				
+				<dd><a href="#SuccessMessage">func SuccessMessage() map[string]interface{}</a></dd>
+			
+				
+				<dd><a href="#Test">func Test(w http.ResponseWriter, r *http.Request)</a></dd>
+			
+				
+				<dd><a href="#WriteJsonResponse">func WriteJsonResponse(response string, w http.ResponseWriter)</a></dd>
+			
+			
+				
+				<dd><a href="#Anon_User">type Anon_User</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Api">type Api</a></dd>
+				
+				
+			
+				
+				<dd><a href="#GameInstStuc">type GameInstStuc</a></dd>
+				
+				
+			
+				
+				<dd><a href="#GameStuc">type GameStuc</a></dd>
+				
+				
+			
+				
+				<dd><a href="#LobbyStuc">type LobbyStuc</a></dd>
+				
+				
+			
+				
+				<dd><a href="#MyServer">type MyServer</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#MyServer.ServeHTTP">func (s *MyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request)</a></dd>
+				
+			
+				
+				<dd><a href="#UserStruc">type UserStruc</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/apidoc/AnonUserTableFunc.go">AnonUserTableFunc.go</a>
+			
+				<a href="/src/apidoc/Api.go">Api.go</a>
+			
+				<a href="/src/apidoc/GameTableFunc.go">GameTableFunc.go</a>
+			
+				<a href="/src/apidoc/JsonResTypes.go">JsonResTypes.go</a>
+			
+				<a href="/src/apidoc/LobbyUserTableFunc.go">LobbyUserTableFunc.go</a>
+			
+				<a href="/src/apidoc/UserTableFunc.go">UserTableFunc.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+			<h2 id="pkg-variables">Variables</h2>
+			
+				<pre>var <span id="Credentials">Credentials</span> <a href="/pkg/builtin/#string">string</a> = &#34;ANEXD_ADMIN:gn9-MVn-6Bq-q6b@&#34; +
+    &#34;tcp(p3plcpnl0650.prod.phx3.secureserver.net:3306)/ANEXD&#34;</pre>
+				<p>
+credentials for database log in
+</p>
+
+			
+				<pre>var <span id="Db">Db</span> *<a href="/pkg/database/sql/">sql</a>.<a href="/pkg/database/sql/#DB">DB</a></pre>
+				<p>
+global var for accessing database
+</p>
+
+			
+				<pre>var <span id="Logged">Logged</span> = <a href="/pkg/builtin/#make">make</a>(map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#int64">int64</a>)</pre>
+				<p>
+Keeps track of who is logged in.
+</p>
+
+			
+		
+		
+			
+			
+			<h2 id="AddLogged">func <a href="/src/apidoc/UserTableFunc.go?s=7920:7945#L309">AddLogged</a></h2>
+			<pre>func AddLogged() <a href="/pkg/builtin/#string">string</a></pre>
+			
+			
+			
+
+		
+			
+			
+			<h2 id="ChangeGameData">func <a href="/src/apidoc/GameTableFunc.go?s=4357:4416#L173">ChangeGameData</a></h2>
+			<pre>func ChangeGameData(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Allows any data in changable to be edited in the Game table.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ChangeLobbyData">func <a href="/src/apidoc/LobbyUserTableFunc.go?s=5237:5297#L196">ChangeLobbyData</a></h2>
+			<pre>func ChangeLobbyData(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Allows any data in changable to be edited in the Lobby table.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ChangeUserData">func <a href="/src/apidoc/UserTableFunc.go?s=4651:4710#L179">ChangeUserData</a></h2>
+			<pre>func ChangeUserData(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Allows any data in changable to be edited in the User table.
+With the password changing will need to grab the salt and apply.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="CheckErr">func <a href="/src/apidoc/Api.go?s=2678:2716#L102">CheckErr</a></h2>
+			<pre>func CheckErr(place <a href="/pkg/builtin/#string">string</a>, err <a href="/pkg/builtin/#error">error</a>)</pre>
+			<p>
+Check if error exists
+Prints if it finds one currently will not end current thread will just print.
+Ending current thread if current copied out.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="CheckLogged">func <a href="/src/apidoc/UserTableFunc.go?s=8265:8301#L326">CheckLogged</a></h2>
+			<pre>func CheckLogged(hash <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#bool">bool</a></pre>
+			
+			
+			
+
+		
+			
+			
+			<h2 id="DelLobby">func <a href="/src/apidoc/LobbyUserTableFunc.go?s=7011:7064#L269">DelLobby</a></h2>
+			<pre>func DelLobby(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Will remove Lobby from the database.
+Can only use the lobIdentifier to do this.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="DelUser">func <a href="/src/apidoc/UserTableFunc.go?s=7087:7139#L275">DelUser</a></h2>
+			<pre>func DelUser(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Will remove User from the database.
+Can only use the userId to do this.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="FailMessage">func <a href="/src/apidoc/JsonResTypes.go?s=119:162#L1">FailMessage</a></h2>
+			<pre>func FailMessage() map[<a href="/pkg/builtin/#string">string</a>]interface{}</pre>
+			<p>
+The default part of all Failed responses.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetAllGames">func <a href="/src/apidoc/GameTableFunc.go?s=3522:3578#L139">GetAllGames</a></h2>
+			<pre>func GetAllGames(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+This will get all the games currently in the database.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetGame">func <a href="/src/apidoc/GameTableFunc.go?s=2240:2292#L79">GetGame</a></h2>
+			<pre>func GetGame(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+This will get a game or games depending on fields used in string array in args.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetLobby">func <a href="/src/apidoc/LobbyUserTableFunc.go?s=4262:4315#L156">GetLobby</a></h2>
+			<pre>func GetLobby(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Gets any existing lobbies from the database.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetUser">func <a href="/src/apidoc/UserTableFunc.go?s=2002:2054#L78">GetUser</a></h2>
+			<pre>func GetUser(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+DEPRECATED
+Gets any existing user(s) from the database.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonAdded">func <a href="/src/apidoc/JsonResTypes.go?s=847:894#L27">JsonAdded</a></h2>
+			<pre>func JsonAdded(table <a href="/pkg/builtin/#string">string</a>, id <a href="/pkg/builtin/#int64">int64</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Generates message for when data is successfuly added
+and returns message with id of added data.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonAddedData">func <a href="/src/apidoc/JsonResTypes.go?s=1216:1286#L38">JsonAddedData</a></h2>
+			<pre>func JsonAddedData(table <a href="/pkg/builtin/#string">string</a>, data map[<a href="/pkg/builtin/#string">string</a>]interface{}) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+An extension from function above that also returns some data information aswell.
+Often includes the id in the data map.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonBadCookie">func <a href="/src/apidoc/JsonResTypes.go?s=2875:2904#L94">JsonBadCookie</a></h2>
+			<pre>func JsonBadCookie() <a href="/pkg/builtin/#string">string</a></pre>
+			
+			
+			
+
+		
+			
+			
+			<h2 id="JsonChanged">func <a href="/src/apidoc/JsonResTypes.go?s=2402:2440#L77">JsonChanged</a></h2>
+			<pre>func JsonChanged(table <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Generate message for when data has been changed
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonDeleted">func <a href="/src/apidoc/JsonResTypes.go?s=1830:1885#L58">JsonDeleted</a></h2>
+			<pre>func JsonDeleted(table <a href="/pkg/builtin/#string">string</a>, id interface{}) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Generate message for when data is removed.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonDupKey">func <a href="/src/apidoc/JsonResTypes.go?s=484:538#L16">JsonDupKey</a></h2>
+			<pre>func JsonDupKey(table <a href="/pkg/builtin/#string">string</a>, message <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Generate Response message when duplicate data is present.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonFail">func <a href="/src/apidoc/JsonResTypes.go?s=2155:2178#L68">JsonFail</a></h2>
+			<pre>func JsonFail() <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Generate message for when were not sucessful with input information.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonGetData">func <a href="/src/apidoc/JsonResTypes.go?s=1539:1596#L48">JsonGetData</a></h2>
+			<pre>func JsonGetData(table <a href="/pkg/builtin/#string">string</a>, data interface{}) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Similar to jsonAddedData only adding single data item.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="JsonNtExist">func <a href="/src/apidoc/JsonResTypes.go?s=2672:2711#L86">JsonNtExist</a></h2>
+			<pre>func JsonNtExist(table <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Generate message for when data doesnt exist.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="Login">func <a href="/src/apidoc/UserTableFunc.go?s=2933:2983#L116">Login</a></h2>
+			<pre>func Login(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Similar to get but requires userId and password.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="NewGame">func <a href="/src/apidoc/GameTableFunc.go?s=497:549#L14">NewGame</a></h2>
+			<pre>func NewGame(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+This will add a new game to the database.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="NewLobby">func <a href="/src/apidoc/LobbyUserTableFunc.go?s=760:813#L26">NewLobby</a></h2>
+			<pre>func NewLobby(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Creates a new lobby which host games instance.
+1.   Checks for valid input data
+2.   Check lobby exists.
+2.2. Delete it.
+3.   Create the lobby.
+4.   Generate Random idenfier.
+5.   Call to Backend with fetching relevant data.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="NewRandStr">func <a href="/src/apidoc/LobbyUserTableFunc.go?s=7781:7807#L300">NewRandStr</a></h2>
+			<pre>func NewRandStr() <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Create a random string between 1 and rndSize.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="NewUser">func <a href="/src/apidoc/UserTableFunc.go?s=360:412#L13">NewUser</a></h2>
+			<pre>func NewUser(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Will create new User in the database.
+With there salt.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="RandStringRunes">func <a href="/src/apidoc/Api.go?s=7217:7251#L249">RandStringRunes</a></h2>
+			<pre>func RandStringRunes(n <a href="/pkg/builtin/#int">int</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			
+			
+			
+
+		
+			
+			
+			<h2 id="RequestDecode">func <a href="/src/apidoc/Api.go?s=2946:3006#L111">RequestDecode</a></h2>
+			<pre>func RequestDecode(r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>) map[<a href="/pkg/builtin/#string">string</a>]interface{}</pre>
+			<p>
+This is used for decoding request header. Simply decode and put into map.
+Returns a varaible of all json vars that were in the payload.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="RequiredVariables">func <a href="/src/apidoc/Api.go?s=3335:3433#L122">RequiredVariables</a></h2>
+			<pre>func RequiredVariables(vars []<a href="/pkg/builtin/#string">string</a>, params map[<a href="/pkg/builtin/#string">string</a>]interface{}, qStr *<a href="/pkg/builtin/#string">string</a>) []interface{}</pre>
+			<p>
+Go through the useable list vars and change query string accordingly.
+If you pass queryString that too will be edited accordingly to params passed.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="SuccessMessage">func <a href="/src/apidoc/JsonResTypes.go?s=291:337#L8">SuccessMessage</a></h2>
+			<pre>func SuccessMessage() map[<a href="/pkg/builtin/#string">string</a>]interface{}</pre>
+			<p>
+The default part of all Success responses.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="Test">func <a href="/src/apidoc/Api.go?s=1909:1958#L75">Test</a></h2>
+			<pre>func Test(w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, r *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+			<p>
+Test url to see if database connects
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="WriteJsonResponse">func <a href="/src/apidoc/JsonResTypes.go?s=3145:3207#L104">WriteJsonResponse</a></h2>
+			<pre>func WriteJsonResponse(response <a href="/pkg/builtin/#string">string</a>, w <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>)</pre>
+			<p>
+Setting header for response and writing response.
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="Anon_User">type <a href="/src/apidoc/AnonUserTableFunc.go?s=208:331#L5">Anon_User</a></h2>
+			<pre>type Anon_User struct {
+    UserID   <a href="/pkg/builtin/#int">int</a>    `json:&#34;userID&#34;`
+    Username <a href="/pkg/builtin/#string">string</a> `json:&#34;username&#34;`
+    Lobby    <a href="/pkg/builtin/#int">int</a>    `json:&#34;lobby&#34;`
+}</pre>
+			<p>
+Structure for receiving Anon data.
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Api">type <a href="/src/apidoc/Api.go?s=1452:1529#L56">Api</a></h2>
+			<pre>type Api struct {
+    ReqType <a href="/pkg/builtin/#string">string</a>
+    Name    <a href="/pkg/builtin/#string">string</a>
+    Method  <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#HandlerFunc">HandlerFunc</a>
+}</pre>
+			<p>
+For adding new apis - see main()
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="GameInstStuc">type <a href="/src/apidoc/LobbyUserTableFunc.go?s=383:510#L13">GameInstStuc</a></h2>
+			<pre>type GameInstStuc struct {
+    Url      <a href="/pkg/builtin/#string">string</a> `json:&#34;url&#34;`
+    Port     <a href="/pkg/builtin/#string">string</a> `json:&#34;port&#34;`
+    ConnType <a href="/pkg/builtin/#string">string</a> `json:&#34;connType&#34;`
+}</pre>
+			
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="GameStuc">type <a href="/src/apidoc/GameTableFunc.go?s=135:448#L2">GameStuc</a></h2>
+			<pre>type GameStuc struct {
+    GameID       <a href="/pkg/builtin/#int">int</a>    `json:&#34;gameID, &#34;`
+    CreatorID    <a href="/pkg/builtin/#int">int</a>    `json:&#34;creatorID&#34;`
+    Name         <a href="/pkg/builtin/#string">string</a> `json:&#34;name&#34;`
+    Date_created <a href="/pkg/builtin/#string">string</a> `json:&#34;date_created&#34;`
+    Rating       <a href="/pkg/builtin/#int">int</a>    `json:&#34;rating&#34;`
+    Type         <a href="/pkg/builtin/#string">string</a> `json:&#34;type&#34;`
+    Description  <a href="/pkg/builtin/#string">string</a> `json:&#34;description&#34;`
+    Image        <a href="/pkg/builtin/#string">string</a> `json:&#34;image&#34;`
+}</pre>
+			
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="LobbyStuc">type <a href="/src/apidoc/LobbyUserTableFunc.go?s=129:379#L4">LobbyStuc</a></h2>
+			<pre>type LobbyStuc struct {
+    LobbyID <a href="/pkg/builtin/#int">int</a> `json:&#34;lobbyID&#34;`
+    <span class="comment">// Title string			 `json:&#34;title&#34;`   deprecated</span>
+    Creator       <a href="/pkg/builtin/#int">int</a> `json:&#34;creator&#34;`
+    LobIdentifier <a href="/pkg/builtin/#int">int</a> `json:&#34;lobIdentifier&#34;`
+    Game          <a href="/pkg/builtin/#int">int</a> `json:&#34;game&#34;`
+    Size          <a href="/pkg/builtin/#int">int</a> `json:&#34;size&#34;`
+}</pre>
+			
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="MyServer">type <a href="/src/apidoc/Api.go?s=6249:6293#L225">MyServer</a></h2>
+			<pre>type MyServer struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+<a href="http://stackoverflow.com/questions/12830095/setting-http-headers-in-golang">http://stackoverflow.com/questions/12830095/setting-http-headers-in-golang</a>
+This is for overwritting Mux headers to allow Access-Control-Headers
+So requests are able to go out which the browser would normally stop
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+				
+				<h3 id="MyServer.ServeHTTP">func (*MyServer) <a href="/src/apidoc/Api.go?s=6297:6368#L229">ServeHTTP</a></h3>
+				<pre>func (s *<a href="#MyServer">MyServer</a>) ServeHTTP(rw <a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#ResponseWriter">ResponseWriter</a>, req *<a href="/pkg/net/http/">http</a>.<a href="/pkg/net/http/#Request">Request</a>)</pre>
+				
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="UserStruc">type <a href="/src/apidoc/UserTableFunc.go?s=170:295#L5">UserStruc</a></h2>
+			<pre>type UserStruc struct {
+    UserID   <a href="/pkg/builtin/#int">int</a>    `json:&#34;userID&#34;`
+    Username <a href="/pkg/builtin/#string">string</a> `json:&#34;username&#34;`
+    Email    <a href="/pkg/builtin/#string">string</a> `json:&#34;email&#34;`
+}</pre>
+			
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.6.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+<a href="/doc/tos.html">Terms of Service</a> | 
+<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+
+<!-- TODO(adonovan): load these from <head> using "defer" attribute? -->
+<!-- <script type="text/javascript" src="/lib/godoc/jquery.js"></script>
+<script type="text/javascript" src="/lib/godoc/jquery.treeview.js"></script>
+<script type="text/javascript" src="/lib/godoc/jquery.treeview.edit.js"></script>
+
+
+<script type="text/javascript" src="/lib/godoc/godocs.js"></script> -->
+
+</body>
+</html>
+

@@ -25,7 +25,7 @@ angular.module('ANEXD')
     function ($scope, $rootScope, $timeout, $location, $http, md5, CONST, SessionService, APIService, SocketService) 
 	{		
 		//Check if the user is on mobile
-		$scope.isMobile = $rootScope.isMobile;   
+		$scope.isMobile = $rootScope.isMobile;
 		//Is the user logged in?
     	$scope.loggedIn = SessionService.isLoggedIn();    
 		//Used to disable a button
@@ -33,7 +33,7 @@ angular.module('ANEXD')
 		//Used for signing in / up; is this email recognised?
 		$scope.newEmail = false;
 		//Conditional show/hide vars
-		$scope.shouldHide = true;                          
+		$scope.shouldHide = true;
         $scope.showUpdate = false;
 		
 		//If logged in, get user's email to display on the header
