@@ -52,8 +52,8 @@ angular.module('ANEXD')
 				'email': email
 			};
 			
-			return APIService.post('login', payload).then(function(response){
-				if(response){
+			return APIService.post('login', payload, false).then(function(response){
+				if(response.data.status === 'Success'){
 					loggedIn = true;
 					$cookies.put('userEmail', response.data.data.data.email);
 					$cookies.put('userId', response.data.data.data.userID);

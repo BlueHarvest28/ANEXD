@@ -15,15 +15,6 @@ NG_DOCS={
     },
     {
       "section": "api",
-      "id": "ANEXD.controller:MobileHomeController",
-      "shortName": "MobileHomeController",
-      "type": "controller",
-      "moduleName": "ANEXD",
-      "shortDescription": "Handles all mobile-user lobby connections. ",
-      "keywords": "anexd api connections controller handles join leave lobby mobile-user ready toggle users"
-    },
-    {
-      "section": "api",
       "id": "ANEXD.SessionService",
       "shortName": "ANEXD.SessionService",
       "type": "service",

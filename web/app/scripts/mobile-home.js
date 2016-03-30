@@ -6,15 +6,6 @@
  *
  * Copyright (C): University Of Kent 01/03/2016 
 **/
-
-/**
- * @ngdoc controller
- * @name ANEXD.controller:MobileHomeController
- * @description
- * Handles all mobile-user lobby connections. 
- * Users are able to join, toggle their ready state, and leave a lobby from here.
- */
-
 (function () {
 'use strict';
 angular.module('ANEXD')
@@ -57,26 +48,23 @@ angular.module('ANEXD')
         * Called after a successful lobby generation
 		* Listens on relevant socket events to update the lobby
         */
-//		var connect = function(){
-			SocketService.default.on('start', function(response){
-				if(!response.failed){
-					//Create cookie for reconnecting
-					$cookies.put('name', $scope.name);
-					//Move to the application page
-					$location.path($location.path() + '/' + appId, true);
-				}
-			});
-			
-			//Update the player list
-			SocketService.default.on('updatelobby', function(users){
-				console.log(users);
-				$scope.users = users;
-			});
-			
-			SocketService.default.on('close', function(){
-				$scope.back();
-			});
-//		};
+		SocketService.default.on('start', function(response){
+			if(!response.failed){
+				//Create cookie for reconnecting
+				$cookies.put('name', $scope.name);
+				//Move to the application page
+				$location.path($location.path() + '/' + appId, true);
+			}
+		});
+
+		//Update the player list
+		SocketService.default.on('updatelobby', function(users){
+			$scope.users = users;
+		});
+
+		SocketService.default.on('close', function(){
+			$scope.back();
+		});
 		
         /*
         * HJ80
@@ -101,7 +89,6 @@ angular.module('ANEXD')
 								appId = response;
 								SessionService.create($scope.lobby, appId);
 								$location.path('/' + $scope.lobby, false);
-								//connect();	
 							}
 						);
 					}
@@ -116,13 +103,7 @@ angular.module('ANEXD')
         */
         $scope.toggleReady = function(){
 			$scope.ready = !$scope.ready;
-			SocketService.promise('setready', $scope.ready, false)
-			.then(function(response){
-				if(response){
-					//Client connection successful
-				}
-			});
-			//SocketService.emit('setready', $scope.ready);
+			SocketService.emit('setready', $scope.ready);
 		};
     }
 ]);

@@ -9,13 +9,14 @@ describe('Controller: IndexController', function () {
 		httpBackend;
 
 	// Initialize the controller and a mock scope
-	beforeEach(inject(function ($rootScope, $controller, $httpBackend, $http) {
+	beforeEach(inject(function ($rootScope, $controller, $httpBackend) {
 		scope = $rootScope.$new();
 		httpBackend = $httpBackend;
 		
 		httpBackend.when('GET', './views/home.html').respond();
 		
 		httpBackend.when('POST', 'http://api-anexd.rhcloud.com/login').respond({
+			'status': 'Success',
 			'data': {
 				'data': {
 					'data': {
@@ -39,8 +40,7 @@ describe('Controller: IndexController', function () {
 		});
 		
 		$controller('IndexController', {
-			$scope: scope,
-			$http: $http
+			$scope: scope
 		});
 	}));
 
