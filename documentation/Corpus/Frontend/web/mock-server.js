@@ -1,7 +1,15 @@
-/*
-*	TODO:	UPDATE TO MATCH GO STANDARDS FOR RISK MANAGEMENT
-*/
-
+/**
+ * CO600 ANEXD Project Code
+ *
+ * Contributor(s): Harry Jones(HJ80)
+ * Mock server for developing the frontend without Go
+ * Handles the websocket events and instantiates applications for testing
+ *
+ * Carries on from api.js functionality
+ *
+ * Copyright (C): University Of Kent 17/03/2016
+**/
+#!/bin/env node
 var express = require('express');
 var http    = require('http');
 var app     = express();
@@ -162,17 +170,6 @@ var launch = function(){
 launch();
 
 /***********************
-*	GAMES --> SERVER
-***********************/
-//var appWatch = function(){
-//	appsio.on('connection', function (socket){
-//		console.log('new app connection');
-//	});
-//};
-//
-//appWatch();
-
-/***********************
 *	SERVER --> GAME
 ***********************/
 var play = function(){
@@ -202,70 +199,3 @@ var play = function(){
 		
 	});
 };
-//
-//var serverappid = 14;
-//var imageURL;
-//var socketio = require('socket.io-client')
-//var appsocket = socketio('http://' + app.get('ip') + ':' + app.get('port') + '/apps');
-//var socket;
-//appsocket.on('connect', function(){
-//	console.log('connect to apps list');
-//	appsocket.on('start', function(appid){
-//		if(serverappid === appid){
-//			if(!socket){
-//				socket = socketio('http://' + app.get('ip') + ':' + app.get('port') + '/apps/' + appid);
-//				imageannotate();	
-//			}
-//		}
-//	});
-//});
-//
-//var imageannotate = function(){
-//	socket.on('connect', function(){
-//		console.log('game server connected to mock');
-//		
-//		socket.on('new', function(data){
-//			console.log('new');
-//			if(imageURL){
-//				console.log('sending image', imageURL);
-//				socket.emit('image', imageURL);
-//			}
-//		});
-//		
-//		socket.on('image', function(data){
-//			console.log('image:', data);
-//			imageURL = data;
-//			var msg = {
-//				'event': 'image',
-//				'data': imageURL,
-//			};
-//			socket.emit('msgall', {'msg': msg});
-//		});
-//
-//		socket.on('drawing', function(data){
-//			console.log('drawing:', data);
-//			var msg = {
-//				'event': 'drawing',
-//				'data': data,
-//			}
-//			socket.emit('msgplayer', {'player': 0, 'msg': msg});
-//		});
-//
-//		socket.on('save', function(data){
-//			console.log('save:', data);
-//			var msg = {
-//				'event': 'save',
-//				'data': data,
-//			}
-//			socket.emit('msgplayer', {'player': 0, 'msg': msg});
-//		});
-//
-//		socket.on('undo', function(data){
-//			console.log('undo');
-//			var msg = {
-//				'event': 'undo',
-//			}
-//			socket.emit('msgplayer', {'player': 0, 'msg': msg});
-//		});	
-//	});
-//}

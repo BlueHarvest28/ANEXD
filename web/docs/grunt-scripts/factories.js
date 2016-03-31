@@ -298,8 +298,8 @@ angular.module('ANEXD')
 	'socketFactory', 
 	function ($rootScope, $q, $timeout, CONST, socketFactory) {
 		//Used for web connection (same server)
-		//var socket = socketFactory();
-		var host = io.connect('http://api-anexd.rhcloud.com:8000');
+//		var socket = socketFactory();
+		var host = io.connect('http://localhost:3002');
 		var socket = socketFactory({
 			ioSocket: host
 		});
