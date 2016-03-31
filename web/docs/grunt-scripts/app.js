@@ -13,11 +13,6 @@
   * @description 
   * A platform for real time, collaborative web applications.
   */
-
-/*
-*	TODO: 	TIDY UP MOBILE CHECK (REUSE?)
-*/
-
 'use strict';
 angular
 .module('ANEXD', [
@@ -44,7 +39,8 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 	$locationProvider.hashPrefix('!');
 	
 	//Check if the client is using a mobile browser
-	//Code taken from: LINK
+	//Code courtesy of: Chad Smith
+	//http://detectmobilebrowsers.com/
 	var isMobile = (function () {
 		var check = false;
 		(function (a) {
@@ -80,7 +76,6 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 	'$route',
 	function ($rootScope, $location, $route) {
 		//Repeated code due to inability for .config() to inject $rootScope data
-		//TODO: FIND A BETTER IMPLEMENTATION WITHOUT REPEATING
 		$rootScope.isMobile = (function () {
 			var check = false;
 			(function (a) {
@@ -92,7 +87,8 @@ function ($locationProvider, $routeProvider, $sceDelegateProvider) {
 		})();
 		
 		//Allow us to change URL without reloading the controller
-		//Code taken from: LINK
+		//Code courtesy of Joel Saupe:
+		//http://joelsaupe.com/programming/angularjs-change-path-without-reloading/
 		var original = $location.path;
 		$location.path = function (path, reload) {
 			if (reload === false) {

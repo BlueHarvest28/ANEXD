@@ -8,13 +8,12 @@
  *
  * Copyright (C): University Of Kent 24/03/2016 
 **/
-
 (function () {
 'use strict';
 angular.module('ANEXD')
 /*
 *	HJ80
-*	Scroll to the provided anchor when this element is clicked
+*	Scroll to the provided anchor when this element is clicked (minus navbar height)
 */
 .directive('scrollOnClick', function () {
 	return {

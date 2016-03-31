@@ -327,7 +327,7 @@ angular.module('ANEXD')
 					console.log('error:', event, val);
 					$rootScope.$broadcast(CONST.ERROR, 'We\'re having problems connecting to the server right now, please try again; ' + event + ', ' + val);
 				}
-			}, 3000);
+			}, 6000);
 			
 			//Return from server
 			socket.on(event, function (response) {
