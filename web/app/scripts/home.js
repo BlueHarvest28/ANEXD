@@ -20,7 +20,7 @@ angular.module('ANEXD')
 	'APIService',
 	'SessionService',
 	'SocketService',
-    function ($scope, $rootScope, $timeout, $http, $location, CONST, APIService, SessionService, SocketService) 
+    function ($scope, $rootScope, $timeout, $http, $location, CONST, APIService, SessionService, SocketService)
     {				
 		var openedApp;
 		var lobbyId;

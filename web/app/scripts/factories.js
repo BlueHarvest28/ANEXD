@@ -311,7 +311,7 @@ angular.module('ANEXD')
 		* @description Promises a response on the same event sent
 		* @param {string} event The event to send the websocket message on
 		* @param {string} val Contents of message
-		* @param {boolean} error Whether to show errors on timeout (3 seconds)
+		* @param {boolean} error Whether to show errors on timeout (6 seconds)
 		* @returns {string} Promise of the return message
 		*/
 		var promise = function (event, val, error) {

@@ -17,7 +17,7 @@ server.listen(app.get('port') ,app.get('ip'), function () {
 });
 
 //Serve from '/public' folder
-app.use(express.static(__dirname + '/public'));
+//app.use(express.static(__dirname + '/public'));
 
 //Player and host sockets
 var players = [];
@@ -164,13 +164,13 @@ launch();
 /***********************
 *	GAMES --> SERVER
 ***********************/
-//var appWatch = function(){
-//	appsio.on('connection', function (socket){
-//		console.log('new app connection');
-//	});
-//};
-//
-//appWatch();
+var appWatch = function(){
+	appsio.on('connection', function (socket){
+		console.log('new app connection');
+	});
+};
+
+appWatch();
 
 /***********************
 *	SERVER --> GAME
