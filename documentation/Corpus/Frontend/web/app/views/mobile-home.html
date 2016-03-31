@@ -1,0 +1,58 @@
+<div id="home" class="mobile home">
+	<div class="back" ng-click="back()" ng-show="showLobby">
+		<i class="fa fa-chevron-left"/>
+	</div>
+    
+	<div class="menu" ng-show="!showLobby">
+		<form ng-submit="join()">            
+			<div class="login-input-back">
+				<img class="password-icon" src="../images/icon-password.png"/>
+				<input class="login-input" 
+						type="text" onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+						maxlength="6" ng-model="lobby" placeholder="Lobby ID" required/>
+			</div>
+			<div class="login-input-back">	
+				<img class="email-icon" src="../images/icon-account-small.png"/>
+				<input class="login-input" type="text" maxlength="10" 
+						ng-model="name" placeholder="Name" required/>
+			</div>
+            <div class="input-error" ng-show="inputError">Incorrect lobby ID or username is currently in use</div>
+			<input class="login-submit" type="submit"/>
+		</form>
+	</div>
+    
+	<div class="lobby-app-container" ng-show="showLobby">
+		<div class="lobby">
+			<div class="lobby-header">
+				<h3>Players {{users.length}}/5</h3>
+			</div>
+			<div class="lobby-content">
+				<div class="lobby-players">
+					<div class="row">
+						<div class="col-xs-9">
+							<span>{{name}}</span>
+						</div>
+						<div class="col-xs-3">
+							<i class="fa" ng-class="{'fa-check': ready, 'fa-close': !ready}"/>
+						</div>
+					</div>
+					<hr/>
+					<div class="empty" ng-show="users.length < 2">
+						Waiting for players...
+					</div>
+					<div class="row" ng-repeat="user in users" ng-if="user.nickname != name">
+						<div class="col-xs-9">
+							<span>{{user.nickname}}</span>
+						</div>
+						<div class="col-xs-3">
+							<i class="fa" ng-class="{'fa-check': user.ready, 'fa-close': !user.ready}"/>
+						</div>
+					</div>
+				</div>
+				<div class="lobby-launch">
+					<button class="login-submit" ng-click="toggleReady()" ng-class="{'not-ready' : ready}">SET READY</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

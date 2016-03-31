@@ -1,0 +1,86 @@
+<h1><code ng:non-bindable="">SessionService</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ANEXD</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="anexd-sessionservice-page"><p>SessionService provides application-wide access to logging in, logging out, creating and removing sessions, and accessing their states</p>
+</div></div>
+<h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$rootScope">$rootScope</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$cookies">$cookies</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$http">$http</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/md5">md5</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/CONST">CONST</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/APIService">APIService</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_close">close()</h3>
+<div class=""><div class="anexd-sessionservice-close-page"><p>End a running session</p>
+</div></div>
+</li>
+<li><h3 id="methods_create">create(lobbyId, appId)</h3>
+<div class="create"><div class="anexd-sessionservice-create-page"><p>Create a new session holding the lobby and application ids</p>
+</div><h5 id="methods_create_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>lobbyId</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-create-page"><ul>
+<li>The lobby&#39;s id</li>
+</ul>
+</div></td></tr><tr><td>appId</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-create-page"><ul>
+<li>The application&#39;s id</li>
+</ul>
+</div></td></tr></tbody></table></div>
+</li>
+<li><h3 id="methods_createuser">createUser()</h3>
+<div class="createuser"><div class="anexd-sessionservice-createuser-page"><p>Request to create a new user. If successful, call the login function on the new user.</p>
+</div><h5 id="methods_createuser_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="anexd-sessionservice-createuser-page"><p>True if the user is successfully created and logged in, false otherwise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_details">details()</h3>
+<div class="details"><div class="anexd-sessionservice-details-page"><p>Return the lobby and app ids of a running service</p>
+</div><h5 id="methods_details_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-details-page"><p>Object of two strings; {&#39;lobby&#39;: lobby, &#39;app&#39;, app}</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_getuser">getUser()</h3>
+<div class="getuser"><div class="anexd-sessionservice-getuser-page"><p>Get the email of the user currently logged in, if any</p>
+</div><h5 id="methods_getuser_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-getuser-page"><p>User&#39;s email if logged in, false otherwise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_getuserid">getUserId()</h3>
+<div class="getuserid"><div class="anexd-sessionservice-getuserid-page"><p>Get the id of the currently logged in user, if any</p>
+</div><h5 id="methods_getuserid_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-getuserid-page"><p>User&#39;s id if logged in, false otherwise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_isloggedin">isLoggedIn()</h3>
+<div class="isloggedin"><div class="anexd-sessionservice-isloggedin-page"><p>Returns whether a user is currently logged in or not</p>
+</div><h5 id="methods_isloggedin_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="anexd-sessionservice-isloggedin-page"><p>True if the user is logged in, false otherwise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_login">login(email, password)</h3>
+<div class="login"><div class="anexd-sessionservice-login-page"><p>attempt to log a user in given a validated existing email and password</p>
+</div><h5 id="methods_login_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>email</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-login-page"><ul>
+<li>The user&#39;s email (confirmed by checkEmail to be a valid user email)</li>
+</ul>
+</div></td></tr><tr><td>password</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-sessionservice-login-page"><ul>
+<li>The user&#39;s supposed password</li>
+</ul>
+</div></td></tr></tbody></table><h5 id="methods_login_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="anexd-sessionservice-login-page"><p>True if the user successfully logs in, false otherwise</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_logout">logout()</h3>
+<div class="logout"><div class="anexd-sessionservice-logout-page"><p>Log the user out, clear cookies, and broadcast the &#39;logout&#39; event</p>
+</div><h5 id="methods_logout_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-undefined">undefined</a></td><td><div class="anexd-sessionservice-logout-page"><p>No return as all actions are taken locally</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_running">running()</h3>
+<div class="running"><div class="anexd-sessionservice-running-page"><p>Check if a session is currently running</p>
+</div><h5 id="methods_running_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="anexd-sessionservice-running-page"><p>True if a session is running, false otherwise</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+</div>

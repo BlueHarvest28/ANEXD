@@ -1,0 +1,200 @@
+/*
+  Styles app 1 quiz creation
+  Written by HJ80
+
+  QA by FH98
+*/
+
+.quiz ::-webkit-input-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.quiz :-moz-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.quiz ::-moz-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.quiz :-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.quiz .form-input {
+  padding: 5px;
+  width: 50%;
+  font-size: 13pt;
+  color: #2B2B2B;
+  font-weight: 100;
+  letter-spacing: 1px;
+  border: 1px solid #ADADAD;
+  transition: border-color 0.2s;
+}
+
+.quiz button {
+  width: 30%;
+  border: none;
+  padding: 5px 15px;
+  margin-right: 10px;
+  font-size: 13pt;
+  background-color: #6bbb5c;
+  color: white;
+  font-weight: 100;
+  transition: background-color 0.2s;
+}
+
+.quiz button[disabled] {
+  opacity: 0.5;
+}
+
+.quiz .top {
+  margin-bottom: 40px;
+}
+
+.quiz .top .form-input {
+  width: 100%;
+}
+
+.quiz .middle {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+.quiz .middle .inline {
+  width: 80%;
+  display: inline;
+  margin-right: 10px;
+  line-height: 40px;
+}
+.quiz .middle .middle-answers {
+  margin-bottom: 5px;
+}
+.quiz .middle .form-input {
+  width: 100%;
+}
+.quiz .middle .form-input.correct {
+  width: 20px;
+}
+.quiz .middle .form-input.answer {
+  width: 80%;
+  font-size: 10pt;
+}
+
+.quiz .question-form {
+  position: relative;
+}
+
+.quiz .question-form .fa-close {
+  position: absolute;
+  right: 0;
+  top: -20px;
+  font-size: 16pt;
+  color: #BB5C5C;
+  cursor: pointer;
+  padding: 5px;
+	left: initial;
+}
+
+.quiz .quiz-title {
+  margin-bottom: 20px;
+}
+.quiz h1 {
+  font-size: 38pt;
+}
+.quiz h2 {
+  margin: 0;
+  color: #6d6d6d;
+  font-weight: 200;
+  font-size: 30pt;
+}
+.quiz h2 .light {
+  color: #ccc6c6;
+}
+.quiz .player-count h2 {
+  font-size: 22pt;
+  margin-top: 5px;
+}
+.quiz h3 {
+  font-weight: 200;
+  color: #7e7e7e;
+}
+.quiz .header {
+  overflow: hidden;
+}
+.quiz .header .question-count, .quiz .header .player-count {
+  float: left;
+  width: 50%;
+  position: relative;
+}
+.quiz .header .player-count {
+  text-align: right;
+}
+.quiz .quiz-steps {
+  max-width: 100%;
+}
+.quiz .arrow {
+  position: absolute;
+  width: 70px;
+  height: 120px;
+  background-color: #222;
+  color: #ddd;
+  text-align: center;
+  font-size: 30pt;
+  font-weight: 500;
+  top: 50%;
+  margin-top: -60px;
+  padding: 28px 0;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+.quiz .arrow.previous {
+  left: -35px;
+}
+.quiz .arrow.next {
+  right: -35px;
+}
+.quiz .answers {
+  list-style: none;
+  padding: 10px 50px 0;
+  margin: 0;
+}
+.quiz .answers li {
+  padding: 10px;
+  margin: 10px;
+  font-size: 25pt;
+  font-weight: 200;
+}
+.quiz .answers li:nth-child(1) {
+  color: #bb2253;
+}
+.quiz .answers li:nth-child(1) .icon {
+  background-color: #bb2253;
+}
+.quiz .answers li:nth-child(2) {
+  color: #21825c;
+}
+.quiz .answers li:nth-child(2) .icon {
+  background-color: #21825c;
+}
+.quiz .answers li:nth-child(3) {
+  color: #2772db;
+}
+.quiz .answers li:nth-child(3) .icon {
+  background-color: #2772db;
+}
+.quiz .answers li:nth-child(4) {
+  color: #f5ca3e;
+}
+.quiz .answers li:nth-child(4) .icon {
+  background-color: #f5ca3e;
+}
+.quiz .answers li .icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  margin-right: 10px;
+  text-align: center;
+  font-weight: 400;
+  color: white;
+}

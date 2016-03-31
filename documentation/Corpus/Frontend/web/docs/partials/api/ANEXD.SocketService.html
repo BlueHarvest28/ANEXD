@@ -1,0 +1,39 @@
+<h1><code ng:non-bindable="">SocketService</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ANEXD</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="anexd-socketservice-page"><p>SocketService provides an interface for sending and receiving websocket events.
+Also provides promises for sending then receiving a message on the same event.</p>
+</div></div>
+<h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$rootScope">$rootScope</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$q">$q</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$timeout">$timeout</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/CONST">CONST</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/socketFactory">socketFactory</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_emit">emit(event, val)</h3>
+<div class="emit"><div class="anexd-socketservice-emit-page"><p>Sends a message on the provided event (also possible using socket.default.emit)</p>
+</div><h5 id="methods_emit_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>event</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-socketservice-emit-page"><p>The event to send the websocket message on</p>
+</div></td></tr><tr><td>val</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-socketservice-emit-page"><p>Contents of message</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><h3 id="methods_promise">promise(event, val, error)</h3>
+<div class="promise"><div class="anexd-socketservice-promise-page"><p>Promises a response on the same event sent</p>
+</div><h5 id="methods_promise_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>event</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-socketservice-promise-page"><p>The event to send the websocket message on</p>
+</div></td></tr><tr><td>val</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-socketservice-promise-page"><p>Contents of message</p>
+</div></td></tr><tr><td>error</td><td><a href="" class="label type-hint type-hint-boolean">boolean</a></td><td><div class="anexd-socketservice-promise-page"><p>Whether to show errors on timeout (3 seconds)</p>
+</div></td></tr></tbody></table><h5 id="methods_promise_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-socketservice-promise-page"><p>Promise of the return message</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+</div>

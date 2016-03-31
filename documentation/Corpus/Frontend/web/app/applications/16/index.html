@@ -1,0 +1,29 @@
+<script src="http://connect.soundcloud.com/sdk.js"></script>
+<link rel="stylesheet" href="applications/16/style.css"/>
+<div ng-controller="SCController">
+    <div class="main">
+        <h1>SoundCloud Group Listener</h1>
+        <div class="left">
+            <div class="headers">Input URL:</div>
+            <!-- Url Input -->
+            <input class="d-input" type="text" 
+                   ng-model="url" 
+                   style="width:100%;height:30px;" 
+                   placeholder="SoundCloud URL" required/>  
+            <!-- Url submit -->
+            <input type="submit" 
+                   class="login-submit" 
+                   value="Submit" 
+                   ng-click="run(url);" />
+            <div class="headers">Chat:</div>
+            <div class="chatbox">
+                <div class="repeatbox" ng-repeat="message in messages track by $index">
+                   Player: {{message}}
+                </div>
+            </div>
+        </div>
+		<div class="right">
+			<div ng-bind-html="player_html"></div>
+		</div>
+    </div>
+</div>

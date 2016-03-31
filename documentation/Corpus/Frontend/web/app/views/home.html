@@ -1,0 +1,132 @@
+<div id="home" class="home">
+	<div class="icons-row-container container-fluid">
+		<div class="container icons-row" ng-class="{expand: hideIcons}">
+			<div class="row icons" ng-hide="hideIcons">
+				<div class="col-xs-4" data-toggle="modal" 
+					 data-target=".login-modal" 
+					 ng-class="{disabled: loggedIn}">
+					<img class="row-icon" src="../images/icon-account-large.png" alt="login"/>
+					<h2>Login</h2>
+					<p>Sign up or login to access ANEXD</p>
+				</div>
+				<div class="col-xs-4" 
+					 scroll-on-click href=".app-header" 
+					 ng-class="{disabled: !loggedIn}">
+					<img class="row-icon" src="../images/icon-settings-large.png" alt="settings"/>
+					<h2>Create</h2>
+					<p>Choose an application to launch</p>
+				</div>
+				<div class="col-xs-4 disabled">
+					<img class="row-icon" src="../images/icon-play-large.png" alt="play"/>
+					<h2>Play</h2>
+					<p>Get a code to share with your players</p>
+				</div>
+			</div>
+			
+			<div class="lobby-app-container" ng-show="hideIcons">
+				<div class="lobby" ng-show="showLobby" ng-class="{'show-lobby': showLobby}">
+					<div class="lobby-header">
+						<h3>Players {{users.length}}/{{maxPlayers}}</h3>
+					</div>
+					<div class="lobby-content">
+						<div class="lobby-players">
+							<div class="row empty" ng-show="!users.length">
+								Waiting for players...
+							</div>
+							<div class="row" ng-repeat="user in users">
+								<div class="col-xs-9">
+									<span>{{user.nickname}}</span>
+								</div>
+								<div class="col-xs-3">
+									<i class="fa" ng-class="{'fa-check': user.ready, 'fa-close': !user.ready}"/>
+								</div>
+							</div>
+						</div>
+						<div class="lobby-launch">
+							<button class="login-submit" ng-click="start()">Play</button>
+						</div>
+					</div>
+				</div>
+				<div class="app-container" ng-class="{'show-lobby': showLobby}">
+					<i class="fa fa-close" ng-click="closeLobby()"></i>
+					<img src="{{app.image}}" ng-class="{'show-lobby': showLobby}"/>
+					<div class="inner" ng-class="{'show-lobby': showLobby}">
+				        <h2>{{app.name}}</h2>
+				        <form ng-hide="showLobby" ng-class="{'show-lobby': showLobby}">
+                            <div class="form-group">		
+				        		<label for="maxplayers">Max Players:&nbsp;</label>
+					          	<select class="form-control" ng-model="maxPlayers" id="max-players">
+					        		<option>5</option>
+					        		<option>10</option>
+					        		<option>20</option>
+					        		<option>50</option>
+					        		<option>100</option>
+					        		<option>250</option>
+					        	</select>
+					        </div>
+							<i class="submit-spinner fa fa-refresh fa-spin" ng-show="isDisabled"/>
+				        	<input type="submit" ng-value="launchMessage" class="login-submit" 
+								   ng-class="{disabled: isDisabled}" 
+								   ng-disabled="isDisabled"
+								   ng-click="launchLobby()">
+				    	</form>
+				    </div>
+				    <div class="qr" ng-show="showLobby">
+				    	<qr text="lobbyQR" ng-show="showLobby"></qr>
+				    </div>
+				    <div class="code" ng-show="showLobby">
+				    	<h3>{{lobbyQR}}</h3>
+				    </div>
+					<div class="cover"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="app-header-list" ng-hide="hideIcons">
+		<div class="navbar navbar-default app-header">
+	        <div class="container">
+	         	<div class="navbar-header">
+	            	<h1>Check Out Our Apps!</h1>
+	          	</div>
+	          	<div id="navbar" class="navbar-collapse collapse">
+	            	<ul class="nav navbar-nav navbar-right">
+	              		<li ng-class="{active: type == ''}" 
+	              			ng-click="setFilter('')"><span 
+	              			class="app-filter">All</span></li>
+						<li ng-class="{active: type == 'app'}" ng-click="setFilter('app')">
+							<span class="app-filter">Apps</span></li>
+	              		<li ng-class="{active: type == 'quiz'}" ng-click="setFilter('quiz')">
+	              			<span class="app-filter">Quizzes</span></li>
+	              		<li ng-class="{active: type == 'game'}" ng-click="setFilter('game')">
+	              			<span class="app-filter">Games</span></li>
+	            	</ul>
+	          	</div>
+	        </div>
+	    </div>
+	    <div class="container-fluid app-list">
+	    	<div class="row">
+	    		<div class="col-lg-4 col-xs-6" ng-repeat="app in apps | filter: {type : type}">
+	    			<div class="app-tile" 
+	    				 style="background-image: url('{{app.image}}')" 
+	    				 scroll-on-click href="#top" 
+	    				 require-login login-callback="selectApp(app)">
+	    				<div class="app-tile-overlay">
+	    					<img src="../images/icon-settings-large.png"/>
+	    				</div>
+	    				<div class="app-tile-top">
+			    			<span class="type">{{app.type}}</span>
+			    			<span class="rating">
+			    				<i class="fa fa-star" ng-repeat="star in app.rating track by $index"></i>
+		    				</span>
+		    			</div>
+		    			<div class="app-tile-bottom">
+		    				<h3>{{app.name}}</h3>
+		    				<p>{{app.description}}</p>
+		    			</div>
+		    		</div>
+	    		</div>
+	    	</div>
+	    </div>
+    </div>
+</div>

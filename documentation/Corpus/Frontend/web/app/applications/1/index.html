@@ -1,0 +1,54 @@
+<!-- Written by HJ80 -->
+<!-- index.html is used in application 1 as the desktop view -->
+
+<link rel="stylesheet" href="applications/1/style.css"/>
+<div class="quiz" ng-controller="AddController">
+	<h1>Create your own quiz</h1>
+	<form name="quiz" ng-submit="submit()">
+		<div class="row top">
+			<div class="col-xs-6">
+				<h3>Quiz Title</h3>
+				<input type="text" class="form-input" ng-model="title" placeholder="Title" required/>
+				<h3>Description</h3>
+				<input type="text" class="form-input" ng-model="description" placeholder="Description" required/>
+			</div>
+			<div class="col-xs-6">
+				<h3>Image</h3>
+				<button ngf-select="upload(image)" ng-model="image" name="file" ngf-pattern="'image/*'"
+				ngf-accept="'image/*'" ngf-max-size="10MB">Select</button>
+				<p>Suggested size: 650px x 480px</p>
+				<img class="thumbnail" ngf-thumbnail="image">
+			</div>
+		</div>
+		<hr/>
+		<div ng-repeat="q in questions track by $index" class="question-form">
+			<i class="fa fa-close" ng-click="removeQuestion($index)" ng-if="$index != 0"/>
+			<div class="row middle">
+				<div class="col-xs-6">
+					<h4>Question {{$index+1}}</h4>
+					<input type="text" class="form-input" ng-model="q.question" placeholder="Question" required/>
+					<br/>
+					<h4 class="inline">Number of options:</h4>
+					<select ng-model="q.count" class="number-answers" ng-change="resize($index, q.count)" required>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+					</select>
+				</div>
+				<div class="col-xs-6">
+					<h4>Options</h4>
+					<div ng-repeat="o in q.answers track by $index" class="middle-answers">
+						<span>{{o.id}}.</span>
+						<input type="text" class="form-input answer" ng-model="o.answer" placeholder="Answer {{$index+1}}" required/>
+						<input type="checkbox" class="form-input correct" ng-model="correct[$parent.$index][$index]" ng-click="setCorrect($parent.$index, $index, o.id)"/>
+					</div>
+				</div>
+			</div>
+			<hr/>
+		</div>
+		<br/>
+		<button type='button' ng-click="addQuestion()">Add another question</button>
+		<br/><br/>
+		<button type="submit">Submit</button>
+	</form>
+</div>

@@ -1,0 +1,77 @@
+body {
+  background: url("../images/bg.png");
+  background-size: cover;
+  background-color: #3D5663;
+  background-repeat: no-repeat;
+}
+body .empty {
+  color: rgba(255, 255, 255, 0.25);
+  font-style: italic;
+}
+body .container-fluid.main {
+  margin-top: 80px;
+}
+body .navbar-brand {
+  height: 70px;
+}
+body .menu {
+  padding: 20px;
+}
+body input[type="number"]::-webkit-outer-spin-button,
+body input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+body input[type="number"] {
+  -moz-appearance: textfield;
+}
+body .fa-chevron-left {
+  font-size: 25pt;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1030;
+}
+body .lobby-app-container {
+  padding: 25px;
+}
+body .lobby {
+  box-shadow: rgba(0, 0, 0, 0.2) 0 10px 10px;
+}
+body .lobby hr {
+  border-top: 1px solid #333;
+}
+body .lobby .lobby-header {
+  padding: 5px 10px;
+  background-color: #3D6072;
+  color: white;
+}
+body .lobby h3 {
+  margin-top: 10px;
+  text-align: center;
+}
+body .lobby .lobby-players {
+  min-height: 50px;
+  background-color: #222;
+  padding: 15px;
+  max-height: 60vh;
+  overflow: scroll;
+}
+body .lobby .fa-check {
+  color: #6bbb5c;
+}
+body .lobby .fa-close {
+  color: #C34848;
+}
+body .lobby .col-xs-3 {
+  text-align: center;
+}
+body .lobby .col-xs-9 {
+  text-align: left;
+}
+body .lobby .col-xs-9 span {
+  color: white;
+}
+body .login-submit.not-ready {
+  background-color: #C34848;
+}

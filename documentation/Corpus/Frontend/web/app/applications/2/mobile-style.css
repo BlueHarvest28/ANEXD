@@ -1,0 +1,45 @@
+/*
+  mobie-style.css manages all styling for the mobile version of application 2 quiz play
+  Written by HJ80
+*/
+
+.quiz .buttons {
+  margin-top: 30px;
+}
+.quiz .buttons ul {
+  margin: 0;
+  padding: 0;
+}
+.quiz .buttons ul li {
+  display: block;
+  margin: 15px 0;
+  padding: 5px;
+  width: 100%;
+  color: white;
+  font-size: 15pt;
+  font-weight: 200;
+  border-radius: 5px;
+  transition: opacity 0.5s;
+  text-align: center;
+  line-height: 22px;
+  cursor: pointer;
+}
+.quiz .buttons ul li:nth-child(1) {
+  border: 2px solid #bb2253;
+  background: linear-gradient(173deg, #c52457 50%, #bb2253 50%);
+}
+.quiz .buttons ul li:nth-child(2) {
+  border: 2px solid #21825c;
+  background: linear-gradient(173deg, #248c63 50%, #21825c 50%);
+}
+.quiz .buttons ul li:nth-child(3) {
+  border: 2px solid #2772db;
+  background: linear-gradient(173deg, #2976e3 50%, #2772db 50%);
+}
+.quiz .buttons ul li:nth-child(4) {
+  border: 2px solid #f5ca3e;
+  background: linear-gradient(173deg, #facf44 50%, #f5ca3e 50%);
+}
+.quiz .buttons ul li.disabled {
+  opacity: 0.2;
+}

@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="applications/2/style.css"/>
+<div class="quiz" ng-controller="QuizController">
+	<div class="arrow previous" 
+		 ng-click="showStart||previous()" 
+		 ng-disabled="showStart" 
+		 ng-class="{disabled : showStart}">
+		&lt;
+	</div>
+	<div class="arrow next" ng-click="showEnd||next()" ng-disabled="showEnd" ng-class="{disabled : showEnd}">
+		&gt;
+	</div>
+	<div ng-if="showStart">
+		<div class="header">
+			<div class="question-count">
+				<h2>Question: 0<span class="light"> / {{total}}</span></h2>
+			</div>
+			<div class="player-count">
+				<h2>Players: {{userCount}}</h2>
+			</div>
+		</div>
+		<div class="main">
+			<div class="quiz-title">
+				<h1>{{title}}</h1>
+				<h3>{{description}}</h3>
+			</div>
+			<img class="quiz-steps" src="images/steps.png"/>
+		</div>
+	</div>
+	
+	<div ng-if="showQuestion">
+		<div class="header">
+			<div class="question-count">
+				<h2>Question: {{question.number}}<span class="light"> / {{total}}</span></h2>
+			</div>
+			<div class="player-count">
+				<h2>Answered: {{answers[question.number]}} <span class="light"> / {{userCount}}</span></h2>
+			</div>
+		</div>
+		
+		<div class="main">
+			<div class="quiz-title">
+				<h1>{{question.question}}</h1>
+			</div>
+			<ul class="answers">
+				<li ng-repeat="answer in question.answers">
+					<span class="icon">{{answer.id}}</span>{{answer.answer}}
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div ng-if="showEnd">
+		<h1>Oh good grief you've done it</h1>
+		<ul>
+			<li ng-repeat="score in scores">
+				{{score}}
+			</li>
+		</ul>
+	</div>
+</div>

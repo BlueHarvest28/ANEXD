@@ -1,0 +1,32 @@
+Youtube video is embedded into html 
+	user can write a comment of the video 
+	the comment will be stored in the exact time the user starts typing 
+
+	many users can comment on one video at the same time using their device 
+
+html
+-----
+embedded Youtube video
+
+
+
+
+node desktop side 
+-----
+when video is on certain time, pause video 
+
+
+node server
+-----
+mobile user will send comments to node server 
+
+time they write (server takes note of when user starts typing)
+
+node server connected via tcp to go lang
+
+front end = websocket
+
+handle number of users: how many users can connect
+handle user names on node server 
+
+http://localhost:9000/#!/1/3

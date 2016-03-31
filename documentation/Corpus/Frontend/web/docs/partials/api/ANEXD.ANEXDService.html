@@ -1,0 +1,39 @@
+<h1><code ng:non-bindable="">ANEXDService</code>
+<div><span class="hint">service in module <code ng:non-bindable="">ANEXD</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="anexd-anexdservice-page"><p>Provides a simple interface for application developers to send and receive websocket messages from the server</p>
+</div></div>
+<h2 id="dependencies">Dependencies</h2>
+<ul class="dependencies"><li><code ng:non-bindable=""><a href="api/ng.$rootScope">$rootScope</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/ng.$timeout">$timeout</a></code>
+</li>
+<li><code ng:non-bindable=""><a href="api/SocketService">SocketService</a></code>
+</li>
+</ul>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><h3 id="methods_expect">expect(event)</h3>
+<div class="expect"><div class="anexd-anexdservice-expect-page"><p>Call once for each message expected from the server that may be received at any time
+Different from sendToServer in that it isn&#39;t in response to any other event
+Results are gathered from the getFromServer function</p>
+</div><h5 id="methods_expect_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>event</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-anexdservice-expect-page"><p>The event to listen on</p>
+</div></td></tr></tbody></table></div>
+</li>
+<li><h3 id="methods_getfromserver">getFromServer()</h3>
+<div class="getfromserver"><div class="anexd-anexdservice-getfromserver-page"><p>returns the most recent websocket message received being listened on by expect
+Use $scope.$watch to access on the $digest cycle</p>
+</div><h5 id="methods_getfromserver_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-anexdservice-getfromserver-page"><p>Object of the event and data received from the most recent event</p>
+</div></td></tr></table></div>
+</li>
+<li><h3 id="methods_sendtoserver">sendToServer(event, val)</h3>
+<div class="sendtoserver"><div class="anexd-anexdservice-sendtoserver-page"><p>Send a message to the server and wait for a reply using SocketService promise</p>
+</div><h5 id="methods_sendtoserver_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>event</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-anexdservice-sendtoserver-page"><p>The event to send the websocket message on</p>
+</div></td></tr><tr><td>val</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="anexd-anexdservice-sendtoserver-page"><p>Contents of message</p>
+</div></td></tr></tbody></table></div>
+</li>
+</ul>
+</div>
+</div>

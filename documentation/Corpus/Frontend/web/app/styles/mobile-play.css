@@ -1,0 +1,17 @@
+.play .container {
+  margin: 10px 0 0;
+  padding: 10px 20px;
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 3px 15px;
+}
+.play .container h1 {
+  font-size: 22pt;
+}
+.play .container h3 {
+  font-size: 20pt;
+  font-weight: 200;
+  color: #7e7e7e;
+}
+.play .container p {
+  margin-top: 30px;
+}
