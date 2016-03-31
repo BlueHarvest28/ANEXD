@@ -1,0 +1,121 @@
+// play.scss styles the play desktop view.
+// Written by HJ80
+// QA from FH98
+body{
+    background: url('../images/bg.png');
+	background-size: cover;
+	background-color: #3D5663;
+	background-repeat: no-repeat;
+}
+
+.thumbnail{
+	max-width: 150px;
+	max-height: 150px;
+}
+
+.play {
+	::-webkit-input-placeholder {
+		color: rgba(0, 0, 0, 0.4);
+	}
+
+	:-moz-placeholder {
+		color: rgba(0, 0, 0, 0.4);
+	}
+
+	::-moz-placeholder {
+		color: rgba(0, 0, 0, 0.4);
+	}
+
+	:-ms-input-placeholder {
+		color: rgba(0, 0, 0, 0.4);
+	}
+	
+	.form-input{
+		padding: 5px;
+		width: 50%;
+		font-size: 13pt;
+		color: #2B2B2B;
+		font-weight: 100;
+		letter-spacing: 1px;
+		border: 1px solid #ADADAD;
+		transition: border-color 0.2s;
+	}
+	
+	button{
+		width: 30%;
+		border: none;
+		padding: 5px 15px;
+		margin-right: 10px;
+		font-size: 13pt;
+		background-color: #6bbb5c;
+		color: white;
+		font-weight: 100;
+		transition: background-color 0.2s;
+		
+		&[disabled]{
+			opacity: 0.5;
+		}
+	}
+	
+	.top {
+		margin-bottom: 40px;
+		.form-input{
+			width: 100%;
+		}
+	}
+	
+	.middle {
+		margin-top: 40px;
+		margin-bottom: 40px;
+		
+		.inline{
+			width: 80%;
+			display: inline;
+			margin-right: 10px;
+			line-height: 40px;
+		}
+		
+		.middle-answers{
+			margin-bottom: 5px;
+		}
+		
+		.form-input{
+			width: 100%;
+			
+			&.correct{
+				width: 20px;
+			}
+			
+			&.answer{
+				width: 80%;
+    			font-size: 10pt;
+			}
+		}
+	}
+	
+	.question-form{
+		position: relative;
+	}
+	
+	.fa-close{
+	    position: absolute;
+		top: 5px;
+		left: 10px;
+		font-size: 22pt;
+		color: #272727;
+		cursor: pointer;
+		padding: 5px;
+	}
+
+	.container{
+		background-color: #fff;
+		box-shadow: rgba(0,0,0,0.2) 0 10px 10px;
+		margin: 50px auto;
+    	padding: 40px 80px;
+		position: relative;
+		min-height: 550px;
+		width: 1000px;
+	}
+}
+
+

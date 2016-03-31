@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="applications/14/style.css"/>
+<div class="image-annotate" ng-controller="ImageAnnotateController">
+	<div ng-show="!done">
+		<h1>Upload an Image to Annotate</h1>
+		<br/>
+	</div>
+	<button ngf-select="upload(image)" ng-model="image" name="file" ngf-pattern="'image/*'"
+	ngf-accept="'image/*'" ngf-max-size="10MB">Select an Image</button>
+	<span ng-show="inProgress">Progress: {{progress}}%</span>
+	<br/><br/>
+	<div class="canvas-container" ng-show="done">
+		<canvas posting image="imageURL"></canvas>
+		<img ng-if="imageURL" ng-src="{{imageURL}}"></canvas>
+	</div>
+</div>

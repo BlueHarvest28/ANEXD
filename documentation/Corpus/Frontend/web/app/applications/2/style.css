@@ -1,0 +1,108 @@
+/*
+  style.css styles the desktop view of application 2, play quiz. 
+  Written by HJ80
+*/
+
+.quiz .quiz-title {
+  margin-bottom: 20px;
+}
+.quiz h1 {
+  font-size: 38pt;
+}
+.quiz h2 {
+  margin: 0;
+  color: #6d6d6d;
+  font-weight: 200;
+  font-size: 30pt;
+}
+.quiz h2 .light {
+  color: #ccc6c6;
+}
+.quiz .player-count h2 {
+  font-size: 22pt;
+  margin-top: 5px;
+}
+.quiz h3 {
+  font-weight: 200;
+  color: #7e7e7e;
+}
+.quiz .header {
+  overflow: hidden;
+}
+.quiz .header .question-count, .quiz .header .player-count {
+  float: left;
+  width: 50%;
+  position: relative;
+}
+.quiz .header .player-count {
+  text-align: right;
+}
+.quiz .quiz-steps {
+  max-width: 100%;
+}
+.quiz .arrow {
+  position: absolute;
+  width: 70px;
+  height: 120px;
+  background-color: #222;
+  color: #ddd;
+  text-align: center;
+  font-size: 30pt;
+  font-weight: 500;
+  top: 50%;
+  margin-top: -60px;
+  padding: 28px 0;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+.quiz .arrow.previous {
+  left: -35px;
+}
+.quiz .arrow.next {
+  right: -35px;
+}
+.quiz .answers {
+  list-style: none;
+  padding: 10px 50px 0;
+  margin: 0;
+}
+.quiz .answers li {
+  padding: 10px;
+  margin: 10px;
+  font-size: 25pt;
+  font-weight: 200;
+}
+.quiz .answers li:nth-child(1) {
+  color: #bb2253;
+}
+.quiz .answers li:nth-child(1) .icon {
+  background-color: #bb2253;
+}
+.quiz .answers li:nth-child(2) {
+  color: #21825c;
+}
+.quiz .answers li:nth-child(2) .icon {
+  background-color: #21825c;
+}
+.quiz .answers li:nth-child(3) {
+  color: #2772db;
+}
+.quiz .answers li:nth-child(3) .icon {
+  background-color: #2772db;
+}
+.quiz .answers li:nth-child(4) {
+  color: #f5ca3e;
+}
+.quiz .answers li:nth-child(4) .icon {
+  background-color: #f5ca3e;
+}
+.quiz .answers li .icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  margin-right: 10px;
+  text-align: center;
+  font-weight: 400;
+  color: white;
+}

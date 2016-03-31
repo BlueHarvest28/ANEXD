@@ -1,0 +1,50 @@
+<!-- mobile-index.html creates the view used on the mobile version of application 3, images annotate. -->
+<!-- Written by HJ80 -->
+<link rel="stylesheet" href="applications/14/mobile-style.css"/>
+<div class="image-annotate" ng-controller="MobileImageAnnotateController">	
+	<div ng-show="!image">
+		<h2>Please wait for the host to upload an image</h2>
+	</div>
+	<div class="edit control undo" ng-click="undo()">
+		<i class="fa fa-undo"/>
+	</div>
+	<div class="edit" ng-click="toggleEdit()" ng-class="{editing: editing}">
+		<i class="fa fa-edit"/>
+	</div>
+	<div class="edit control menu" ng-click="showMenu = !showMenu">
+		<span class="colour" ng-style="{'background-color': selectedColour}"></span>
+		<div ng-show="showMenu">
+			<div class="colour-menu">
+				<span class="colour-item white" ng-click="selectColour('white')">
+				</span>
+				<span class="colour-item yellow" ng-click="selectColour('yellow')">
+				</span>
+				<br/>
+				<span class="colour-item black" ng-click="selectColour('black')">
+				</span>
+				<span class="colour-item orange" ng-click="selectColour('orange')">
+				</span>
+				<br/>
+				<span class="colour-item red" ng-click="selectColour('red')">
+				</span>
+				<span class="colour-item purple" ng-click="selectColour('purple')">
+				</span>
+				<br/>
+				<span class="colour-item green" ng-click="selectColour('green')">
+				</span>
+				<span class="colour-item brown" ng-click="selectColour('brown')">
+				</span>
+				<br/>
+				<span class="colour-item blue" ng-click="selectColour('blue')">
+				</span>
+				<span class="colour-item grey" ng-click="selectColour('grey')">
+				</span>
+			</div>
+			<div class="arrow-down"></div>
+		</div>
+	</div>
+	<div class="canvas-container" ng-show="image">
+		<canvas ng-if="image" drawing image="image" editing="editing"></canvas>
+		<img ng-if="image" ng-src="{{image}}"></canvas>
+	</div>
+</div>

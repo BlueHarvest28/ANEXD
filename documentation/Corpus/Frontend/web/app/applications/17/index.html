@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+     	//YouTube API 
+  	 	var tag = document.createElement('script');
+  	    tag.src = "https://www.youtube.com/iframe_api";
+  	    var scriptTag = document.getElementsByTagName('script')[0];
+  	    scriptTag.parentNode.insertBefore(tag, scriptTag);
+    </script>
+    <script src="/applications/17/vidapp.js"></script>
+</head>
+<body>
+  <div ng-controller="YTController">
+  <!-- Div id="player" == Iframe. YouTube Api converts Div to Iframe -->
+  <div id="player"></div>
+    <div class="main">
+      <div class="headers">Messages:</div>
+      <div class="chatbox">
+          <div class="repeatbox" ng-repeat="message in messages track by $index">
+            Player: {{message}}
+          </div>
+      </div>
+      <div class="right">
+      <div ng-bind-html="player_html"></div>
+    </div>
+      </div>
+    </div>
+</body>
+
+</html>
+
+

@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="applications/2/mobile-style.css"/>
+<div class="quiz" ng-controller="MobileQuizController">
+	<div ng-if="showStart">
+		<h1>{{title}}</h1>
+		<h3>{{description}}</h3>
+		<p>Please wait for the host to begin the quiz.</p>
+	</div>
+	
+	<div ng-if="showQuestion">
+		<h1>{{question.question}}</h1>
+		<div class="buttons">
+			<ul>
+				<li ng-repeat="answer in question.answers" 
+						ng-click="setAnswer(answer.id)" 
+						ng-disabled="answers[question.number]" 
+						ng-class="{disabled : answers[question.number] && answers[question.number] != answer.id}" >{{answer.id}}. {{answer.answer}}
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div ng-if="showEnd">
+		<h1>Congrats on quizzing all over my app</h1>
+		<h3>You are a functioning member of society</h3>
+		<h1>{{score}} / {{total}}</h1>
+	</div>
+</div>
