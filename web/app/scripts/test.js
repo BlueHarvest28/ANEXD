@@ -9,14 +9,13 @@
  *
  * Copyright (C): University Of Kent 14/03/2016 
 **/
+'use strict';
 #!/bin/env node
 //Server requirements
-var net 	= require('net');
-var express = require('express');
-var http    = require('http');
-var app     = express();
-var socketio = require('socket.io-client');
-var bodyParser = require('body-parser');
+var express 	= require('express');
+var app     	= express();
+var socketio 	= require('socket.io-client');
+var bodyParser 	= require('body-parser');
 
 var serverSocket;
 var games = [];
@@ -31,26 +30,8 @@ app.listen(app.get('port'), app.get('ip'), function () {
     console.log("✔ Express server listening at %s:%d ", app.get('ip'), app.get('port'));
 });
 
-//When we receive the post request to launch the lobby
-app.post('/', function(request, response) {
-	if(request.body){
-		//Instantiate the socket
-		serverSocket = socketio('http://api-anexd.rhcloud.com:8000');
-		var lobbyid = request.body.lobbyId;
-		//Inform Go we are beginning a new session
-		serverSocket.on('newsession', function(data){
-			serverSocket.emit('created');
-			//Instantiate the app
-			var i = new instance(lobbyid);
-			i.init();
-			games.push(i);	
-		});
-	}
-	response.json({});
-});
-
 //Object for Image Annotate instances
-function instance(lobbyid) {
+function Instance(lobbyid) {
 	//New socket connection for this instance to listen on
 	var socket = socketio('http://api-anexd.rhcloud.com:8000');
 	//Local storage of the image being edited
@@ -73,7 +54,7 @@ function instance(lobbyid) {
     var run= function() {
 		console.log('Running');
 		//New player joined
-        socket.on('new', function(data) {
+        socket.on('new', function() {
 			console.log('new');
 			if(this.imageURL){
 				console.log('sending image', this.imageURL);
@@ -98,27 +79,45 @@ function instance(lobbyid) {
 			var msg = {
 				'event': 'drawing',
 				'data': data,
-			}
+			};
 			socket.emit('msgplayer', {'player': 0, 'msg': msg});
 		});
 		
 		//Save on each new drawing
-		socket.on('save', function(data {
+		socket.on('save', function(data) {
 			console.log('save:', data);
 			var msg = {
 				'event': 'save',
 				'data': data,
-			}
+			};
 			socket.emit('msgplayer', {'player': 0, 'msg': msg});
 		});
 		
 		//Undo from the list of saves
-		socket.on('undo', function(data) {
+		socket.on('undo', function() {
 			console.log('undo');
 			var msg = {
 				'event': 'undo',
-			}
+			};
 			socket.emit('msgplayer', {'player': 0, 'msg': msg});
 		});	
     };
-};
+}
+
+//When we receive the post request to launch the lobby
+app.post('/', function(request, response) {
+	if(request.body){
+		//Instantiate the socket
+		serverSocket = socketio('http://api-anexd.rhcloud.com:8000');
+		var lobbyid = request.body.lobbyId;
+		//Inform Go we are beginning a new session
+		serverSocket.on('newsession', function(){
+			serverSocket.emit('created');
+			//Instantiate the app
+			var i = new Instance(lobbyid);
+			i.init();
+			games.push(i);	
+		});
+	}
+	response.json({});
+});
