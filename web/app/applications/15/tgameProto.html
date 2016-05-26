@@ -17,13 +17,8 @@ canvas {
 //tutorial from http://www.w3schools.com/games/default.asp
 
 //TODO:
+//backtrack amount bullet penertrates object.
 //Only shoot 3/5 bullets then need a pause
-//Make collision with enrivon objects
-
-//space partitioning
-//bounding box then spec collision
-//if no bound box then go straight to coll det
-//ONLY check if out canvas if in arr 0 or 6 or that side
 
 //Partioned space size
 const partitions = [6,6]; //x,y
@@ -169,10 +164,12 @@ var Tank = function(width, height, type, x, y, rotInit) {
     this.angle = 0 + rotInit;
     this.angleSpeed = 0;  
     this.health = 1;
+    //when tank is hit.
     this.removeHealth = function() {
         this.health -= 1;
         return this.health;
-    } 
+    };
+    //alter position of tank according to values.
     this.newPos = function() {
         this.angle += this.angleSpeed;
         if (this.angle >= 360)
@@ -185,10 +182,17 @@ var Tank = function(width, height, type, x, y, rotInit) {
         // Bound vars
         this.bMin = [this.x, this.y];
         this.bMax = [this.x + this.width, this.y + this.height];     
-    } 
+    };
+    //any changes to x or y need to call update to change 
+    //bounds aswell.
+    this.update = function(){
+        this.bMin = [this.x, this.y];
+        this.bMax = [this.x + this.width, this.y + this.height];
+    };
+    //used for sending tank drawing info to main screen
     this.getData = function() {
         return [this.width, this.height, this.type, this.x, this.y, this.angle];
-    }
+    };
 };
 
 // This contains all the methods and vars potaining to a bullet.
@@ -361,6 +365,33 @@ var EnvObj = function(x, y, w, h, rot) {
     };
     this.bBox = [];
     // this.points = this.createShape(x,y,w,h,rot,shape);
+
+    this.collisionCal = function(bMin, bMax, bMins, bMaxs){
+        var diff = [
+            Math.abs(bMins[1] - bMax[1]), //top
+            Math.abs(bMaxs[1] - bMin[1]), //bot
+
+            Math.abs(bMins[0] - bMax[0]), //left
+            Math.abs(bMaxs[0] - bMin[0])  //right
+        ];
+
+        console.log(diff)
+
+        var d = [[],[]];
+        for(var i=0, j=0; i<2; i++, j+=2){
+            if(diff[j] < diff[j+1]){
+                d[i] = [diff[j], j];
+            }else{
+                d[i] = [diff[j+1], j+1];
+            }
+        }
+
+        if(d[0][0] < d[1][0]){ //side coll
+            return d[0];
+        }else{ //top coll
+            return d[1]; 
+        }
+    }
 };
 
 // This is for the environ rectangle shapes.
@@ -385,30 +416,7 @@ var EnvObjRect = function(x, y, w, h, rot, shape){
             this.bMin[1] < bMax[1] && 
             this.bMax[1] > bMin[1]){ //bounding box
 
-            var diff = [
-                Math.abs(this.bMin[1] - bMax[1]), //top
-                Math.abs(this.bMax[1] - bMin[1]), //bot
-
-                Math.abs(this.bMin[0] - bMax[0]), //left
-                Math.abs(this.bMax[0] - bMin[0])  //right
-            ];
-
-            var d = [0,0]
-            for(var i=0, j=0; i<2; i++, j+=2){
-                if(diff[j] < diff[j+1]){
-                    d[i] = diff[j];
-                }else{
-                    d[i] = diff[j+1];
-                }
-            }
-
-            if(d[0] > d[1]){
-                console.log('side')
-                return 0;
-            }else{
-                console.log('top')
-                return 1; 
-            }
+            return this.collisionCal(bMin, bMax, this.bMin, this.bMax);
         }
 
         return -1; //no collision
@@ -448,31 +456,7 @@ var EnvObjL = function(x, y, w, h, rot, shape){
                     bMin[1] < bMaxs[1] && 
                     bMax[1] > bMins[1]){
 
-
-                    console.log('we did have collision!!')
-
-                    var diff = [
-                        Math.abs(bMins[1] - bMax[1]), //top
-                        Math.abs(bMaxs[1] - bMin[1]), //bot
-
-                        Math.abs(bMins[0] - bMax[0]), //left
-                        Math.abs(bMaxs[0] - bMin[0])  //right
-                    ];
-
-                    var d = [0,0]
-                    for(var i=0, j=0; i<2; i++, j+=2){
-                        if(diff[j] < diff[j+1]){
-                            d[i] = diff[j];
-                        }else{
-                            d[i] = diff[j+1];
-                        }
-                    }
-
-                    if(d[0] > d[1]){ //side coll
-                        return 0;
-                    }else{ //top coll
-                        return 1; 
-                    }
+                    return this.collisionCal(bMin, bMax, bMins, bMaxs);
                            
                 }
             }
@@ -539,6 +523,7 @@ var EnvObjPlus = function(x, y, w, h, rot, shape){
     };
 
     // Check to see if two objects collide.
+    // Sends back dir and amount penertrated so back backtrack.
     // @param bMin, bMax - bounds of the object
     this.collision = function(bMin, bMax){
         if( this.bMax[0] > bMin[0] && 
@@ -556,28 +541,7 @@ var EnvObjPlus = function(x, y, w, h, rot, shape){
                     bMin[1] < bMaxs[1] && 
                     bMax[1] > bMins[1]){
 
-                    var diff = [
-                        Math.abs(bMins[1] - bMax[1]), //top
-                        Math.abs(bMaxs[1] - bMin[1]), //bot
-
-                        Math.abs(bMins[0] - bMax[0]), //left
-                        Math.abs(bMaxs[0] - bMin[0])  //right
-                    ];
-
-                    var d = [0,0];
-                    for(var i=0, j=0; i<2; i++, j+=2){
-                        if(diff[j] < diff[j+1]){
-                            d[i] = diff[j];
-                        }else{
-                            d[i] = diff[j+1];
-                        }
-                    }
-
-                    if(d[0] > d[1]){ //side coll
-                        return 0;
-                    }else{ //top coll
-                        return 1; 
-                    }
+                    return this.collisionCal(bMin, bMax, bMins, bMaxs);
                            
                 }
             }
@@ -861,6 +825,7 @@ var updateGameArea = function() {
                 }
             }
 
+            //check tank with canvas bounds.
             for(key in oldpos){
                 if(oldpos[key].indexOf(0) !== -1){ //check top canvas bound
                     if (p.y <= 0){
@@ -875,7 +840,44 @@ var updateGameArea = function() {
                         outB = true;
                     }
                 }
+
+                //Tank collision with environment
+                for(var j=0, l=oldpos[key].length; j<l; j++){ //loop y
+                    var id = oldpos[key][j];
+                    var objs = partition.pArr[key][id];
+                    for(var k=0, m=objs.length; k<m; k++){ //loop objs in partition space.
+                        if(objs[k][0] === 1){ //env obj
+                            var index = objs[k][1];
+                            var dir = objects[1][index].collision( objects[0][i].bMin, objects[0][i].bMax);
+
+                            if(dir !== -1){ //collision
+                                outB = true;
+                            }
+
+                            if(dir[1] < 2 && dir[1] !== -1){ //height collision
+                                if(dir[1] == 0){//top
+                                    objects[0][i].y -= (dir[1] + 1) * 2; //rem penertration
+                                }
+                                if(dir[1] == 1){//bottom
+                                    objects[0][i].y += dir[1] * 2; //rem penertration
+                                }
+                            }else if(dir[1] >= 2  ){ //side collision
+                                if(dir[1] === 2){//right
+                                    objects[0][i].x -= dir[1] * 2; //rem penertration
+                                }
+                                if(dir[1] === 3){//left
+                                    objects[0][i].x += dir[1] * 2; //rem penertration
+                                }
+                            }
+                            objects[0][i].update();
+
+                        }
+                    }
+                }
+
+
             }
+
 
             if(!outB){ //only change pos if not on bound
                 objects[0][i].newPos();
@@ -948,18 +950,36 @@ var updateGameArea = function() {
                             var index = objs[k][1];
                             var dir = objects[1][index].collision(b.bMin, b.bMax);
 
-                            if(dir === 1){ //height collision
+                            if(dir[1] < 2 && dir[1] !== -1){ //height collision
+                                //change angle
                                 if (b.angle > 180){
                                     objects[2][i][1].angle = 360 + (180 - (b.angle));
                                 }else{
                                     objects[2][i][1].angle = 180 - (b.angle);
                                 }
+                                //check bounces
                                 if(del && objects[2][i][1].remBounce() == 0)
                                     del = false;
-                            }else if(dir === 0){ //side collision
+                                //move back to point of collision
+                                if(dir[0] === 1){//top
+                                    objects[2][i][1].y -= dir[1]; //rem penertration
+                                }
+                                if(dir[0] === 1){//bottom
+                                    objects[2][i][1].y += dir[1]; //rem penertration
+                                }
+                            }else if(dir[1] >= 2  ){ //side collision
+                                //change angle
                                 objects[2][i][1].angle = 360 - (b.angle);
+                                //check bounces
                                 if(del && objects[2][i][1].remBounce() == 0)
                                     del = false;
+                                //move back to point of collision
+                                if(dir[0] === 2){//right
+                                    objects[2][i][1].x -= dir[1]; //rem penertration
+                                }
+                                if(dir[0] === 3){//left
+                                    objects[2][i][1].x += dir[1]; //rem penertration
+                                }
                             }
 
                         }
@@ -1113,8 +1133,6 @@ var myGameArea = {
     }
 };
 
-//     0            1           2         3      4          5
-//[this.width, this.height, this.type, this.x, this.y, this.angle];
 var drawBullet = function(info){
     var ctx = myGameArea.context;
     ctx.drawImage(bull, 
