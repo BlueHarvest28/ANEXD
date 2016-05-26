@@ -202,7 +202,7 @@ var Bullet = function(width, height, type, x, y, speed, direction) {
     this.bMax = [x + width*0.65, y + height*0.65];
 
     this.angle = 0 + direction;
-    this.bounces = 1
+    this.bounces = 3;
     this.speed = speed; 
     this.remBounce = function() {
         this.bounces -= 1;
@@ -280,9 +280,6 @@ var EnvObj = function(x, y, w, h, rot) {
         }
         ctx.closePath();
         ctx.fill();
-
-        ctx.fillStyle = "green";
-        ctx.fillRect(this.points[0][0]-2.5, this.points[1][0]-2.5, 5, 5);
     };
     // This will distinguish how to swap x,y and minus them
     // Only rotates 90,180,270
@@ -366,6 +363,8 @@ var EnvObj = function(x, y, w, h, rot) {
     // this.points = this.createShape(x,y,w,h,rot,shape);
 };
 
+// This is for the environ rectangle shapes.
+// @params all passed to EnvObj
 var EnvObjRect = function(x, y, w, h, rot, shape){
     EnvObj.call(this, x, y, w, h, rot, shape);
 
@@ -417,6 +416,8 @@ var EnvObjRect = function(x, y, w, h, rot, shape){
     this.points = this.createShape(this.rectPoints(this.width, this.height));
 };
 
+// This is for the environ L shapes.
+// @params all passed to EnvObj
 var EnvObjL = function(x, y, w, h, rot, shape){
     EnvObj.call(this, x, y, w, h, rot, shape);
 
@@ -437,39 +438,93 @@ var EnvObjL = function(x, y, w, h, rot, shape){
             this.bMin[1] < bMax[1] && 
             this.bMax[1] > bMin[1]){ //bounding box
 
-            console.log('bb');
+            //check collision with each shape part
+            for(var k=0, l=this.subshapes.length; k<l; k++){
+                var bMins = this.subshapes[k][0];
+                var bMaxs = this.subshapes[k][1];
 
-            var diff = [
-                Math.abs(this.bMin[1] - bMax[1]), //top
-                Math.abs(this.bMax[1] - bMin[1]), //bot
+                if( bMax[0] > bMins[0] && 
+                    bMin[0] < bMaxs[0] &&
+                    bMin[1] < bMaxs[1] && 
+                    bMax[1] > bMins[1]){
 
-                Math.abs(this.bMin[0] - bMax[0]), //left
-                Math.abs(this.bMax[0] - bMin[0])  //right
-            ];
 
-            var d = [0,0]
-            for(var i=0, j=0; i<2; i++, j+=2){
-                if(diff[j] < diff[j+1]){
-                    d[i] = diff[j];
-                }else{
-                    d[i] = diff[j+1];
+                    console.log('we did have collision!!')
+
+                    var diff = [
+                        Math.abs(bMins[1] - bMax[1]), //top
+                        Math.abs(bMaxs[1] - bMin[1]), //bot
+
+                        Math.abs(bMins[0] - bMax[0]), //left
+                        Math.abs(bMaxs[0] - bMin[0])  //right
+                    ];
+
+                    var d = [0,0]
+                    for(var i=0, j=0; i<2; i++, j+=2){
+                        if(diff[j] < diff[j+1]){
+                            d[i] = diff[j];
+                        }else{
+                            d[i] = diff[j+1];
+                        }
+                    }
+
+                    if(d[0] > d[1]){ //side coll
+                        return 0;
+                    }else{ //top coll
+                        return 1; 
+                    }
+                           
                 }
             }
 
-            if(d[0] > d[1]){
-                console.log('side')
-                return 0;
-            }else{
-                console.log('top')
-                return 1; 
-            }
+
         }
 
         return -1; //no collision
     };
+
     this.points = this.createShape(this.LPoints(this.width, this.height));
+
+    //This will calculate bMin and bMax for that shape section.
+    this.subshapes = function(p){
+        //shapes indexs
+        var shpIn = [
+            [2, 3, 4, 5],
+            [0, 1, 5, 6],
+        ];
+
+        var bounds = [];
+        for(var i=0, l=shpIn.length; i<l; i++){ 
+            
+            var id = shpIn[i];
+            
+            var bound = [ 
+                [p[0][id[0]], p[1][id[0]]], //bMin
+                [p[0][id[0]], p[1][id[0]]], //bMax
+            ];
+
+            for(var j=0, l2=id.length; j<l2; j++){ //loop shpIn[i]
+                if(p[0][id[j]] < bound[0][0]){ //xmin
+                    bound[0][1] = p[0][id[j]];
+                }
+                if(p[1][id[j]] < bound[0][1]){ //ymin
+                    bound[0][1] = p[1][id[j]];
+                }
+                if(p[0][id[j]] > bound[1][0]){ //xmax
+                    bound[1][0] = p[0][id[j]];
+                }
+                if(p[1][id[j]] > bound[1][1]){ //ymax
+                    bound[1][1] = p[1][id[j]];
+                }
+            }
+            bounds.push(bound);
+        }
+        return bounds;
+    }(this.points);
 };
 
+// This is for the environ + shape.
+// @params all passed to EnvObj
 var EnvObjPlus = function(x, y, w, h, rot, shape){
     EnvObj.call(this, x, y, w, h, rot, shape);
     // Will return points to build a plus shape
@@ -491,37 +546,87 @@ var EnvObjPlus = function(x, y, w, h, rot, shape){
             this.bMin[1] < bMax[1] && 
             this.bMax[1] > bMin[1]){ //bounding box
 
-            console.log('bb');
+            //check collision with each shape part
+            for(var k=0, l=this.subshapes.length; k<l; k++){
+                var bMins = this.subshapes[k][0];
+                var bMaxs = this.subshapes[k][1];
 
-            var diff = [
-                Math.abs(this.bMin[1] - bMax[1]), //top
-                Math.abs(this.bMax[1] - bMin[1]), //bot
+                if( bMax[0] > bMins[0] && 
+                    bMin[0] < bMaxs[0] &&
+                    bMin[1] < bMaxs[1] && 
+                    bMax[1] > bMins[1]){
 
-                Math.abs(this.bMin[0] - bMax[0]), //left
-                Math.abs(this.bMax[0] - bMin[0])  //right
-            ];
+                    var diff = [
+                        Math.abs(bMins[1] - bMax[1]), //top
+                        Math.abs(bMaxs[1] - bMin[1]), //bot
 
-            var d = [0,0]
-            for(var i=0, j=0; i<2; i++, j+=2){
-                if(diff[j] < diff[j+1]){
-                    d[i] = diff[j];
-                }else{
-                    d[i] = diff[j+1];
+                        Math.abs(bMins[0] - bMax[0]), //left
+                        Math.abs(bMaxs[0] - bMin[0])  //right
+                    ];
+
+                    var d = [0,0];
+                    for(var i=0, j=0; i<2; i++, j+=2){
+                        if(diff[j] < diff[j+1]){
+                            d[i] = diff[j];
+                        }else{
+                            d[i] = diff[j+1];
+                        }
+                    }
+
+                    if(d[0] > d[1]){ //side coll
+                        return 0;
+                    }else{ //top coll
+                        return 1; 
+                    }
+                           
                 }
             }
 
-            if(d[0] > d[1]){
-                console.log('side')
-                return 0;
-            }else{
-                console.log('top')
-                return 1; 
-            }
         }
 
         return -1; //no collision
     };
+
     this.points = this.createShape(this.plusPoints(this.width, this.height));
+
+    //This will calculate bMin and bMax for that shape section.
+    this.subshapes = function(p){
+        //shapes indexs
+        var shpIn = [
+            [0, 1, 2, 11],
+            [2, 3, 4, 5],
+            [5, 6, 7, 8],
+            [8, 9, 10, 11],
+        ];
+
+        var bounds = [];
+        for(var i=0, l=shpIn.length; i<l; i++){ 
+            
+            var id = shpIn[i];
+            
+            var bound = [ 
+                [p[0][id[0]], p[1][id[0]]], //bMin
+                [p[0][id[0]], p[1][id[0]]], //bMax
+            ];
+
+            for(var j=0, l2=id.length; j<l2; j++){ //loop shpIn[i]
+                if(p[0][id[j]] < bound[0][0]){ //xmin
+                    bound[0][1] = p[0][id[j]];
+                }
+                if(p[1][id[j]] < bound[0][1]){ //ymin
+                    bound[0][1] = p[1][id[j]];
+                }
+                if(p[0][id[j]] > bound[1][0]){ //xmax
+                    bound[1][0] = p[0][id[j]];
+                }
+                if(p[1][id[j]] > bound[1][1]){ //ymax
+                    bound[1][1] = p[1][id[j]];
+                }
+            }
+            bounds.push(bound);
+        }
+        return bounds;
+    }(this.points);
 };
 
 // Object inheritence setup.
@@ -784,10 +889,6 @@ var updateGameArea = function() {
                 ctx.fillRect(p.bMin[0], p.bMin[1], p.bMax[0]-p.bMin[0], p.bMax[1]-p.bMin[1]);
             }
 
-            //x,y point draw
-            ctx.fillStyle = "green";
-            ctx.fillRect(p.x-2.5, p.y-2.5, 5, 5);
-
             drawTank(objects[0][i].getData());
         }
     }
@@ -816,7 +917,7 @@ var updateGameArea = function() {
                 if (b.x + b.width/2 > myGameArea.canvas.width || b.x + b.width/2 < 0){
                     objects[2][i][1].angle = 360 - (b.angle);
                     
-                    if(del && objects[2][i][1].remBounce())
+                    if(del && objects[2][i][1].remBounce() == 0)
                         del = false;
                 }
             }
@@ -830,7 +931,7 @@ var updateGameArea = function() {
                             objects[2][i][1].angle = 180 - (b.angle);
                         }
 
-                        if(del && objects[2][i][1].remBounce())
+                        if(del && objects[2][i][1].remBounce() == 0)
                             del = false;
                     }
                     break;
@@ -853,11 +954,11 @@ var updateGameArea = function() {
                                 }else{
                                     objects[2][i][1].angle = 180 - (b.angle);
                                 }
-                                if(del && objects[2][i][1].remBounce())
+                                if(del && objects[2][i][1].remBounce() == 0)
                                     del = false;
                             }else if(dir === 0){ //side collision
                                 objects[2][i][1].angle = 360 - (b.angle);
-                                if(del && objects[2][i][1].remBounce())
+                                if(del && objects[2][i][1].remBounce() == 0)
                                     del = false;
                             }
 
