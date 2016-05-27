@@ -53,6 +53,7 @@ angular.module('ANEXD')
                 info[0], info[1]);
 		}
 
+		//will draw the various tanks
 		var drawTank = function(info){
 
 			var img;
@@ -83,10 +84,36 @@ angular.module('ANEXD')
 	        ctx.restore();
 		};
 
+		//draws the ground in a repeating fashion to cover canvas
 		var drawGround = function(){
 			myGameArea.context.fillStyle = myGameArea.context.createPattern(grou, 'repeat');
 		    myGameArea.context.fillRect(0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
-		}
+		};
+
+	    // Will draw points of any arb shape
+	    // @params p - set of points 2d arr [[x],[y]]
+	    var drawEnvObj = function(points){
+	        // if(showBoundingBox)
+	        //     this.drawBounds();
+
+	        var ctx = myGameArea.context;
+	        ctx.fillStyle = '#f00';
+	        ctx.beginPath();
+	        ctx.moveTo(points[0][0], points[1][0]);
+	        for(var i=1, l=points[0].length; i < l; i++){
+	            ctx.lineTo(points[0][i], points[1][i]);
+	        }
+	        ctx.closePath();
+	        ctx.fill();
+	    };
+
+	    //draw bullet bb
+            var ctx = myGameArea.context;
+            if(showBoundingBox){
+                //draw boundb
+                ctx.fillStyle = "rgba(240, 240, 0, 0.4)";
+                ctx.fillRect(b.bMin[0], b.bMin[1], b.bMax[0]-b.bMin[0], b.bMax[1]-b.bMin[1]);
+            }
 
 		$scope.startGame = function(){
 			myGameArea.start();
@@ -136,15 +163,18 @@ angular.module('ANEXD')
 			myGameArea.clear();
 			drawGround();
 			for(var i = 0; i < objects.length; i++){
-				if(objects[i][2] === "yellowTank" ||
-				objects[i][2] === "greenTank" ||
-				objects[i][2] === "blueTank" ||
-				objects[i][2] === "redTank"){
+				if(objects[i][0] === "yellowTank" ||
+				objects[i][0] === "greenTank" ||
+				objects[i][0] === "blueTank" ||
+				objects[i][0] === "redTank"){
 					drawTank(objects[i]);
-				}else if(objects[i][2] === "bullet"){
+				}else if(objects[i][0] === "bullet"){
 					drawBullet(objects[i]);
+				}else if(objects[i][0] === "envobj"){
+					drawEnvObj(objects[i][1]);
 				}else{
 					//error
+					console.log('Invalid object sent', objects[i])
 				}
 			}
 		};
